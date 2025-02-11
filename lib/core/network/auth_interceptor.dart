@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:tcm/core/event_bus.dart';
 import 'package:tcm/enums.dart';
-import 'package:tcm/utils/sp_util.dart';
 
 class AuthInterceptor extends Interceptor {
   static bool isRefreshing = false;
@@ -9,10 +8,7 @@ class AuthInterceptor extends Interceptor {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    options.headers
-        .putIfAbsent("Accept-Language", () => SPUtil.getLanguageCode());
-    options.headers.putIfAbsent("Authorization",
-        () => '${SPUtil.getTokenType()} ${SPUtil.getAccessToken()}');
+    options.headers.putIfAbsent("X-API-Key", () => 'UjMJWmaEC3RQBVZ');
     super.onRequest(options, handler);
   }
 

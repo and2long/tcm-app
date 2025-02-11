@@ -14,7 +14,11 @@ class ConstantsKeyCache {
 class ConstantsHttp {
   ConstantsHttp._();
 
-  static const String baseUrl = '';
+  static const String baseUrl = 'http://127.0.0.1:5000';
+  static const String orders = '/orders';
+  static const String pendingOrders = '/orders/pedding';
+  static const String contacts = '/contacts';
+  static const String products = '/products';
 }
 
 const appBarHeight = kToolbarHeight;

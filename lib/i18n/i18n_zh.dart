@@ -17,7 +17,7 @@ class ProjectLocalizationsZH implements S {
   String get termsOfService => "服务条款";
 
   @override
-  String get me => "我的";
+  String get me => "个人中心";
 
   @override
   String get settingsLanguage => "语言";

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:tcm/utils/sp_util.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:tcm/core/blocs/order/order_cubit.dart';
+import 'package:tcm/core/repos/order_repo.dart';
+import 'package:tcm/utils/sp_util.dart';
 
 /// 全局状态管理
 class Store {
@@ -13,6 +16,7 @@ class Store {
         // 国际化
         ChangeNotifierProvider.value(
             value: LocaleStore(SPUtil.getLanguageCode())),
+        BlocProvider(create: (_) => OrderCubit(OrderRepo())),
       ],
       child: child,
     );

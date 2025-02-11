@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ytnavigator/flutter_ytnavigator.dart';
 import 'package:tcm/components/yt_tile.dart';
 import 'package:tcm/i18n/i18n.dart';
-import 'package:tcm/pages/language.dart';
+import 'package:tcm/pages/order_list_page.dart';
 
 class Me extends StatelessWidget {
   const Me({super.key});
@@ -16,18 +16,18 @@ class Me extends StatelessWidget {
       body: ListView(
         children: [
           YTTile(
-            title: S.of(context).settingsLanguage,
+            title: '客户管理',
+            onTap: () {},
+          ),
+          YTTile(
+            title: '药品管理',
+            onTap: () {},
+          ),
+          YTTile(
+            title: '处方管理',
             onTap: () {
-              NavigatorUtil.push(context, const LanguagePage());
+              NavigatorUtil.push(context, const OrderListPage());
             },
-          ),
-          YTTile(
-            title: S.of(context).privacyPolicy,
-            onTap: () {},
-          ),
-          YTTile(
-            title: S.of(context).termsOfService,
-            onTap: () {},
           ),
         ],
       ),
