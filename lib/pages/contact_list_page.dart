@@ -35,6 +35,12 @@ class _ContactListPageState extends State<ContactListPage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('联系人管理'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: () => _showCreateContactDialog(context),
+            ),
+          ],
         ),
         body: RefreshIndicator(
           onRefresh: () {
@@ -51,6 +57,42 @@ class _ContactListPageState extends State<ContactListPage> {
             itemCount: _contacts.length,
           ),
         ),
+      ),
+    );
+  }
+
+  void _showCreateContactDialog(BuildContext context) {
+    final nameController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('新建联系人'),
+        content: TextField(
+          controller: nameController,
+          decoration: const InputDecoration(
+            labelText: '姓名',
+            border: OutlineInputBorder(),
+          ),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('取消'),
+          ),
+          TextButton(
+            onPressed: () {
+              if (nameController.text.trim().isNotEmpty) {
+                context
+                    .read<ContactCubit>()
+                    .createContact(nameController.text.trim());
+                Navigator.pop(context);
+              }
+            },
+            child: const Text('确定'),
+          ),
+        ],
       ),
     );
   }

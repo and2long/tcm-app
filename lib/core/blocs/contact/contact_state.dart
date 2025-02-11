@@ -8,3 +8,8 @@ class ContactListSuccessState extends ContactState {
   final List<Contact> contacts;
   ContactListSuccessState(this.contacts);
 }
+
+class ContactCreateSuccessState extends ContactState {
+  final Contact contact;
+  ContactCreateSuccessState(this.contact);
+}

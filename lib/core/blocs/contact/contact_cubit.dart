@@ -27,4 +27,18 @@ class ContactCubit extends Cubit<ContactState> {
       SmartDialog.dismiss();
     }
   }
+
+  Future createContact(String name) async {
+    try {
+      SmartDialog.showLoading();
+      Response res = await _repo.createContact(name);
+      Contact contact = Contact.fromJson(res.data);
+      maybeEmit(ContactCreateSuccessState(contact));
+      SmartDialog.showToast('创建成功');
+    } catch (e, s) {
+      handleError(e, stackTrace: s);
+    } finally {
+      SmartDialog.dismiss();
+    }
+  }
 }

@@ -6,4 +6,8 @@ class ContactRepo {
   Future<Response> getContactList() async {
     return XHttp.instance.get(ConstantsHttp.contacts);
   }
+
+  Future<Response> createContact(String name) async {
+    return XHttp.instance.post(ConstantsHttp.contacts, data: {'name': name});
+  }
 }
