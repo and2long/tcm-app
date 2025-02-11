@@ -4,6 +4,7 @@ import 'package:tcm/components/yt_tile.dart';
 import 'package:tcm/i18n/i18n.dart';
 import 'package:tcm/pages/contact_list_page.dart';
 import 'package:tcm/pages/order_list_page.dart';
+import 'package:tcm/pages/product_list_page.dart';
 
 class Me extends StatelessWidget {
   const Me({super.key});
@@ -24,7 +25,9 @@ class Me extends StatelessWidget {
           ),
           YTTile(
             title: '药品管理',
-            onTap: () {},
+            onTap: () {
+              NavigatorUtil.push(context, const ProductListPage());
+            },
           ),
           YTTile(
             title: '处方管理',

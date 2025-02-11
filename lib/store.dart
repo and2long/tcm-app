@@ -3,8 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:tcm/core/blocs/contact/contact_cubit.dart';
 import 'package:tcm/core/blocs/order/order_cubit.dart';
+import 'package:tcm/core/blocs/product/product_cubit.dart';
 import 'package:tcm/core/repos/contact_repo.dart';
 import 'package:tcm/core/repos/order_repo.dart';
+import 'package:tcm/core/repos/product_repo.dart';
 import 'package:tcm/utils/sp_util.dart';
 
 /// 全局状态管理
@@ -20,6 +22,7 @@ class Store {
             value: LocaleStore(SPUtil.getLanguageCode())),
         BlocProvider(create: (_) => OrderCubit(OrderRepo())),
         BlocProvider(create: (_) => ContactCubit(ContactRepo())),
+        BlocProvider(create: (_) => ProductCubit(ProductRepo())),
       ],
       child: child,
     );
