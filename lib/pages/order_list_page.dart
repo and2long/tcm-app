@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tcm/components/yt_tile.dart';
+import 'package:tcm/core/blocs/extension.dart';
 import 'package:tcm/core/blocs/order/order_cubit.dart';
 import 'package:tcm/core/blocs/order/order_state.dart';
 import 'package:tcm/models/order.dart';
@@ -45,9 +46,37 @@ class _OrderListPageState extends State<OrderListPage> {
           child: ListView.builder(
             itemBuilder: (context, index) {
               final order = _orders[index];
-              return YTTile(
-                title: order.name,
-                subtitle: order.isCompleted ? '已完成' : '未完成',
+              final previousOrder = index > 0 ? _orders[index - 1] : null;
+              final showDateHeader = previousOrder == null ||
+                  order.createdAt.formatStyle3() !=
+                      previousOrder.createdAt.formatStyle3();
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (showDateHeader)
+                    Container(
+                      color: Colors.grey[200],
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        order.createdAt.formatStyle3(),
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 24,
+                        ),
+                      ),
+                    ),
+                  YTTile(
+                    title: '${order.name} / ${order.contact?.name}',
+                    trailing: Icon(
+                      order.isCompleted
+                          ? Icons.check_circle_outline
+                          : Icons.circle_outlined,
+                      color: order.isCompleted
+                          ? Colors.green
+                          : Colors.grey.shade300,
+                    ),
+                  ),
+                ],
               );
             },
             itemCount: _orders.length,
