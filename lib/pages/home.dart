@@ -39,11 +39,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Tab1',
+            label: '首页',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: 'Tab2',
+            label: '个人中心',
           ),
         ],
         currentIndex: _tabIndex,
