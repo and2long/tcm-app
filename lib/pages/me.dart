@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ytnavigator/flutter_ytnavigator.dart';
 import 'package:tcm/components/yt_tile.dart';
 import 'package:tcm/i18n/i18n.dart';
+import 'package:tcm/pages/contact_list_page.dart';
 import 'package:tcm/pages/order_list_page.dart';
 
 class Me extends StatelessWidget {
@@ -17,7 +18,9 @@ class Me extends StatelessWidget {
         children: [
           YTTile(
             title: '客户管理',
-            onTap: () {},
+            onTap: () {
+              NavigatorUtil.push(context, const ContactListPage());
+            },
           ),
           YTTile(
             title: '药品管理',

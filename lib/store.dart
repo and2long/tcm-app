@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:tcm/core/blocs/contact/contact_cubit.dart';
 import 'package:tcm/core/blocs/order/order_cubit.dart';
+import 'package:tcm/core/repos/contact_repo.dart';
 import 'package:tcm/core/repos/order_repo.dart';
 import 'package:tcm/utils/sp_util.dart';
 
@@ -17,6 +19,7 @@ class Store {
         ChangeNotifierProvider.value(
             value: LocaleStore(SPUtil.getLanguageCode())),
         BlocProvider(create: (_) => OrderCubit(OrderRepo())),
+        BlocProvider(create: (_) => ContactCubit(ContactRepo())),
       ],
       child: child,
     );
