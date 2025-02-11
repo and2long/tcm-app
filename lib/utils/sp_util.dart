@@ -1,5 +1,5 @@
-import 'package:flutter_project_template/constants.dart';
-import 'package:flutter_project_template/i18n/i18n.dart';
+import 'package:tcm/constants.dart';
+import 'package:tcm/i18n/i18n.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SPUtil {

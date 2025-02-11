@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_project_template/constants.dart';
-import 'package:flutter_project_template/core/network/auth_interceptor.dart';
-import 'package:flutter_project_template/core/network/log_interceptor.dart';
+import 'package:tcm/constants.dart';
+import 'package:tcm/core/network/auth_interceptor.dart';
+import 'package:tcm/core/network/log_interceptor.dart';
 
 class XHttp {
   XHttp._internal();

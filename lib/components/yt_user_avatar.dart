@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_project_template/components/yt_network_image.dart';
-import 'package:flutter_project_template/theme.dart';
+import 'package:tcm/components/yt_network_image.dart';
+import 'package:tcm/theme.dart';
 
 class YTUserAvatar extends StatelessWidget {
   final String? url;
