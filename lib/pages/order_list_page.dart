@@ -53,6 +53,13 @@ class _OrderListPageState extends State<OrderListPage>
             const SnackBar(content: Text('删除成功')),
           );
         }
+        if (state is OrderUpdateSuccessState) {
+          final index = _orders.indexWhere((o) => o.id == state.order.id);
+          if (index != -1) {
+            _orders[index] = state.order;
+            setState(() {});
+          }
+        }
       },
       child: Scaffold(
         appBar: AppBar(

@@ -11,10 +11,16 @@ import 'package:tcm/core/blocs/order/order_state.dart';
 import 'package:tcm/core/blocs/product/product_cubit.dart';
 import 'package:tcm/core/blocs/product/product_state.dart';
 import 'package:tcm/models/contact.dart';
+import 'package:tcm/models/order.dart';
 import 'package:tcm/models/product.dart';
 
 class OrderCreatePage extends StatefulWidget {
-  const OrderCreatePage({super.key});
+  final Order? order;
+
+  const OrderCreatePage({
+    super.key,
+    this.order,
+  });
 
   @override
   State<OrderCreatePage> createState() => _OrderCreatePageState();
@@ -39,6 +45,18 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
     super.initState();
     context.read<ContactCubit>().getContactList();
     context.read<ProductCubit>().getProductList();
+
+    if (widget.order != null) {
+      _selectedContact = widget.order!.contact;
+      _lineItems.clear();
+      _lineItems.addAll(
+        widget.order!.orderLines.map(
+          (line) => OrderLineItem()
+            ..product = line.product
+            ..quantity = line.quantity,
+        ),
+      );
+    }
   }
 
   void _addLineItem() {
@@ -107,12 +125,19 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
             if (state is OrderCreateSuccessState) {
               Navigator.pop(context);
             }
+            if (state is OrderUpdateSuccessState) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('修改成功')),
+              );
+              Navigator.pop(context);
+            }
           },
         ),
       ],
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('创建处方'),
+          title:
+              Text(widget.order == null ? '创建处方' : '修改处方 #${widget.order!.id}'),
         ),
         body: Form(
           key: _formKey,
@@ -334,13 +359,21 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                             })
                         .toList();
 
-                    context.read<OrderCubit>().createOrder(
-                          contactId: _selectedContact!.id,
-                          items: items,
-                        );
+                    if (widget.order == null) {
+                      context.read<OrderCubit>().createOrder(
+                            contactId: _selectedContact!.id,
+                            items: items,
+                          );
+                    } else {
+                      context.read<OrderCubit>().updateOrder(
+                            id: widget.order!.id,
+                            contactId: _selectedContact!.id,
+                            items: items,
+                          );
+                    }
                   }
                 },
-                child: const Text('创建'),
+                child: Text(widget.order == null ? '创建' : '保存'),
               ),
             ],
           ),

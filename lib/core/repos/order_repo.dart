@@ -28,4 +28,20 @@ class OrderRepo {
   Future<Response> deleteOrder(int id) async {
     return XHttp.instance.delete('${ConstantsHttp.orders}/$id');
   }
+
+  Future<Response> updateOrder({
+    required int id,
+    required int contactId,
+    required List<Map<String, int>> items,
+    List<String>? images,
+  }) async {
+    return XHttp.instance.patch(
+      '${ConstantsHttp.orders}/$id',
+      data: {
+        'contact_id': contactId,
+        'order_lines': items,
+        'images': images ?? [],
+      },
+    );
+  }
 }

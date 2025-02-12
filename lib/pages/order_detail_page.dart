@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_ytnavigator/flutter_ytnavigator.dart';
 import 'package:tcm/core/blocs/extension.dart';
 import 'package:tcm/core/blocs/order/order_cubit.dart';
 import 'package:tcm/core/blocs/order/order_state.dart';
 import 'package:tcm/models/order.dart';
+import 'package:tcm/pages/order_create_page.dart';
 
 class OrderDetailPage extends StatefulWidget {
   final int orderId;
@@ -35,10 +37,27 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             _order = state.order;
           });
         }
+        if (state is OrderUpdateSuccessState) {
+          setState(() {
+            _order = state.order;
+          });
+        }
       },
       child: Scaffold(
         appBar: AppBar(
           title: Text('#${widget.orderId} ${_order?.contact?.name}'),
+          actions: [
+            if (_order != null)
+              IconButton(
+                icon: const Icon(Icons.edit_outlined),
+                onPressed: () {
+                  NavigatorUtil.push(
+                    context,
+                    OrderCreatePage(order: _order),
+                  );
+                },
+              ),
+          ],
         ),
         body: _order == null
             ? const Center(child: CircularProgressIndicator())
