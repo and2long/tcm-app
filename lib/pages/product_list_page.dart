@@ -37,7 +37,6 @@ class _ProductListPageState extends State<ProductListPage> {
           );
         }
         if (state is ProductCreateSuccessState) {
-          Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('创建成功')),
           );
@@ -162,6 +161,7 @@ class _CreateProductDialogState extends State<_CreateProductDialog> {
               context
                   .read<ProductCubit>()
                   .createProduct(_nameController.text.trim());
+              Navigator.pop(context);
             }
           },
           child: const Text('确定'),

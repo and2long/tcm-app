@@ -53,7 +53,12 @@ class _ContactListPageState extends State<ContactListPage> {
           actions: [
             IconButton(
               icon: const Icon(Icons.add),
-              onPressed: () => _showCreateContactDialog(context),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => _CreateContactDialog(),
+                );
+              },
             ),
           ],
         ),
@@ -115,40 +120,60 @@ class _ContactListPageState extends State<ContactListPage> {
       ),
     );
   }
+}
 
-  void _showCreateContactDialog(BuildContext context) {
-    final nameController = TextEditingController();
+class _CreateContactDialog extends StatefulWidget {
+  @override
+  State<_CreateContactDialog> createState() => _CreateContactDialogState();
+}
 
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('新建联系人'),
-        content: TextField(
-          controller: nameController,
+class _CreateContactDialogState extends State<_CreateContactDialog> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('新建联系人'),
+      content: Form(
+        key: _formKey,
+        child: TextFormField(
+          controller: _nameController,
           decoration: const InputDecoration(
             labelText: '姓名',
             hintText: '请输入姓名',
           ),
-          autofocus: true,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return '请输入姓名';
+            }
+            return null;
+          },
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
-          ),
-          TextButton(
-            onPressed: () {
-              if (nameController.text.trim().isNotEmpty) {
-                context
-                    .read<ContactCubit>()
-                    .createContact(nameController.text.trim());
-                Navigator.pop(context);
-              }
-            },
-            child: const Text('确定'),
-          ),
-        ],
       ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('取消'),
+        ),
+        TextButton(
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              context
+                  .read<ContactCubit>()
+                  .createContact(_nameController.text.trim());
+              Navigator.pop(context);
+            }
+          },
+          child: const Text('确定'),
+        ),
+      ],
     );
   }
 }
