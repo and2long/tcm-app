@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:tcm/components/search_select_field.dart';
 import 'package:tcm/core/blocs/contact/contact_cubit.dart';
 import 'package:tcm/core/blocs/contact/contact_state.dart';
@@ -28,6 +31,8 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
   final List<Contact> _contacts = [];
   final List<Product> _products = [];
   final List<OrderLineItem> _lineItems = [OrderLineItem()];
+  final List<XFile> _images = [];
+  final _picker = ImagePicker();
 
   @override
   void initState() {
@@ -45,6 +50,31 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
   void _removeLineItem(int index) {
     setState(() {
       _lineItems.removeAt(index);
+    });
+  }
+
+  Future<void> _pickImage() async {
+    if (_images.length == 2) {
+      XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        setState(() {
+          _images.add(image);
+        });
+      }
+    } else {
+      final List<XFile> images =
+          await _picker.pickMultiImage(limit: 3 - _images.length);
+      if (images.isNotEmpty) {
+        setState(() {
+          _images.addAll(images);
+        });
+      }
+    }
+  }
+
+  void _removeImage(int index) {
+    setState(() {
+      _images.removeAt(index);
     });
   }
 
@@ -106,6 +136,93 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                   }
                   return null;
                 },
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  const Text(
+                    '图片',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '(${_images.length}/3)',
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              SizedBox(
+                height: 100,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    ..._images.asMap().entries.map(
+                      (entry) {
+                        final index = entry.key;
+                        final image = entry.value;
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.file(
+                                  File(image.path),
+                                  width: 100,
+                                  height: 100,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              Positioned(
+                                right: 4,
+                                top: 4,
+                                child: GestureDetector(
+                                  onTap: () => _removeImage(index),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: const BoxDecoration(
+                                      color: Colors.black54,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.close,
+                                      size: 16,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                    if (_images.length < 3)
+                      GestureDetector(
+                        onTap: _pickImage,
+                        child: Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(
+                            Icons.add_photo_alternate_outlined,
+                            size: 32,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
               const SizedBox(height: 24),
               const Text(
