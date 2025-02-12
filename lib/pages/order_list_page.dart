@@ -46,6 +46,13 @@ class _OrderListPageState extends State<OrderListPage>
             const SnackBar(content: Text('创建成功')),
           );
         }
+        if (state is OrderDeleteSuccessState) {
+          _orders.removeWhere((order) => order.id == state.id);
+          setState(() {});
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('删除成功')),
+          );
+        }
       },
       child: Scaffold(
         appBar: AppBar(
@@ -61,7 +68,6 @@ class _OrderListPageState extends State<OrderListPage>
         ),
         body: RefreshIndicator(
           onRefresh: () {
-            // 刷新订单列表
             context.read<OrderCubit>().getOrderList();
             return Future.value();
           },
@@ -87,21 +93,58 @@ class _OrderListPageState extends State<OrderListPage>
                         ),
                       ),
                     ),
-                  YTTile(
-                    title: '${order.name} / ${order.contact?.name}',
-                    onTap: () {
-                      NavigatorUtil.push(
-                        context,
-                        OrderDetailPage(orderId: order.id),
+                  Dismissible(
+                    key: Key('order_${order.id}'),
+                    direction: DismissDirection.endToStart,
+                    confirmDismiss: (direction) async {
+                      return await showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('确认删除'),
+                          content: const Text('确定要删除这个处方吗？'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Text('取消'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                context
+                                    .read<OrderCubit>()
+                                    .deleteOrder(order.id);
+                                Navigator.pop(context, true);
+                              },
+                              child: const Text('确定'),
+                            ),
+                          ],
+                        ),
                       );
                     },
-                    trailing: Icon(
-                      order.isCompleted
-                          ? Icons.check_circle_outline
-                          : Icons.circle_outlined,
-                      color: order.isCompleted
-                          ? Colors.green
-                          : Colors.grey.shade300,
+                    background: Container(
+                      color: Colors.red,
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.only(right: 16.0),
+                      child: const Icon(
+                        Icons.delete_outline,
+                        color: Colors.white,
+                      ),
+                    ),
+                    child: YTTile(
+                      title: '${order.name} / ${order.contact?.name}',
+                      onTap: () {
+                        NavigatorUtil.push(
+                          context,
+                          OrderDetailPage(orderId: order.id),
+                        );
+                      },
+                      trailing: Icon(
+                        order.isCompleted
+                            ? Icons.check_circle_outline
+                            : Icons.circle_outlined,
+                        color: order.isCompleted
+                            ? Colors.green
+                            : Colors.grey.shade300,
+                      ),
                     ),
                   ),
                 ],

@@ -59,4 +59,16 @@ class OrderCubit extends Cubit<OrderState> {
       SmartDialog.dismiss();
     }
   }
+
+  Future deleteOrder(int id) async {
+    try {
+      SmartDialog.showLoading();
+      await _repo.deleteOrder(id);
+      maybeEmit(OrderDeleteSuccessState(id));
+    } catch (e, s) {
+      handleError(e, stackTrace: s);
+    } finally {
+      SmartDialog.dismiss();
+    }
+  }
 }

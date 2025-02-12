@@ -18,3 +18,8 @@ class OrderDetailSuccessState extends OrderState {
   final Order order;
   OrderDetailSuccessState(this.order);
 }
+
+class OrderDeleteSuccessState extends OrderState {
+  final int id;
+  OrderDeleteSuccessState(this.id);
+}

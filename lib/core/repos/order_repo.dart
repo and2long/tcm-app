@@ -24,4 +24,8 @@ class OrderRepo {
   Future<Response> getOrderDetail(int id) async {
     return XHttp.instance.get('${ConstantsHttp.orders}/$id');
   }
+
+  Future<Response> deleteOrder(int id) async {
+    return XHttp.instance.delete('${ConstantsHttp.orders}/$id');
+  }
 }
