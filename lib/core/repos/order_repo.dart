@@ -29,4 +29,8 @@ class OrderRepo {
       data: formData,
     );
   }
+
+  Future<Response> getOrderDetail(int id) async {
+    return XHttp.instance.get('${ConstantsHttp.orders}/$id');
+  }
 }

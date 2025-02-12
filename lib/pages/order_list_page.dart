@@ -7,6 +7,7 @@ import 'package:tcm/core/blocs/order/order_cubit.dart';
 import 'package:tcm/core/blocs/order/order_state.dart';
 import 'package:tcm/models/order.dart';
 import 'package:tcm/pages/order_create_page.dart';
+import 'package:tcm/pages/order_detail_page.dart';
 
 class OrderListPage extends StatefulWidget {
   const OrderListPage({super.key});
@@ -88,6 +89,12 @@ class _OrderListPageState extends State<OrderListPage>
                     ),
                   YTTile(
                     title: '${order.name} / ${order.contact?.name}',
+                    onTap: () {
+                      NavigatorUtil.push(
+                        context,
+                        OrderDetailPage(orderId: order.id),
+                      );
+                    },
                     trailing: Icon(
                       order.isCompleted
                           ? Icons.check_circle_outline

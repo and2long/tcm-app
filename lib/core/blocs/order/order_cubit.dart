@@ -46,4 +46,17 @@ class OrderCubit extends Cubit<OrderState> {
       SmartDialog.dismiss();
     }
   }
+
+  Future getOrderDetail(int id) async {
+    try {
+      SmartDialog.showLoading();
+      Response res = await _repo.getOrderDetail(id);
+      Order order = Order.fromJson(res.data);
+      maybeEmit(OrderDetailSuccessState(order));
+    } catch (e, s) {
+      handleError(e, stackTrace: s);
+    } finally {
+      SmartDialog.dismiss();
+    }
+  }
 }

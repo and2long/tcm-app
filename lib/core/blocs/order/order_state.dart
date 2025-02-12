@@ -13,3 +13,8 @@ class OrderCreateSuccessState extends OrderState {
   final Order order;
   OrderCreateSuccessState(this.order);
 }
+
+class OrderDetailSuccessState extends OrderState {
+  final Order order;
+  OrderDetailSuccessState(this.order);
+}
