@@ -45,7 +45,27 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             : ListView(
                 padding: const EdgeInsets.all(16.0),
                 children: [
+                  // 订单信息
+                  Text(
+                    '订单信息',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('创建时间：${_order!.createdAt.formatStyle1()}'),
+                          const SizedBox(height: 8),
+                          Text('状态：${_order!.isCompleted ? "已完成" : "未完成"}'),
+                        ],
+                      ),
+                    ),
+                  ),
                   // 客户信息
+                  const SizedBox(height: 24),
                   Text(
                     '客户信息',
                     style: Theme.of(context).textTheme.titleMedium,
@@ -126,27 +146,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                       ),
                     );
                   }),
-
-                  // 订单信息
-                  const SizedBox(height: 24),
-                  Text(
-                    '订单信息',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('创建时间：${_order!.createdAt.formatStyle1()}'),
-                          const SizedBox(height: 8),
-                          Text('状态：${_order!.isCompleted ? "已完成" : "未完成"}'),
-                        ],
-                      ),
-                    ),
-                  ),
                 ],
               ),
       ),
