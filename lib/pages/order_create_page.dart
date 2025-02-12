@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tcm/components/search_select_field.dart';
 import 'package:tcm/core/blocs/contact/contact_cubit.dart';
 import 'package:tcm/core/blocs/contact/contact_state.dart';
+import 'package:tcm/core/blocs/order/order_cubit.dart';
+import 'package:tcm/core/blocs/order/order_state.dart';
 import 'package:tcm/core/blocs/product/product_cubit.dart';
 import 'package:tcm/core/blocs/product/product_state.dart';
 import 'package:tcm/models/contact.dart';
@@ -67,6 +69,13 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                 _products.clear();
                 _products.addAll(state.products);
               });
+            }
+          },
+        ),
+        BlocListener<OrderCubit, OrderState>(
+          listener: (context, state) {
+            if (state is OrderCreateSuccessState) {
+              Navigator.pop(context);
             }
           },
         ),
@@ -190,7 +199,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                     ),
                   ),
                 );
-              }).toList(),
+              }),
               const SizedBox(height: 16),
               OutlinedButton.icon(
                 onPressed: _addLineItem,
@@ -201,11 +210,17 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
               FilledButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    // TODO: 创建订单
-                    print('联系人: ${_selectedContact?.name}');
-                    for (var item in _lineItems) {
-                      print('产品: ${item.product?.name}, 数量: ${item.quantity}');
-                    }
+                    final items = _lineItems
+                        .map((item) => {
+                              'product_id': item.product!.id,
+                              'quantity': item.quantity,
+                            })
+                        .toList();
+
+                    context.read<OrderCubit>().createOrder(
+                          contactId: _selectedContact!.id,
+                          items: items,
+                        );
                   }
                 },
                 child: const Text('创建'),

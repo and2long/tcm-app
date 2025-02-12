@@ -27,4 +27,23 @@ class OrderCubit extends Cubit<OrderState> {
       SmartDialog.dismiss();
     }
   }
+
+  Future createOrder({
+    required int contactId,
+    required List<Map<String, int>> items,
+  }) async {
+    try {
+      SmartDialog.showLoading();
+      Response res = await _repo.createOrder(
+        contactId: contactId,
+        items: items,
+      );
+      Order order = Order.fromJson(res.data);
+      maybeEmit(OrderCreateSuccessState(order));
+    } catch (e, s) {
+      handleError(e, stackTrace: s);
+    } finally {
+      SmartDialog.dismiss();
+    }
+  }
 }

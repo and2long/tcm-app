@@ -8,3 +8,8 @@ class OrderListSuccessState extends OrderState {
   final List<Order> orders;
   OrderListSuccessState(this.orders);
 }
+
+class OrderCreateSuccessState extends OrderState {
+  final Order order;
+  OrderCreateSuccessState(this.order);
+}

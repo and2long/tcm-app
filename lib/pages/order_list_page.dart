@@ -38,6 +38,13 @@ class _OrderListPageState extends State<OrderListPage>
             _orders.addAll(state.orders);
           });
         }
+        if (state is OrderCreateSuccessState) {
+          _orders.insert(0, state.order);
+          setState(() {});
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('创建成功')),
+          );
+        }
       },
       child: Scaffold(
         appBar: AppBar(
