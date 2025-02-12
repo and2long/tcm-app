@@ -4,7 +4,6 @@ import 'package:tcm/components/yt_tile.dart';
 import 'package:tcm/core/blocs/contact/contact_cubit.dart';
 import 'package:tcm/core/blocs/contact/contact_state.dart';
 import 'package:tcm/models/contact.dart';
-import 'package:tcm/utils/toast_util.dart';
 
 class ContactListPage extends StatefulWidget {
   const ContactListPage({super.key});
@@ -33,13 +32,17 @@ class _ContactListPageState extends State<ContactListPage> {
           setState(() {});
         }
         if (state is ContactCreateSuccessState) {
-          ToastUtil.show('创建成功');
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('创建成功')),
+          );
           _contacts.add(state.contact);
           _contacts.sort((a, b) => a.name.compareTo(b.name));
           setState(() {});
         }
         if (state is ContactDeleteScuuessState) {
-          ToastUtil.show('删除成功');
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('删除成功')),
+          );
           _contacts.removeWhere((contact) => contact.id == state.id);
           setState(() {});
         }
@@ -124,7 +127,7 @@ class _ContactListPageState extends State<ContactListPage> {
           controller: nameController,
           decoration: const InputDecoration(
             labelText: '姓名',
-            border: OutlineInputBorder(),
+            hintText: '请输入姓名',
           ),
           autofocus: true,
         ),

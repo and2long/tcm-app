@@ -27,4 +27,30 @@ class ProductCubit extends Cubit<ProductState> {
       SmartDialog.dismiss();
     }
   }
+
+  Future createProduct(String name) async {
+    try {
+      SmartDialog.showLoading();
+      Response res = await _repo.createProduct(name);
+      Product product = Product.fromJson(res.data);
+      maybeEmit(ProductCreateSuccessState(product));
+    } catch (e, s) {
+      handleError(e, stackTrace: s);
+    } finally {
+      SmartDialog.dismiss();
+    }
+  }
+
+  Future deleteProduct(int id) async {
+    try {
+      SmartDialog.showLoading();
+      await _repo.deleteProduct(id);
+      maybeEmit(ProductDeleteSuccessState(id));
+      await getProductList(); // 删除成功后刷新列表
+    } catch (e, s) {
+      handleError(e, stackTrace: s);
+    } finally {
+      SmartDialog.dismiss();
+    }
+  }
 }
