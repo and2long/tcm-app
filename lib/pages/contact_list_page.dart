@@ -86,9 +86,9 @@ class _ContactListPageState extends State<ContactListPage>
                 child: YTTile(
                   title: contact.name,
                 ),
-                confirmDismiss: (DismissDirection direction) async {
+                confirmDismiss: (DismissDirection direction) {
                   // 显示确认对话框
-                  showDialog(
+                  return showDialog(
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
@@ -114,7 +114,6 @@ class _ContactListPageState extends State<ContactListPage>
                       );
                     },
                   );
-                  return null;
                 },
               );
             },

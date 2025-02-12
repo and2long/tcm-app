@@ -79,8 +79,8 @@ class _ProductListPageState extends State<ProductListPage>
                   padding: const EdgeInsets.only(right: 20.0),
                   child: const Icon(Icons.delete, color: Colors.white),
                 ),
-                confirmDismiss: (direction) async {
-                  showDialog(
+                confirmDismiss: (direction) {
+                  return showDialog(
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
@@ -106,7 +106,6 @@ class _ProductListPageState extends State<ProductListPage>
                       );
                     },
                   );
-                  return null;
                 },
                 child: YTTile(title: product.name),
               );
