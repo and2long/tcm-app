@@ -7,6 +7,7 @@ import 'package:tcm/core/blocs/product/product_cubit.dart';
 import 'package:tcm/core/repos/contact_repo.dart';
 import 'package:tcm/core/repos/order_repo.dart';
 import 'package:tcm/core/repos/product_repo.dart';
+import 'package:tcm/providers/app_provider.dart';
 import 'package:tcm/utils/sp_util.dart';
 
 /// 全局状态管理
@@ -20,6 +21,7 @@ class Store {
         // 国际化
         ChangeNotifierProvider.value(
             value: LocaleStore(SPUtil.getLanguageCode())),
+        ChangeNotifierProvider(create: (_) => AppProvider()),
         BlocProvider(create: (_) => OrderCubit(OrderRepo())),
         BlocProvider(create: (_) => ContactCubit(ContactRepo())),
         BlocProvider(create: (_) => ProductCubit(ProductRepo())),

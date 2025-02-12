@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tcm/core/blocs/contact/contact_cubit.dart';
+import 'package:tcm/core/blocs/product/product_cubit.dart';
 import 'package:tcm/pages/contact_list_page.dart';
 import 'package:tcm/pages/order_list_page.dart';
 import 'package:tcm/pages/product_list_page.dart';
+import 'package:tcm/providers/app_provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,13 +15,38 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
-  int _tabIndex = 0;
   final _pageController = PageController();
+  int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _initData();
+  }
+
+  Future<void> _initData() async {
+    if (!mounted) return;
+    final appProvider = context.read<AppProvider>();
+
+    // 获取联系人列表
+    final contacts = await context.read<ContactCubit>().getContactList();
+    if (!mounted) return;
+    if (contacts != null) {
+      appProvider.setContacts(contacts);
+    }
+
+    // 获取产品列表
+    final products = await context.read<ProductCubit>().getProductList();
+    if (!mounted) return;
+    if (products != null) {
+      appProvider.setProducts(products);
+    }
+  }
 
   @override
   void dispose() {
-    super.dispose();
     _pageController.dispose();
+    super.dispose();
   }
 
   @override
@@ -28,7 +57,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         controller: _pageController,
         onPageChanged: (index) {
           setState(() {
-            _tabIndex = index;
+            _currentIndex = index;
           });
         },
         children: const [
@@ -52,7 +81,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             label: '药品',
           ),
         ],
-        currentIndex: _tabIndex,
+        currentIndex: _currentIndex,
         onTap: (index) {
           _pageController.jumpToPage(index);
         },

@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tcm/components/yt_tile.dart';
 import 'package:tcm/core/blocs/contact/contact_cubit.dart';
 import 'package:tcm/core/blocs/contact/contact_state.dart';
-import 'package:tcm/models/contact.dart';
+import 'package:tcm/providers/app_provider.dart';
 
 class ContactListPage extends StatefulWidget {
   const ContactListPage({super.key});
@@ -16,39 +16,25 @@ class _ContactListPageState extends State<ContactListPage>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
-  final List<Contact> _contacts = [];
-
-  @override
-  void initState() {
-    super.initState();
-    context.read<ContactCubit>().getContactList();
-  }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final contacts = context.watch<AppProvider>().contacts;
+
     return BlocListener<ContactCubit, ContactState>(
-      listener: (BuildContext context, ContactState state) {
-        if (state is ContactListSuccessState) {
-          _contacts.clear();
-          _contacts.addAll(state.contacts);
-          _contacts.sort((a, b) => a.name.compareTo(b.name));
-          setState(() {});
-        }
+      listener: (context, state) {
         if (state is ContactCreateSuccessState) {
+          context.read<AppProvider>().addContact(state.contact);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('创建成功')),
           );
-          _contacts.add(state.contact);
-          _contacts.sort((a, b) => a.name.compareTo(b.name));
-          setState(() {});
         }
         if (state is ContactDeleteScuuessState) {
+          context.read<AppProvider>().removeContact(state.id);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('删除成功')),
           );
-          _contacts.removeWhere((contact) => contact.id == state.id);
-          setState(() {});
         }
       },
       child: Scaffold(
@@ -67,13 +53,18 @@ class _ContactListPageState extends State<ContactListPage>
           ],
         ),
         body: RefreshIndicator(
-          onRefresh: () {
-            context.read<ContactCubit>().getContactList();
-            return Future.value();
+          onRefresh: () async {
+            final cubit = context.read<ContactCubit>();
+            final provider = context.read<AppProvider>();
+            final contacts = await cubit.getContactList();
+            if (!mounted) return;
+            if (contacts != null) {
+              provider.setContacts(contacts);
+            }
           },
           child: ListView.builder(
             itemBuilder: (context, index) {
-              final contact = _contacts[index];
+              final contact = contacts[index];
               return Dismissible(
                 key: Key(contact.id.toString()),
                 direction: DismissDirection.endToStart,
@@ -117,7 +108,7 @@ class _ContactListPageState extends State<ContactListPage>
                 },
               );
             },
-            itemCount: _contacts.length,
+            itemCount: contacts.length,
           ),
         ),
       ),
@@ -147,6 +138,7 @@ class _CreateContactDialogState extends State<_CreateContactDialog> {
       content: Form(
         key: _formKey,
         child: TextFormField(
+          autocorrect: false,
           controller: _nameController,
           decoration: const InputDecoration(
             labelText: '姓名',

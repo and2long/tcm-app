@@ -137,6 +137,7 @@ class _SearchSelectFieldState<T> extends State<SearchSelectField<T>> {
     return CompositedTransformTarget(
       link: _layerLink,
       child: TextFormField(
+        autocorrect: false,
         controller: _controller,
         focusNode: _focusNode,
         decoration: InputDecoration(

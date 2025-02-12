@@ -3,16 +3,16 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:tcm/core/network/http.dart';
-import 'package:tcm/i18n/i18n.dart';
-import 'package:tcm/pages/home.dart';
-import 'package:tcm/store.dart';
-import 'package:tcm/theme.dart';
-import 'package:tcm/utils/sp_util.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_ytlog/log.dart';
 import 'package:provider/provider.dart';
+import 'package:tcm/core/network/http.dart';
+import 'package:tcm/i18n/i18n.dart';
+import 'package:tcm/pages/home.dart';
+import 'package:tcm/providers/store.dart';
+import 'package:tcm/theme.dart';
+import 'package:tcm/utils/sp_util.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

@@ -4,15 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tcm/components/search_select_field.dart';
-import 'package:tcm/core/blocs/contact/contact_cubit.dart';
-import 'package:tcm/core/blocs/contact/contact_state.dart';
 import 'package:tcm/core/blocs/order/order_cubit.dart';
 import 'package:tcm/core/blocs/order/order_state.dart';
-import 'package:tcm/core/blocs/product/product_cubit.dart';
-import 'package:tcm/core/blocs/product/product_state.dart';
 import 'package:tcm/models/contact.dart';
 import 'package:tcm/models/order.dart';
 import 'package:tcm/models/product.dart';
+import 'package:tcm/providers/app_provider.dart';
 
 class OrderCreatePage extends StatefulWidget {
   final Order? order;
@@ -34,8 +31,6 @@ class OrderLineItem {
 class _OrderCreatePageState extends State<OrderCreatePage> {
   final _formKey = GlobalKey<FormState>();
   Contact? _selectedContact;
-  final List<Contact> _contacts = [];
-  final List<Product> _products = [];
   final List<OrderLineItem> _lineItems = [OrderLineItem()];
   final List<XFile> _images = [];
   final _picker = ImagePicker();
@@ -43,9 +38,6 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
   @override
   void initState() {
     super.initState();
-    context.read<ContactCubit>().getContactList();
-    context.read<ProductCubit>().getProductList();
-
     if (widget.order != null) {
       _selectedContact = widget.order!.contact;
       _lineItems.clear();
@@ -98,28 +90,10 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
 
   @override
   Widget build(BuildContext context) {
+    final appProvider = context.watch<AppProvider>();
+
     return MultiBlocListener(
       listeners: [
-        BlocListener<ContactCubit, ContactState>(
-          listener: (context, state) {
-            if (state is ContactListSuccessState) {
-              setState(() {
-                _contacts.clear();
-                _contacts.addAll(state.contacts);
-              });
-            }
-          },
-        ),
-        BlocListener<ProductCubit, ProductState>(
-          listener: (context, state) {
-            if (state is ProductListSuccessState) {
-              setState(() {
-                _products.clear();
-                _products.addAll(state.products);
-              });
-            }
-          },
-        ),
         BlocListener<OrderCubit, OrderState>(
           listener: (context, state) {
             if (state is OrderCreateSuccessState) {
@@ -147,7 +121,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
               SearchSelectField<Contact>(
                 label: '客户',
                 hint: '输入客户姓名关键字进行筛选',
-                items: _contacts,
+                items: appProvider.contacts,
                 value: _selectedContact,
                 getLabel: (contact) => contact.name,
                 onChanged: (contact) {
@@ -286,7 +260,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                           child: SearchSelectField<Product>(
                             label: '药品名称',
                             hint: '请选择或输入药品',
-                            items: _products,
+                            items: appProvider.products,
                             value: item.product,
                             getLabel: (product) => product.name,
                             onChanged: (product) {
@@ -306,6 +280,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                         Expanded(
                           flex: 1,
                           child: TextFormField(
+                            autocorrect: false,
                             decoration: const InputDecoration(
                               labelText: '数量',
                               hintText: '请输入数量',

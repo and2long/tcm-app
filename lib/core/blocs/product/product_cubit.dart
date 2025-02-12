@@ -14,15 +14,17 @@ class ProductCubit extends Cubit<ProductState> {
       : _repo = repo,
         super(ProductInitialState());
 
-  Future getProductList() async {
+  Future<List<Product>?> getProductList() async {
     try {
       SmartDialog.showLoading();
       Response res = await _repo.getProductList();
       List<Product> products =
           (res.data as List).map((e) => Product.fromJson(e)).toList();
       maybeEmit(ProductListSuccessState(products));
+      return products;
     } catch (e, s) {
       handleError(e, stackTrace: s);
+      return null;
     } finally {
       SmartDialog.dismiss();
     }

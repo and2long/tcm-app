@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tcm/components/yt_tile.dart';
 import 'package:tcm/i18n/i18n.dart';
-import 'package:tcm/store.dart';
+import 'package:tcm/providers/store.dart';
 
 class LanguagePage extends StatefulWidget {
   const LanguagePage({super.key});

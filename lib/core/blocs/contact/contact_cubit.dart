@@ -14,15 +14,17 @@ class ContactCubit extends Cubit<ContactState> {
       : _repo = repo,
         super(ContactInitialState());
 
-  Future getContactList() async {
+  Future<List<Contact>?> getContactList() async {
     try {
       SmartDialog.showLoading();
       Response res = await _repo.getContactList();
       List<Contact> contacts =
           (res.data as List).map((e) => Contact.fromJson(e)).toList();
       maybeEmit(ContactListSuccessState(contacts));
+      return contacts;
     } catch (e, s) {
       handleError(e, stackTrace: s);
+      return null;
     } finally {
       SmartDialog.dismiss();
     }
