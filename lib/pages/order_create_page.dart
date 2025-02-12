@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:tcm/components/search_select_field.dart';
 import 'package:tcm/core/blocs/order/order_cubit.dart';
 import 'package:tcm/core/blocs/order/order_state.dart';
+import 'package:tcm/core/repos/upload_repo.dart';
 import 'package:tcm/models/contact.dart';
 import 'package:tcm/models/order.dart';
 import 'package:tcm/models/product.dart';
@@ -34,6 +35,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
   final List<OrderLineItem> _lineItems = [OrderLineItem()];
   final List<XFile> _images = [];
   final _picker = ImagePicker();
+  final List<String> _uploadedImages = [];
 
   @override
   void initState() {
@@ -48,6 +50,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
             ..quantity = line.quantity,
         ),
       );
+      _uploadedImages.addAll(widget.order!.images);
     }
   }
 
@@ -86,6 +89,50 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
     setState(() {
       _images.removeAt(index);
     });
+  }
+
+  Future<void> _handleSubmit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final items = _lineItems
+        .map((item) => {
+              'product_id': item.product!.id,
+              'quantity': item.quantity,
+            })
+        .toList();
+
+    List<String> allImages = [..._uploadedImages]; // 先保存已有的图片
+
+    // 只有当有新选择的图片时才进行上传
+    if (_images.isNotEmpty) {
+      final newImages = await Future.wait(
+        _images.map((image) async {
+          try {
+            final res =
+                await context.read<UploadRepo>().uploadImage(image.path);
+            return res.data['url'] as String;
+          } catch (e) {
+            return null;
+          }
+        }),
+      );
+      allImages.addAll(newImages.where((url) => url != null).cast<String>());
+    }
+
+    if (widget.order == null) {
+      context.read<OrderCubit>().createOrder(
+            contactId: _selectedContact!.id,
+            items: items,
+            images: allImages,
+          );
+    } else {
+      context.read<OrderCubit>().updateOrder(
+            id: widget.order!.id,
+            contactId: _selectedContact!.id,
+            items: items,
+            images: allImages,
+          );
+    }
   }
 
   @override
@@ -325,29 +372,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
               ),
               const SizedBox(height: 32),
               FilledButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    final items = _lineItems
-                        .map((item) => {
-                              'product_id': item.product!.id,
-                              'quantity': item.quantity,
-                            })
-                        .toList();
-
-                    if (widget.order == null) {
-                      context.read<OrderCubit>().createOrder(
-                            contactId: _selectedContact!.id,
-                            items: items,
-                          );
-                    } else {
-                      context.read<OrderCubit>().updateOrder(
-                            id: widget.order!.id,
-                            contactId: _selectedContact!.id,
-                            items: items,
-                          );
-                    }
-                  }
-                },
+                onPressed: _handleSubmit,
                 child: Text(widget.order == null ? '创建' : '保存'),
               ),
             ],

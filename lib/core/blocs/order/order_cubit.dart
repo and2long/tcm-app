@@ -31,6 +31,7 @@ class OrderCubit extends Cubit<OrderState> {
   Future createOrder({
     required int contactId,
     required List<Map<String, int>> items,
+    required List<String>? images,
   }) async {
     try {
       SmartDialog.showLoading();

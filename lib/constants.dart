@@ -19,6 +19,7 @@ class ConstantsHttp {
   static const String pendingOrders = '/orders/pedding';
   static const String contacts = '/contacts';
   static const String products = '/products';
+  static const String upload = '/upload';
 }
 
 const appBarHeight = kToolbarHeight;
