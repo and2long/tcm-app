@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_ytnavigator/flutter_ytnavigator.dart';
 import 'package:tcm/components/yt_tile.dart';
 import 'package:tcm/core/blocs/extension.dart';
 import 'package:tcm/core/blocs/order/order_cubit.dart';
 import 'package:tcm/core/blocs/order/order_state.dart';
 import 'package:tcm/models/order.dart';
+import 'package:tcm/pages/order_create_page.dart';
 
 class OrderListPage extends StatefulWidget {
   const OrderListPage({super.key});
@@ -36,6 +38,14 @@ class _OrderListPageState extends State<OrderListPage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('处方管理'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: () {
+                NavigatorUtil.push(context, const OrderCreatePage());
+              },
+            ),
+          ],
         ),
         body: RefreshIndicator(
           onRefresh: () {
