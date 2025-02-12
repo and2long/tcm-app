@@ -73,7 +73,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
       ],
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('创建订单'),
+          title: const Text('创建处方'),
         ),
         body: Form(
           key: _formKey,
@@ -81,8 +81,8 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
             padding: const EdgeInsets.all(16.0),
             children: [
               SearchSelectField<Contact>(
-                label: '联系人',
-                hint: '请选择或输入联系人',
+                label: '客户',
+                hint: '输入客户姓名关键字进行筛选',
                 items: _contacts,
                 value: _selectedContact,
                 getLabel: (contact) => contact.name,
@@ -100,7 +100,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
               ),
               const SizedBox(height: 24),
               const Text(
-                '订单明细',
+                '处方明细',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -133,8 +133,8 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                         Expanded(
                           flex: 3,
                           child: SearchSelectField<Product>(
-                            label: '产品名称',
-                            hint: '请选择或输入产品',
+                            label: '药品名称',
+                            hint: '请选择或输入药品',
                             items: _products,
                             value: item.product,
                             getLabel: (product) => product.name,
@@ -157,7 +157,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                           child: TextFormField(
                             decoration: const InputDecoration(
                               labelText: '数量',
-                              hintText: '数量',
+                              hintText: '请输入数量',
                             ),
                             keyboardType: TextInputType.number,
                             initialValue: item.quantity.toString(),
@@ -195,7 +195,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
               OutlinedButton.icon(
                 onPressed: _addLineItem,
                 icon: const Icon(Icons.add),
-                label: const Text('添加产品'),
+                label: const Text('添加行'),
               ),
               const SizedBox(height: 32),
               FilledButton(
@@ -208,7 +208,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                     }
                   }
                 },
-                child: const Text('创建订单'),
+                child: const Text('创建'),
               ),
             ],
           ),
