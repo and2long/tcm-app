@@ -26,10 +26,15 @@ class _ContactListPageState extends State<ContactListPage> {
     return BlocListener<ContactCubit, ContactState>(
       listener: (BuildContext context, ContactState state) {
         if (state is ContactListSuccessState) {
-          setState(() {
-            _contacts.clear();
-            _contacts.addAll(state.contacts);
-          });
+          _contacts.clear();
+          _contacts.addAll(state.contacts);
+          _contacts.sort((a, b) => a.name.compareTo(b.name));
+          setState(() {});
+        }
+        if (state is ContactCreateSuccessState) {
+          _contacts.add(state.contact);
+          _contacts.sort((a, b) => a.name.compareTo(b.name));
+          setState(() {});
         }
       },
       child: Scaffold(
