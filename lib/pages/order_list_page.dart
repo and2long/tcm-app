@@ -130,7 +130,7 @@ class _OrderListPageState extends State<OrderListPage>
                       ),
                     ),
                     child: YTTile(
-                      title: '${order.name} / ${order.contact?.name}',
+                      title: '#${order.id} ${order.contact?.name}',
                       onTap: () {
                         NavigatorUtil.push(
                           context,

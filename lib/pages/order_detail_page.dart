@@ -38,7 +38,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(_order?.name ?? ''),
+          title: Text('#${widget.orderId} ${_order?.contact?.name}'),
         ),
         body: _order == null
             ? const Center(child: CircularProgressIndicator())
@@ -64,22 +64,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                       ),
                     ),
                   ),
-                  // 客户信息
-                  const SizedBox(height: 24),
-                  Text(
-                    '客户信息',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text('姓名：${_order!.contact?.name ?? "未知"}'),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-
                   // 图片
+                  const SizedBox(height: 24),
                   if (_order!.images.isNotEmpty) ...[
                     Text(
                       '图片',

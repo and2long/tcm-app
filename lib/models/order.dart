@@ -5,7 +5,6 @@ import 'package:tcm/models/order_line.dart';
 
 class Order {
   int id;
-  String name;
   bool isCompleted;
   Contact? contact;
   List<OrderLine> orderLines;
@@ -14,7 +13,6 @@ class Order {
 
   Order({
     required this.id,
-    required this.name,
     required this.contact,
     required this.images,
     required this.isCompleted,
@@ -25,7 +23,6 @@ class Order {
   factory Order.fromJson(Map<String, dynamic> map) {
     return Order(
       id: map['id'],
-      name: map['name'],
       images: (map['images'] as List).map((e) => e.toString()).toList(),
       contact: map['contact'] != null ? Contact.fromJson(map['contact']) : null,
       createdAt: DateTime.parse(map['created_at']),
@@ -38,7 +35,6 @@ class Order {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'name': name,
       'images': images,
       'contact': contact?.toJson(),
       'is_completed': isCompleted,
