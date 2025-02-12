@@ -12,7 +12,10 @@ class ProductListPage extends StatefulWidget {
   State<ProductListPage> createState() => _ProductListPageState();
 }
 
-class _ProductListPageState extends State<ProductListPage> {
+class _ProductListPageState extends State<ProductListPage>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   final List<Product> _products = [];
 
   @override
@@ -23,6 +26,7 @@ class _ProductListPageState extends State<ProductListPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return BlocListener<ProductCubit, ProductState>(
       listener: (BuildContext context, ProductState state) {
         if (state is ProductListSuccessState) {

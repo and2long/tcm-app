@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:tcm/pages/me.dart';
-import 'package:tcm/pages/page1.dart';
+import 'package:tcm/pages/contact_list_page.dart';
+import 'package:tcm/pages/order_list_page.dart';
+import 'package:tcm/pages/product_list_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -31,19 +32,24 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           });
         },
         children: const [
-          Page1(),
-          Me(),
+          OrderListPage(),
+          ContactListPage(),
+          ProductListPage(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: '首页',
+            label: '处方',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: '个人中心',
+            label: '客户',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.medical_services_rounded),
+            label: '药品',
           ),
         ],
         currentIndex: _tabIndex,

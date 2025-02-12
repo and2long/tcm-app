@@ -15,7 +15,10 @@ class OrderListPage extends StatefulWidget {
   State<OrderListPage> createState() => _OrderListPageState();
 }
 
-class _OrderListPageState extends State<OrderListPage> {
+class _OrderListPageState extends State<OrderListPage>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   final List<Order> _orders = [];
 
   @override
@@ -26,6 +29,7 @@ class _OrderListPageState extends State<OrderListPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return BlocListener<OrderCubit, OrderState>(
       listener: (BuildContext context, OrderState state) {
         if (state is OrderListSuccessState) {

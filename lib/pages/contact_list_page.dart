@@ -12,7 +12,10 @@ class ContactListPage extends StatefulWidget {
   State<ContactListPage> createState() => _ContactListPageState();
 }
 
-class _ContactListPageState extends State<ContactListPage> {
+class _ContactListPageState extends State<ContactListPage>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   final List<Contact> _contacts = [];
 
   @override
@@ -23,6 +26,7 @@ class _ContactListPageState extends State<ContactListPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return BlocListener<ContactCubit, ContactState>(
       listener: (BuildContext context, ContactState state) {
         if (state is ContactListSuccessState) {
@@ -52,7 +56,7 @@ class _ContactListPageState extends State<ContactListPage> {
           title: const Text('联系人管理'),
           actions: [
             IconButton(
-              icon: const Icon(Icons.add),
+              icon: const Icon(Icons.person_add),
               onPressed: () {
                 showDialog(
                   context: context,
