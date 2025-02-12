@@ -10,4 +10,8 @@ class ContactRepo {
   Future<Response> createContact(String name) async {
     return XHttp.instance.post(ConstantsHttp.contacts, data: {'name': name});
   }
+
+  Future<Response> deleteContact(int id) async {
+    return XHttp.instance.delete('${ConstantsHttp.contacts}/$id');
+  }
 }

@@ -4,6 +4,7 @@ import 'package:tcm/components/yt_tile.dart';
 import 'package:tcm/core/blocs/contact/contact_cubit.dart';
 import 'package:tcm/core/blocs/contact/contact_state.dart';
 import 'package:tcm/models/contact.dart';
+import 'package:tcm/utils/toast_util.dart';
 
 class ContactListPage extends StatefulWidget {
   const ContactListPage({super.key});
@@ -32,8 +33,14 @@ class _ContactListPageState extends State<ContactListPage> {
           setState(() {});
         }
         if (state is ContactCreateSuccessState) {
+          ToastUtil.show('创建成功');
           _contacts.add(state.contact);
           _contacts.sort((a, b) => a.name.compareTo(b.name));
+          setState(() {});
+        }
+        if (state is ContactDeleteScuuessState) {
+          ToastUtil.show('删除成功');
+          _contacts.removeWhere((contact) => contact.id == state.id);
           setState(() {});
         }
       },
@@ -85,9 +92,9 @@ class _ContactListPageState extends State<ContactListPage> {
                           TextButton(
                             child: const Text('确认'),
                             onPressed: () {
-                              setState(() {
-                                _contacts.removeAt(index);
-                              });
+                              context
+                                  .read<ContactCubit>()
+                                  .deleteContact(contact.id);
                               Navigator.of(context).pop();
                             },
                           ),

@@ -34,7 +34,18 @@ class ContactCubit extends Cubit<ContactState> {
       Response res = await _repo.createContact(name);
       Contact contact = Contact.fromJson(res.data);
       maybeEmit(ContactCreateSuccessState(contact));
-      SmartDialog.showToast('创建成功');
+    } catch (e, s) {
+      handleError(e, stackTrace: s);
+    } finally {
+      SmartDialog.dismiss();
+    }
+  }
+
+  Future deleteContact(int id) async {
+    try {
+      SmartDialog.showLoading();
+      await _repo.deleteContact(id);
+      maybeEmit(ContactDeleteScuuessState(id));
     } catch (e, s) {
       handleError(e, stackTrace: s);
     } finally {

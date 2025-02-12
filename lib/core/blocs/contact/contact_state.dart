@@ -4,6 +4,11 @@ abstract class ContactState {}
 
 class ContactInitialState extends ContactState {}
 
+class ContactDeleteScuuessState extends ContactState {
+  final int id;
+  ContactDeleteScuuessState(this.id);
+}
+
 class ContactListSuccessState extends ContactState {
   final List<Contact> contacts;
   ContactListSuccessState(this.contacts);
