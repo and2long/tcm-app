@@ -15,18 +15,35 @@ class OrderCreatePage extends StatefulWidget {
   State<OrderCreatePage> createState() => _OrderCreatePageState();
 }
 
+class OrderLineItem {
+  Product? product;
+  int quantity = 1;
+}
+
 class _OrderCreatePageState extends State<OrderCreatePage> {
   final _formKey = GlobalKey<FormState>();
   Contact? _selectedContact;
-  Product? _selectedProduct;
   final List<Contact> _contacts = [];
   final List<Product> _products = [];
+  final List<OrderLineItem> _lineItems = [OrderLineItem()];
 
   @override
   void initState() {
     super.initState();
     context.read<ContactCubit>().getContactList();
     context.read<ProductCubit>().getProductList();
+  }
+
+  void _addLineItem() {
+    setState(() {
+      _lineItems.add(OrderLineItem());
+    });
+  }
+
+  void _removeLineItem(int index) {
+    setState(() {
+      _lineItems.removeAt(index);
+    });
   }
 
   @override
@@ -81,30 +98,114 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                   return null;
                 },
               ),
+              const SizedBox(height: 24),
+              const Text(
+                '订单明细',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              ..._lineItems.asMap().entries.map((entry) {
+                final index = entry.key;
+                final item = entry.value;
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: 32,
+                          child: Center(
+                            child: Text(
+                              '${index + 1}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          flex: 3,
+                          child: SearchSelectField<Product>(
+                            label: '产品名称',
+                            hint: '请选择或输入产品',
+                            items: _products,
+                            value: item.product,
+                            getLabel: (product) => product.name,
+                            onChanged: (product) {
+                              setState(() {
+                                item.product = product;
+                              });
+                            },
+                            validator: (value) {
+                              if (value == null) {
+                                return '请选择产品';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          flex: 1,
+                          child: TextFormField(
+                            decoration: const InputDecoration(
+                              labelText: '数量',
+                              hintText: '数量',
+                            ),
+                            keyboardType: TextInputType.number,
+                            initialValue: item.quantity.toString(),
+                            onChanged: (value) {
+                              item.quantity = int.tryParse(value) ?? 1;
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return '请输入数量';
+                              }
+                              final number = int.tryParse(value);
+                              if (number == null || number < 1) {
+                                return '请输入有效数量';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        if (_lineItems.length > 1) ...[
+                          const SizedBox(width: 8),
+                          IconButton(
+                            icon: const Icon(Icons.delete_outline),
+                            onPressed: () => _removeLineItem(index),
+                            color: Colors.red,
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
               const SizedBox(height: 16),
-              SearchSelectField<Product>(
-                label: '产品',
-                hint: '请选择或输入产品',
-                items: _products,
-                value: _selectedProduct,
-                getLabel: (product) => product.name,
-                onChanged: (product) {
-                  setState(() {
-                    _selectedProduct = product;
-                  });
-                },
-                validator: (value) {
-                  if (value == null) {
-                    return '请选择产品';
-                  }
-                  return null;
-                },
+              OutlinedButton.icon(
+                onPressed: _addLineItem,
+                icon: const Icon(Icons.add),
+                label: const Text('添加产品'),
               ),
               const SizedBox(height: 32),
-              ElevatedButton(
+              FilledButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     // TODO: 创建订单
+                    print('联系人: ${_selectedContact?.name}');
+                    for (var item in _lineItems) {
+                      print('产品: ${item.product?.name}, 数量: ${item.quantity}');
+                    }
                   }
                 },
                 child: const Text('创建订单'),

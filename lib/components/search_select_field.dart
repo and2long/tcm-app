@@ -84,38 +84,50 @@ class _SearchSelectFieldState<T> extends State<SearchSelectField<T>> {
     final size = renderBox.size;
 
     return OverlayEntry(
-      builder: (context) => Positioned(
-        width: size.width,
-        child: CompositedTransformFollower(
-          link: _layerLink,
-          showWhenUnlinked: false,
-          offset: Offset(0.0, size.height + 5.0),
-          child: Material(
-            elevation: 4.0,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: 200),
-              child: ListView(
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                children: widget.items
-                    .where((item) => widget
-                        .getLabel(item)
-                        .toLowerCase()
-                        .contains(_searchText.toLowerCase()))
-                    .map((item) => ListTile(
-                          title: Text(widget.getLabel(item)),
-                          onTap: () {
-                            widget.onChanged(item);
-                            _controller.text = widget.getLabel(item);
-                            _removeOverlay();
-                            _focusNode.unfocus();
-                          },
-                        ))
-                    .toList(),
+      builder: (context) => Stack(
+        children: [
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                _focusNode.unfocus();
+              },
+            ),
+          ),
+          Positioned(
+            width: size.width,
+            child: CompositedTransformFollower(
+              link: _layerLink,
+              showWhenUnlinked: false,
+              offset: Offset(0.0, size.height + 5.0),
+              child: Material(
+                elevation: 4.0,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 200),
+                  child: ListView(
+                    padding: EdgeInsets.zero,
+                    shrinkWrap: true,
+                    children: widget.items
+                        .where((item) => widget
+                            .getLabel(item)
+                            .toLowerCase()
+                            .contains(_searchText.toLowerCase()))
+                        .map((item) => ListTile(
+                              title: Text(widget.getLabel(item)),
+                              onTap: () {
+                                widget.onChanged(item);
+                                _controller.text = widget.getLabel(item);
+                                _removeOverlay();
+                                _focusNode.unfocus();
+                              },
+                            ))
+                        .toList(),
+                  ),
+                ),
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
