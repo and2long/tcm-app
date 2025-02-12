@@ -55,8 +55,48 @@ class _ContactListPageState extends State<ContactListPage> {
           child: ListView.builder(
             itemBuilder: (context, index) {
               final contact = _contacts[index];
-              return YTTile(
-                title: contact.name,
+              return Dismissible(
+                key: Key(contact.id.toString()),
+                direction: DismissDirection.endToStart,
+                background: Container(
+                  color: Colors.red,
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.only(right: 20.0),
+                  child: const Icon(Icons.delete, color: Colors.white),
+                ),
+                child: YTTile(
+                  title: contact.name,
+                ),
+                confirmDismiss: (DismissDirection direction) async {
+                  // 显示确认对话框
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('确认删除'),
+                        content: Text('确认删除 ${contact.name} 吗？'),
+                        actions: <Widget>[
+                          TextButton(
+                            child: const Text('取消'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          TextButton(
+                            child: const Text('确认'),
+                            onPressed: () {
+                              setState(() {
+                                _contacts.removeAt(index);
+                              });
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                  return null;
+                },
               );
             },
             itemCount: _contacts.length,
