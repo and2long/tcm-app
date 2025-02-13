@@ -91,14 +91,11 @@ class _OrderListPageState extends State<OrderListPage>
                 children: [
                   if (showDateHeader)
                     Container(
-                      color: Colors.grey[200],
+                      margin: const EdgeInsets.only(top: 16),
                       padding: const EdgeInsets.all(16.0),
                       child: Text(
                         order.createdAt.formatStyle3(),
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 24,
-                        ),
+                        style: const TextStyle(fontSize: 18),
                       ),
                     ),
                   Slidable(
@@ -139,6 +136,7 @@ class _OrderListPageState extends State<OrderListPage>
                     ),
                     child: YTTile(
                       title: '#${order.id} ${order.contact?.name}',
+                      showTopBorder: showDateHeader,
                       onTap: () {
                         NavigatorUtil.push(
                           context,
