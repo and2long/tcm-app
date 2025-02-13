@@ -44,4 +44,13 @@ class OrderRepo {
       },
     );
   }
+
+  Future<Response> getPendingOrders() async {
+    return XHttp.instance.get(ConstantsHttp.pendingOrders);
+  }
+
+  Future<Response> completeOrder(int id) async {
+    return XHttp.instance
+        .patch('${ConstantsHttp.orders}/$id', data: {'is_completed': true});
+  }
 }

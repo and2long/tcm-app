@@ -28,3 +28,13 @@ class OrderUpdateSuccessState extends OrderState {
   final Order order;
   OrderUpdateSuccessState(this.order);
 }
+
+class PendingOrdersSuccessState extends OrderState {
+  final List<Order> orders;
+  PendingOrdersSuccessState(this.orders);
+}
+
+class OrderCompleteSuccessState extends OrderState {
+  final int id;
+  OrderCompleteSuccessState(this.id);
+}
