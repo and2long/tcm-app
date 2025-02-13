@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ytnavigator/flutter_ytnavigator.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:provider/provider.dart';
 import 'package:tcm/components/yt_tile.dart';
 import 'package:tcm/i18n/i18n.dart';
+import 'package:tcm/pages/operate_page.dart';
 import 'package:tcm/providers/app_provider.dart';
 
 class Me extends StatelessWidget {
@@ -24,7 +26,9 @@ class Me extends StatelessWidget {
               size: 20,
             ),
             title: '切换为药房端',
-            onTap: () {},
+            onTap: () {
+              NavigatorUtil.push(context, const OperatePage());
+            },
           ),
           YTTile(
             title: '主题设置',
