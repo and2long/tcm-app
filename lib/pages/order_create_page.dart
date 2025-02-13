@@ -37,6 +37,8 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
   final List<XFile> _images = [];
   final _picker = ImagePicker();
   final List<String> _uploadedImages = [];
+  // 最大图片数量
+  final int _maxImageCount = 3;
 
   @override
   void initState() {
@@ -68,7 +70,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
   }
 
   Future<void> _pickImage() async {
-    if ((_images.length + _uploadedImages.length) == 2) {
+    if ((_images.length + _uploadedImages.length) == _maxImageCount - 1) {
       XFile? image = await _picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
         setState(() {
@@ -77,7 +79,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
       }
     } else {
       final List<XFile> images = await _picker.pickMultiImage(
-          limit: 3 - (_images.length + _uploadedImages.length));
+          limit: _maxImageCount - (_images.length + _uploadedImages.length));
       if (images.isNotEmpty) {
         setState(() {
           _images.addAll(images);
@@ -197,7 +199,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    '(${_images.length + _uploadedImages.length}/3)',
+                    '(${_images.length + _uploadedImages.length}/$_maxImageCount)',
                     style: TextStyle(
                       color: Colors.grey[600],
                       fontSize: 14,
@@ -295,7 +297,8 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                         );
                       },
                     ),
-                    if (_images.length + _uploadedImages.length < 3)
+                    if (_images.length + _uploadedImages.length <
+                        _maxImageCount)
                       GestureDetector(
                         onTap: _pickImage,
                         child: Container(
