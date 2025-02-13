@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:tcm/core/network/http.dart';
 import 'package:tcm/i18n/i18n.dart';
 import 'package:tcm/pages/home.dart';
+import 'package:tcm/providers/app_provider.dart';
 import 'package:tcm/providers/store.dart';
 import 'package:tcm/theme.dart';
 import 'package:tcm/utils/sp_util.dart';
@@ -41,29 +42,35 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return Consumer<LocaleStore>(
         builder: (BuildContext context, LocaleStore value, Widget? child) {
-      return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        navigatorKey: MyApp.navigatorKey,
-        onGenerateTitle: (context) => S.appName,
-        theme: AppTheme.lightTheme(context),
-        localizationsDelegates: const [
-          GlobalMaterialLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          // 项目本地化资源代理
-          S.delegate,
-        ],
-        // 支持的语言
-        supportedLocales: S.supportedLocales,
-        locale: Locale(value.languageCode),
-        home: const HomePage(),
-        navigatorObservers: [MyRouteObserver()],
-        // builder: (context, child) => GestureDetector(
-        //   onTap: () => CommonUtil.hideKeyboard(context),
-        // ),
-        builder: FlutterSmartDialog.init(
-          loadingBuilder: (String msg) => CustomLoadingWidget(msg: msg),
-        ),
+      return Consumer<AppProvider>(
+        builder: (context, provider, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            navigatorKey: MyApp.navigatorKey,
+            onGenerateTitle: (context) => S.appName,
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            themeMode: provider.themeMode,
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              // 项目本地化资源代理
+              S.delegate,
+            ],
+            // 支持的语言
+            supportedLocales: S.supportedLocales,
+            locale: Locale(value.languageCode),
+            home: const HomePage(),
+            navigatorObservers: [MyRouteObserver()],
+            // builder: (context, child) => GestureDetector(
+            //   onTap: () => CommonUtil.hideKeyboard(context),
+            // ),
+            builder: FlutterSmartDialog.init(
+              loadingBuilder: (String msg) => CustomLoadingWidget(msg: msg),
+            ),
+          );
+        },
       );
     });
   }

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ytnavigator/flutter_ytnavigator.dart';
+import 'package:provider/provider.dart';
 import 'package:tcm/components/yt_tile.dart';
 import 'package:tcm/i18n/i18n.dart';
-import 'package:tcm/pages/contact_list_page.dart';
-import 'package:tcm/pages/order_list_page.dart';
-import 'package:tcm/pages/product_list_page.dart';
+import 'package:tcm/providers/app_provider.dart';
 
 class Me extends StatelessWidget {
   const Me({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<AppProvider>();
+
     return Scaffold(
       appBar: AppBar(
         title: Text(S.of(context).me),
@@ -18,22 +18,33 @@ class Me extends StatelessWidget {
       body: ListView(
         children: [
           YTTile(
-            title: '客户管理',
-            onTap: () {
-              NavigatorUtil.push(context, const ContactListPage());
-            },
+            title: '切换为药房端',
+            onTap: () {},
           ),
           YTTile(
-            title: '药品管理',
-            onTap: () {
-              NavigatorUtil.push(context, const ProductListPage());
-            },
-          ),
-          YTTile(
-            title: '处方管理',
-            onTap: () {
-              NavigatorUtil.push(context, const OrderListPage());
-            },
+            title: '主题设置',
+            trailing: DropdownButton<ThemeMode>(
+              value: provider.themeMode,
+              items: const [
+                DropdownMenuItem(
+                  value: ThemeMode.system,
+                  child: Text('跟随系统'),
+                ),
+                DropdownMenuItem(
+                  value: ThemeMode.light,
+                  child: Text('浅色'),
+                ),
+                DropdownMenuItem(
+                  value: ThemeMode.dark,
+                  child: Text('深色'),
+                ),
+              ],
+              onChanged: (ThemeMode? mode) {
+                if (mode != null) {
+                  provider.setThemeMode(mode);
+                }
+              },
+            ),
           ),
         ],
       ),

@@ -22,7 +22,8 @@ class Store {
         // 国际化
         ChangeNotifierProvider.value(
             value: LocaleStore(SPUtil.getLanguageCode())),
-        ChangeNotifierProvider(create: (_) => AppProvider()),
+        ChangeNotifierProvider(
+            create: (_) => AppProvider(themeMode: SPUtil.getThemeMode())),
         BlocProvider(create: (_) => OrderCubit(OrderRepo())),
         BlocProvider(create: (_) => ContactCubit(ContactRepo())),
         BlocProvider(create: (_) => ProductCubit(ProductRepo())),

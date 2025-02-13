@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:tcm/core/blocs/contact/contact_cubit.dart';
 import 'package:tcm/core/blocs/product/product_cubit.dart';
 import 'package:tcm/pages/contact_list_page.dart';
+import 'package:tcm/pages/me.dart';
 import 'package:tcm/pages/order_list_page.dart';
 import 'package:tcm/pages/product_list_page.dart';
 import 'package:tcm/providers/app_provider.dart';
@@ -64,23 +66,29 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           OrderListPage(),
           ContactListPage(),
           ProductListPage(),
+          Me(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(HugeIcons.strokeRoundedMedicalFile),
             label: '处方',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon: Icon(HugeIcons.strokeRoundedContact),
             label: '客户',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.medical_services_rounded),
+            icon: Icon(HugeIcons.strokeRoundedPlate),
             label: '药品',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(HugeIcons.strokeRoundedUser),
+            label: '我的',
+          ),
         ],
+        type: BottomNavigationBarType.fixed,
         currentIndex: _currentIndex,
         onTap: (index) {
           _pageController.jumpToPage(index);

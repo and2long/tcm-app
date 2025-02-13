@@ -1,6 +1,7 @@
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tcm/constants.dart';
 import 'package:tcm/i18n/i18n.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SPUtil {
   SPUtil._internal();
@@ -53,6 +54,18 @@ class SPUtil {
 
   static String? getRefreshToken() {
     return _spf.getString(ConstantsKeyCache.keyRefreshToken);
+  }
+
+  static Future<bool> saveThemeMode(ThemeMode mode) {
+    return _spf.setString(ConstantsKeyCache.keyThemeMode, mode.name);
+  }
+
+  static ThemeMode getThemeMode() {
+    final String? mode = _spf.getString(ConstantsKeyCache.keyThemeMode);
+    return ThemeMode.values.firstWhere(
+      (e) => e.name == mode,
+      orElse: () => ThemeMode.system,
+    );
   }
 
   static void clean() async {
