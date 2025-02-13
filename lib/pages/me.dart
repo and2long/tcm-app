@@ -3,7 +3,6 @@ import 'package:flutter_ytnavigator/flutter_ytnavigator.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:provider/provider.dart';
 import 'package:tcm/components/yt_tile.dart';
-import 'package:tcm/i18n/i18n.dart';
 import 'package:tcm/pages/operate_page.dart';
 import 'package:tcm/providers/app_provider.dart';
 
@@ -16,7 +15,7 @@ class Me extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(S.of(context).me),
+        title: const Text('个人中心'),
       ),
       body: ListView(
         children: [
@@ -27,7 +26,7 @@ class Me extends StatelessWidget {
             ),
             title: '切换为药房端',
             onTap: () {
-              NavigatorUtil.push(context, const OperatePage());
+              NavigatorUtil.pushReplacement(context, const OperatePage());
             },
           ),
           YTTile(

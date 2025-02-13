@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_ytnavigator/flutter_ytnavigator.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:tcm/core/blocs/extension.dart';
 import 'package:tcm/core/blocs/order/order_cubit.dart';
 import 'package:tcm/core/blocs/order/order_state.dart';
 import 'package:tcm/models/order.dart';
+import 'package:tcm/pages/home.dart';
 
 class OperatePage extends StatefulWidget {
   const OperatePage({super.key});
@@ -30,6 +32,12 @@ class _OperatePageState extends State<OperatePage> {
         _currentOrder = orders.first;
       });
     }
+    if (orders == null || orders.isEmpty) {
+      setState(() {
+        _orders = [];
+        _currentOrder = null;
+      });
+    }
   }
 
   @override
@@ -37,15 +45,51 @@ class _OperatePageState extends State<OperatePage> {
     return BlocListener<OrderCubit, OrderState>(
       listener: (context, state) {
         if (state is OrderCompleteSuccessState) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('订单已完成')),
-          );
           _loadPendingOrders();
         }
       },
       child: Scaffold(
         body: _currentOrder == null
-            ? const Center(child: Text('暂无待办订单'))
+            ? Stack(
+                children: [
+                  Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: 20,
+                      children: [
+                        const Text(
+                          '🎉 暂无待办订单',
+                          style: TextStyle(fontSize: 26),
+                        ),
+                        FilledButton(
+                            onPressed: _loadPendingOrders,
+                            child: const Text(
+                              '刷新',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              ),
+                            )),
+                        Text(
+                          '点击刷新按钮检查是否有新订单',
+                          style:
+                              TextStyle(fontSize: 14, color: Colors.grey[600]),
+                        )
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                      left: 16,
+                      bottom: 16,
+                      child: IconButton(
+                          onPressed: () {
+                            NavigatorUtil.pushReplacement(
+                                context, const HomePage());
+                          },
+                          icon: const Icon(
+                              HugeIcons.strokeRoundedArrowTurnBackward)))
+                ],
+              )
             : SafeArea(
                 child: Stack(
                   children: [
@@ -66,7 +110,7 @@ class _OperatePageState extends State<OperatePage> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        _currentOrder!.contact?.name ?? '',
+                                        _currentOrder?.contact?.name ?? '',
                                         style: const TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
@@ -74,14 +118,14 @@ class _OperatePageState extends State<OperatePage> {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        '订单号: #${_currentOrder!.id}',
+                                        '订单号: #${_currentOrder?.id}',
                                         style: TextStyle(
                                           color: Colors.grey[600],
                                         ),
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        '创建时间: ${_currentOrder!.createdAt.formatStyle1()}',
+                                        '创建时间: ${_currentOrder?.createdAt.formatStyle1()}',
                                         style: TextStyle(
                                           color: Colors.grey[600],
                                         ),
@@ -197,7 +241,8 @@ class _OperatePageState extends State<OperatePage> {
                       bottom: 16,
                       child: IconButton(
                         onPressed: () {
-                          Navigator.pop(context);
+                          NavigatorUtil.pushReplacement(
+                              context, const HomePage());
                         },
                         icon: const Icon(
                             HugeIcons.strokeRoundedArrowTurnBackward),
