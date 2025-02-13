@@ -100,13 +100,31 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                           final image = _order!.images[index];
                           return Padding(
                             padding: const EdgeInsets.only(right: 8.0),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.network(
-                                image,
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.cover,
+                            child: GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => Dialog(
+                                    child: GestureDetector(
+                                      onTap: () => Navigator.of(context).pop(),
+                                      child: InteractiveViewer(
+                                        child: Image.network(
+                                          image,
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.network(
+                                  image,
+                                  width: 100,
+                                  height: 100,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
                           );
