@@ -114,13 +114,13 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
           try {
             final res =
                 await context.read<UploadRepo>().uploadImage(image.path);
-            return res.data['url'] as String;
+            return res.data['key'] as String;
           } catch (e) {
             return null;
           }
         }),
       );
-      allImages.addAll(newImages.where((url) => url != null).cast<String>());
+      allImages.addAll(newImages.where((item) => item != null).cast<String>());
     }
 
     if (widget.order == null) {
