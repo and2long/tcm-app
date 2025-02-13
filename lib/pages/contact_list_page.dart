@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:pinyin/pinyin.dart';
 import 'package:tcm/components/yt_tile.dart';
 import 'package:tcm/core/blocs/contact/contact_cubit.dart';
@@ -50,7 +51,7 @@ class _ContactListPageState extends State<ContactListPage>
           title: const Text('联系人管理'),
           actions: [
             IconButton(
-              icon: const Icon(Icons.person_add),
+              icon: const Icon(HugeIcons.strokeRoundedUserAdd01),
               onPressed: () {
                 showDialog(
                   context: context,
@@ -90,7 +91,7 @@ class _ContactListPageState extends State<ContactListPage>
                       },
                       backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,
-                      icon: Icons.edit,
+                      icon: HugeIcons.strokeRoundedEditUser02,
                     ),
                     SlidableAction(
                       onPressed: (c) {
@@ -123,7 +124,7 @@ class _ContactListPageState extends State<ContactListPage>
                       },
                       backgroundColor: Colors.red,
                       foregroundColor: Colors.white,
-                      icon: Icons.delete,
+                      icon: HugeIcons.strokeRoundedDelete02,
                     ),
                   ],
                 ),

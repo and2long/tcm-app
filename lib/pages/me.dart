@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:provider/provider.dart';
 import 'package:tcm/components/yt_tile.dart';
 import 'package:tcm/i18n/i18n.dart';
@@ -18,6 +19,10 @@ class Me extends StatelessWidget {
       body: ListView(
         children: [
           YTTile(
+            leading: const Icon(
+              HugeIcons.strokeRoundedUserSwitch,
+              size: 20,
+            ),
             title: '切换为药房端',
             onTap: () {},
           ),

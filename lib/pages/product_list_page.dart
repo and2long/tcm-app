@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:pinyin/pinyin.dart';
 import 'package:tcm/components/yt_tile.dart';
 import 'package:tcm/core/blocs/product/product_cubit.dart';
@@ -50,7 +51,7 @@ class _ProductListPageState extends State<ProductListPage>
           title: const Text('药品管理'),
           actions: [
             IconButton(
-              icon: const Icon(Icons.add),
+              icon: const Icon(HugeIcons.strokeRoundedAddSquare),
               onPressed: () {
                 showDialog(
                   context: context,
@@ -90,7 +91,7 @@ class _ProductListPageState extends State<ProductListPage>
                       },
                       backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,
-                      icon: Icons.edit,
+                      icon: HugeIcons.strokeRoundedEdit02,
                     ),
                     SlidableAction(
                       onPressed: (c) {
@@ -119,7 +120,7 @@ class _ProductListPageState extends State<ProductListPage>
                       },
                       backgroundColor: Colors.red,
                       foregroundColor: Colors.white,
-                      icon: Icons.delete,
+                      icon: HugeIcons.strokeRoundedDelete02,
                     ),
                   ],
                 ),
