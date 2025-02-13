@@ -62,7 +62,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         body: _order == null
             ? const Center(child: CircularProgressIndicator())
             : ListView(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.only(
+                    left: 16.0, top: 16, right: 16, bottom: 100),
                 children: [
                   // 订单信息
                   Text(

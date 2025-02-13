@@ -167,7 +167,8 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
         body: Form(
           key: _formKey,
           child: ListView(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.only(
+                left: 16.0, top: 16, right: 16, bottom: 200),
             children: [
               SearchSelectField<Contact>(
                 label: '客户',
