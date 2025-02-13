@@ -113,44 +113,79 @@ class _OperatePageState extends State<OperatePage> {
                         Expanded(
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
-                            child: SizedBox(
-                              width: MediaQuery.of(context).size.width,
-                              child: GridView.builder(
-                                padding: const EdgeInsets.all(16),
-                                gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  childAspectRatio: 3,
-                                  crossAxisSpacing: 8,
-                                ),
-                                itemCount: _currentOrder!.orderLines.length,
-                                itemBuilder: (context, index) {
-                                  final line = _currentOrder!.orderLines[index];
-                                  return Card(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(12),
-                                      child: Row(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  for (int columnIndex = 0;
+                                      columnIndex <
+                                          (_currentOrder!.orderLines.length /
+                                                  10)
+                                              .ceil();
+                                      columnIndex++)
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 16.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          Expanded(
-                                            child: Text(
-                                              '${index + 1}. ${line.product?.name ?? ''}',
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.w500,
+                                          for (int i = columnIndex * 10;
+                                              i < (columnIndex + 1) * 10 &&
+                                                  i <
+                                                      _currentOrder!
+                                                          .orderLines.length;
+                                              i++)
+                                            Card(
+                                              margin: const EdgeInsets.only(
+                                                  bottom: 8.0),
+                                              child: Container(
+                                                width: 280,
+                                                padding:
+                                                    const EdgeInsets.all(12.0),
+                                                child: Row(
+                                                  children: [
+                                                    SizedBox(
+                                                      width: 24,
+                                                      child: Text(
+                                                        '${i + 1}.',
+                                                        style: const TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Expanded(
+                                                      child: Text(
+                                                        _currentOrder!
+                                                                .orderLines[i]
+                                                                .product
+                                                                ?.name ??
+                                                            '',
+                                                        style: const TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                    Text(
+                                                      '× ${_currentOrder!.orderLines[i].quantity}',
+                                                      style: TextStyle(
+                                                        color: Colors.grey[600],
+                                                        fontSize: 13,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          Text(
-                                            '数量: ${line.quantity}',
-                                            style: TextStyle(
-                                              color: Colors.grey[600],
-                                              fontSize: 13,
-                                            ),
-                                          ),
                                         ],
                                       ),
                                     ),
-                                  );
-                                },
+                                ],
                               ),
                             ),
                           ),
@@ -160,20 +195,18 @@ class _OperatePageState extends State<OperatePage> {
                     Positioned(
                       left: 16,
                       bottom: 16,
-                      child: FloatingActionButton(
-                        heroTag: 'back',
+                      child: IconButton(
                         onPressed: () {
                           Navigator.pop(context);
                         },
-                        child: const Icon(
+                        icon: const Icon(
                             HugeIcons.strokeRoundedArrowTurnBackward),
                       ),
                     ),
                     Positioned(
                       right: 16,
                       bottom: 16,
-                      child: FloatingActionButton.extended(
-                        heroTag: 'confirm',
+                      child: FilledButton(
                         onPressed: () {
                           if (_currentOrder != null) {
                             showDialog(
@@ -202,9 +235,7 @@ class _OperatePageState extends State<OperatePage> {
                             );
                           }
                         },
-                        icon: const Icon(
-                            HugeIcons.strokeRoundedCheckmarkCircle01),
-                        label: const Text('确认完成'),
+                        child: const Text('确认完成'),
                       ),
                     ),
                   ],
