@@ -14,4 +14,9 @@ class ProductRepo {
   Future<Response> deleteProduct(int id) async {
     return XHttp.instance.delete('${ConstantsHttp.products}/$id');
   }
+
+  Future<Response> updateProduct(int id, String name) async {
+    return XHttp.instance
+        .patch('${ConstantsHttp.products}/$id', data: {'name': name});
+  }
 }

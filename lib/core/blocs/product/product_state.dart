@@ -18,3 +18,8 @@ class ProductCreateSuccessState extends ProductState {
   final Product product;
   ProductCreateSuccessState(this.product);
 }
+
+class ProductUpdateSuccessState extends ProductState {
+  final Product product;
+  ProductUpdateSuccessState(this.product);
+}

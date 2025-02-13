@@ -55,4 +55,17 @@ class ProductCubit extends Cubit<ProductState> {
       SmartDialog.dismiss();
     }
   }
+
+  Future updateProduct(int id, String name) async {
+    try {
+      SmartDialog.showLoading();
+      Response res = await _repo.updateProduct(id, name);
+      Product product = Product.fromJson(res.data);
+      maybeEmit(ProductUpdateSuccessState(product));
+    } catch (e, s) {
+      handleError(e, stackTrace: s);
+    } finally {
+      SmartDialog.dismiss();
+    }
+  }
 }
