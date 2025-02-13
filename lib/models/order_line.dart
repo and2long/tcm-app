@@ -5,7 +5,7 @@ import 'package:tcm/models/product.dart';
 class OrderLine {
   int id;
 
-  Product product;
+  Product? product;
 
   int quantity;
 
@@ -18,7 +18,8 @@ class OrderLine {
   factory OrderLine.fromJson(Map<String, dynamic> json) {
     return OrderLine(
       id: json['id'],
-      product: Product.fromJson(json['product']),
+      product:
+          json['product'] == null ? null : Product.fromJson(json['product']),
       quantity: json['quantity'],
     );
   }
@@ -26,7 +27,7 @@ class OrderLine {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'product': product.toJson(),
+      'product': product?.toJson(),
       'quantity': quantity,
     };
   }

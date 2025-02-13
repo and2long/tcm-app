@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:tcm/components/yt_tile.dart';
 import 'package:tcm/core/blocs/product/product_cubit.dart';
 import 'package:tcm/core/blocs/product/product_state.dart';
@@ -65,45 +66,42 @@ class _ProductListPageState extends State<ProductListPage>
           child: ListView.builder(
             itemBuilder: (context, index) {
               final product = products[index];
-              return Dismissible(
-                key: Key('product_${product.id}'),
-                direction: DismissDirection.endToStart,
-                confirmDismiss: (direction) {
-                  return showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('确认删除'),
-                      content: Text('确定要删除 ${product.name} 吗？'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, false),
-                          child: const Text('取消'),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            context
-                                .read<ProductCubit>()
-                                .deleteProduct(product.id);
-                            Navigator.pop(context, true);
-                          },
-                          child: const Text('确定'),
-                        ),
-                      ],
+              return Slidable(
+                endActionPane: ActionPane(
+                  motion: const ScrollMotion(),
+                  children: [
+                    SlidableAction(
+                      onPressed: (c) {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('确认删除'),
+                            content: Text('确定要删除 ${product.name} 吗？'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, false),
+                                child: const Text('取消'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  context
+                                      .read<ProductCubit>()
+                                      .deleteProduct(product.id);
+                                  Navigator.pop(context, true);
+                                },
+                                child: const Text('确定'),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                      icon: Icons.delete,
                     ),
-                  );
-                },
-                background: Container(
-                  color: Colors.red,
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.only(right: 16.0),
-                  child: const Icon(
-                    Icons.delete_outline,
-                    color: Colors.white,
-                  ),
+                  ],
                 ),
-                child: YTTile(
-                  title: product.name,
-                ),
+                child: YTTile(title: product.name),
               );
             },
             itemCount: products.length,

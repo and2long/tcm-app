@@ -160,7 +160,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                             ),
                             const SizedBox(width: 8),
                             Expanded(
-                              child: Text(line.product.name),
+                              child: Text(line.product?.name ?? 'Unknown'),
                             ),
                             const SizedBox(width: 16),
                             Text('× ${line.quantity}'),

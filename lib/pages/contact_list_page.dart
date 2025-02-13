@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:tcm/components/yt_tile.dart';
 import 'package:tcm/core/blocs/contact/contact_cubit.dart';
 import 'package:tcm/core/blocs/contact/contact_state.dart';
@@ -65,47 +66,46 @@ class _ContactListPageState extends State<ContactListPage>
           child: ListView.builder(
             itemBuilder: (context, index) {
               final contact = contacts[index];
-              return Dismissible(
-                key: Key(contact.id.toString()),
-                direction: DismissDirection.endToStart,
-                background: Container(
-                  color: Colors.red,
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.only(right: 20.0),
-                  child: const Icon(Icons.delete, color: Colors.white),
+              return Slidable(
+                endActionPane: ActionPane(
+                  motion: const ScrollMotion(),
+                  children: [
+                    SlidableAction(
+                      onPressed: (c) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('确认删除'),
+                              content: Text('确认删除 ${contact.name} 吗？'),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: const Text('取消'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                                TextButton(
+                                  child: const Text('确认'),
+                                  onPressed: () {
+                                    context
+                                        .read<ContactCubit>()
+                                        .deleteContact(contact.id);
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                      icon: Icons.delete,
+                    ),
+                  ],
                 ),
-                child: YTTile(
-                  title: contact.name,
-                ),
-                confirmDismiss: (DismissDirection direction) {
-                  // 显示确认对话框
-                  return showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('确认删除'),
-                        content: Text('确认删除 ${contact.name} 吗？'),
-                        actions: <Widget>[
-                          TextButton(
-                            child: const Text('取消'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          TextButton(
-                            child: const Text('确认'),
-                            onPressed: () {
-                              context
-                                  .read<ContactCubit>()
-                                  .deleteContact(contact.id);
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
+                child: YTTile(title: contact.name),
               );
             },
             itemCount: contacts.length,
