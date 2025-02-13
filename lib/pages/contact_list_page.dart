@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:pinyin/pinyin.dart';
 import 'package:tcm/components/yt_tile.dart';
 import 'package:tcm/core/blocs/contact/contact_cubit.dart';
 import 'package:tcm/core/blocs/contact/contact_state.dart';
+import 'package:tcm/models/contact.dart';
 import 'package:tcm/pages/contact_edit_page.dart';
 import 'package:tcm/providers/app_provider.dart';
 
@@ -27,7 +29,11 @@ class _ContactListPageState extends State<ContactListPage>
     return BlocListener<ContactCubit, ContactState>(
       listener: (context, state) {
         if (state is ContactCreateSuccessState) {
-          context.read<AppProvider>().addContact(state.contact);
+          List<Contact> items = context.read<AppProvider>().contacts;
+          items.add(state.contact);
+          items.sort((a, b) => PinyinHelper.getShortPinyin(a.name)
+              .compareTo(PinyinHelper.getShortPinyin(b.name)));
+          context.read<AppProvider>().setContacts(items);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('创建成功')),
           );

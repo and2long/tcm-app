@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:pinyin/pinyin.dart';
 import 'package:tcm/components/yt_tile.dart';
 import 'package:tcm/core/blocs/product/product_cubit.dart';
 import 'package:tcm/core/blocs/product/product_state.dart';
+import 'package:tcm/models/product.dart';
 import 'package:tcm/pages/product_edit_page.dart';
 import 'package:tcm/providers/app_provider.dart';
 
@@ -27,7 +29,11 @@ class _ProductListPageState extends State<ProductListPage>
     return BlocListener<ProductCubit, ProductState>(
       listener: (context, state) {
         if (state is ProductCreateSuccessState) {
-          context.read<AppProvider>().addProduct(state.product);
+          List<Product> items = context.read<AppProvider>().products;
+          items.add(state.product);
+          items.sort((a, b) => PinyinHelper.getShortPinyin(a.name)
+              .compareTo(PinyinHelper.getShortPinyin(b.name)));
+          context.read<AppProvider>().setProducts(items);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('创建成功')),
           );
