@@ -1,6 +1,5 @@
-# TODO 替换为自己的包名
 name: tcm
-description: A new Flutter project.
+description: TCM 手机客户端.
 publish_to: 'none'
 version: 1.0.0+1
 
