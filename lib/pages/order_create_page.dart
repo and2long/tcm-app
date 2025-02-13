@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tcm/components/search_select_field.dart';
 import 'package:tcm/core/blocs/order/order_cubit.dart';
@@ -67,7 +68,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
   }
 
   Future<void> _pickImage() async {
-    if (_images.length == 2) {
+    if ((_images.length + _uploadedImages.length) == 2) {
       XFile? image = await _picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
         setState(() {
@@ -75,8 +76,8 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
         });
       }
     } else {
-      final List<XFile> images =
-          await _picker.pickMultiImage(limit: 3 - _images.length);
+      final List<XFile> images = await _picker.pickMultiImage(
+          limit: 3 - (_images.length + _uploadedImages.length));
       if (images.isNotEmpty) {
         setState(() {
           _images.addAll(images);
@@ -94,6 +95,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
   Future<void> _handleSubmit() async {
     if (!_formKey.currentState!.validate()) return;
 
+    SmartDialog.showLoading();
     final items = _lineItems
         .map((item) => {
               'product_id': item.product!.id,
@@ -195,7 +197,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    '(${_images.length}/3)',
+                    '(${_images.length + _uploadedImages.length}/3)',
                     style: TextStyle(
                       color: Colors.grey[600],
                       fontSize: 14,
@@ -209,6 +211,49 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   children: [
+                    ..._uploadedImages.asMap().entries.map(
+                      (entry) {
+                        final index = entry.key;
+                        final imageUrl = entry.value;
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.network(
+                                  imageUrl,
+                                  width: 100,
+                                  height: 100,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              Positioned(
+                                right: 4,
+                                top: 4,
+                                child: GestureDetector(
+                                  onTap: () => setState(() {
+                                    _uploadedImages.removeAt(index);
+                                  }),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: const BoxDecoration(
+                                      color: Colors.black54,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.close,
+                                      size: 16,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
                     ..._images.asMap().entries.map(
                       (entry) {
                         final index = entry.key;
@@ -250,7 +295,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                         );
                       },
                     ),
-                    if (_images.length < 3)
+                    if (_images.length + _uploadedImages.length < 3)
                       GestureDetector(
                         onTap: _pickImage,
                         child: Container(
