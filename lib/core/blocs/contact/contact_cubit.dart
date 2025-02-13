@@ -54,4 +54,17 @@ class ContactCubit extends Cubit<ContactState> {
       SmartDialog.dismiss();
     }
   }
+
+  Future updateContact(int id, String name) async {
+    try {
+      SmartDialog.showLoading();
+      Response res = await _repo.updateContact(id, name);
+      Contact contact = Contact.fromJson(res.data);
+      maybeEmit(ContactUpdateSuccessState(contact));
+    } catch (e, s) {
+      handleError(e, stackTrace: s);
+    } finally {
+      SmartDialog.dismiss();
+    }
+  }
 }

@@ -4,6 +4,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:tcm/components/yt_tile.dart';
 import 'package:tcm/core/blocs/contact/contact_cubit.dart';
 import 'package:tcm/core/blocs/contact/contact_state.dart';
+import 'package:tcm/pages/contact_edit_page.dart';
 import 'package:tcm/providers/app_provider.dart';
 
 class ContactListPage extends StatefulWidget {
@@ -70,6 +71,21 @@ class _ContactListPageState extends State<ContactListPage>
                 endActionPane: ActionPane(
                   motion: const ScrollMotion(),
                   children: [
+                    SlidableAction(
+                      onPressed: (c) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ContactEditPage(
+                              contact: contact,
+                            ),
+                          ),
+                        );
+                      },
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      icon: Icons.edit,
+                    ),
                     SlidableAction(
                       onPressed: (c) {
                         showDialog(

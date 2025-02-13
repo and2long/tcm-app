@@ -18,3 +18,8 @@ class ContactCreateSuccessState extends ContactState {
   final Contact contact;
   ContactCreateSuccessState(this.contact);
 }
+
+class ContactUpdateSuccessState extends ContactState {
+  final Contact contact;
+  ContactUpdateSuccessState(this.contact);
+}

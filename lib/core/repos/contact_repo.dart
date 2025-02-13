@@ -14,4 +14,9 @@ class ContactRepo {
   Future<Response> deleteContact(int id) async {
     return XHttp.instance.delete('${ConstantsHttp.contacts}/$id');
   }
+
+  Future<Response> updateContact(int id, String name) async {
+    return XHttp.instance
+        .patch('${ConstantsHttp.contacts}/$id', data: {'name': name});
+  }
 }
