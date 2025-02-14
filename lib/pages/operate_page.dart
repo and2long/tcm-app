@@ -86,16 +86,19 @@ class _OperatePageState extends State<OperatePage> {
                     ),
                   ),
                   Positioned(
-                      left: 16,
-                      bottom: 16,
-                      child: IconButton(
-                          onPressed: () {
-                            SPUtil.saveIsDoctor(true);
-                            NavigatorUtil.pushReplacement(
-                                context, const HomePage());
-                          },
-                          icon: const Icon(
-                              HugeIcons.strokeRoundedArrowTurnBackward)))
+                    left: 16,
+                    bottom: 16,
+                    child: IconButton(
+                      onPressed: () {
+                        SPUtil.saveIsDoctor(true);
+                        NavigatorUtil.pushReplacement(
+                            context, const HomePage());
+                      },
+                      icon: const Icon(
+                        HugeIcons.strokeRoundedArrowTurnBackward,
+                      ),
+                    ),
+                  ),
                 ],
               )
             : SafeArea(
@@ -106,62 +109,56 @@ class _OperatePageState extends State<OperatePage> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                spacing: 20,
                                 children: [
-                                  Row(
-                                    spacing: 20,
-                                    children: [
-                                      Text(
-                                        _currentOrder?.contact?.name ?? '',
-                                        style: const TextStyle(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        '订单号: #${_currentOrder?.id}',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.grey[700],
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        '创建时间: ${_currentOrder?.createdAt.formatStyle1()}',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.grey[600],
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
+                                  Text(
+                                    _currentOrder?.contact?.name ?? '',
+                                    style: const TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 26,
-                                      vertical: 8,
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    '订单号: #${_currentOrder?.id}',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey[700],
                                     ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.green,
-                                      borderRadius: BorderRadius.circular(50),
-                                    ),
-                                    child: Text(
-                                      '👉 剩余订单: ${_orders.length}',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18,
-                                      ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '创建时间: ${_currentOrder?.createdAt.formatStyle1()}',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.grey[600],
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ],
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 26,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.green,
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: Text(
+                                  '👉 剩余订单: ${_orders.length}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                ),
                               ),
                             ],
                           ),
