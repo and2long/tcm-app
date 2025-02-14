@@ -68,15 +68,6 @@ class SPUtil {
     );
   }
 
-  static void clean() async {
-    // 清空所有本地数据，只保存是否是首次进入app的状态和语言设置
-    bool value = isFirst();
-    String languageCode = getLanguageCode();
-    await _spf.clear();
-    await setFirst(value);
-    await setLanguageCode(languageCode);
-  }
-
   static bool getIsDoctor() {
     return _spf.getBool(ConstantsKeyCache.keyIsDoctor) ?? true;
   }

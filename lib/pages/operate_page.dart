@@ -87,20 +87,7 @@ class _OperatePageState extends State<OperatePage> {
                       ],
                     ),
                   ),
-                  Positioned(
-                    left: 16,
-                    bottom: 16,
-                    child: IconButton(
-                      onPressed: () {
-                        SPUtil.saveIsDoctor(true);
-                        NavigatorUtil.pushReplacement(
-                            context, const HomePage());
-                      },
-                      icon: const Icon(
-                        HugeIcons.strokeRoundedArrowTurnBackward,
-                      ),
-                    ),
-                  ),
+                  backHomeWidget(),
                 ],
               )
             : SafeArea(
@@ -207,18 +194,7 @@ class _OperatePageState extends State<OperatePage> {
                         ),
                       ],
                     ),
-                    Positioned(
-                      left: 16,
-                      bottom: 16,
-                      child: IconButton(
-                        onPressed: () {
-                          NavigatorUtil.pushReplacement(
-                              context, const HomePage());
-                        },
-                        icon: const Icon(
-                            HugeIcons.strokeRoundedArrowTurnBackward),
-                      ),
-                    ),
+                    backHomeWidget(),
                     Positioned(
                       right: 16,
                       bottom: 16,
@@ -269,6 +245,22 @@ class _OperatePageState extends State<OperatePage> {
                   ],
                 ),
               ),
+      ),
+    );
+  }
+
+  Widget backHomeWidget() {
+    return Positioned(
+      left: 16,
+      bottom: 16,
+      child: IconButton(
+        onPressed: () {
+          SPUtil.saveIsDoctor(true);
+          NavigatorUtil.pushReplacement(context, const HomePage());
+        },
+        icon: const Icon(
+          HugeIcons.strokeRoundedArrowTurnBackward,
+        ),
       ),
     );
   }
