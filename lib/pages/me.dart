@@ -151,12 +151,17 @@ class Me extends StatelessWidget {
 
   void _downloadAndUpgrade(String downloadUrl) async {
     Log.i(_tag, '_upgrade, download new version apk file: $downloadUrl');
-    SmartDialog.showLoading();
+    SmartDialog.showLoading(msg: '准备下载...');
     await XHttp.instance.download(
       downloadUrl,
       '${(await getTemporaryDirectory()).path}/app.apk',
       onReceiveProgress: (received, total) {
         if (total <= 0) return;
+
+        // 计算下载进度百分比
+        final progress = (received / total * 100).toStringAsFixed(1);
+        SmartDialog.showLoading(msg: '下载中 $progress%');
+
         if (received == total) {
           Log.i(_tag, 'download success, execute silence install.');
           SmartDialog.dismiss();

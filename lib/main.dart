@@ -68,8 +68,8 @@ class _MyAppState extends State<MyApp> {
             //   onTap: () => CommonUtil.hideKeyboard(context),
             // ),
             builder: FlutterSmartDialog.init(
-              loadingBuilder: (String msg) => CustomLoadingWidget(msg: msg),
-            ),
+                // loadingBuilder: (String msg) => CustomLoadingWidget(msg: msg),
+                ),
           );
         },
       );
