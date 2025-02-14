@@ -10,6 +10,7 @@ class ConstantsKeyCache {
   static String keyIsFirst = "IS_FIRST";
   static String keyUser = "USER";
   static String keyThemeMode = "THEME_MODE";
+  static String keyIsDoctor = "IS_DOCTOR";
 }
 
 class ConstantsHttp {

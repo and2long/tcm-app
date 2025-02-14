@@ -76,4 +76,12 @@ class SPUtil {
     await setFirst(value);
     await setLanguageCode(languageCode);
   }
+
+  static bool getIsDoctor() {
+    return _spf.getBool(ConstantsKeyCache.keyIsDoctor) ?? true;
+  }
+
+  static Future<bool> saveIsDoctor(bool isDoctor) async {
+    return await _spf.setBool(ConstantsKeyCache.keyIsDoctor, isDoctor);
+  }
 }

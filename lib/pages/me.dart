@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:tcm/components/yt_tile.dart';
 import 'package:tcm/pages/operate_page.dart';
 import 'package:tcm/providers/app_provider.dart';
+import 'package:tcm/utils/sp_util.dart';
 
 class Me extends StatelessWidget {
   const Me({super.key});
@@ -27,6 +28,7 @@ class Me extends StatelessWidget {
             ),
             title: '切换为药房端',
             onTap: () {
+              SPUtil.saveIsDoctor(false);
               NavigatorUtil.pushReplacement(context, const OperatePage());
             },
           ),

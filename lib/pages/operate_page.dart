@@ -7,6 +7,7 @@ import 'package:tcm/core/blocs/order/order_cubit.dart';
 import 'package:tcm/core/blocs/order/order_state.dart';
 import 'package:tcm/models/order.dart';
 import 'package:tcm/pages/home.dart';
+import 'package:tcm/utils/sp_util.dart';
 
 class OperatePage extends StatefulWidget {
   const OperatePage({super.key});
@@ -89,6 +90,7 @@ class _OperatePageState extends State<OperatePage> {
                       bottom: 16,
                       child: IconButton(
                           onPressed: () {
+                            SPUtil.saveIsDoctor(true);
                             NavigatorUtil.pushReplacement(
                                 context, const HomePage());
                           },

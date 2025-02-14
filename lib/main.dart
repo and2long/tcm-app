@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:tcm/core/network/http.dart';
 import 'package:tcm/i18n/i18n.dart';
 import 'package:tcm/pages/home.dart';
+import 'package:tcm/pages/operate_page.dart';
 import 'package:tcm/providers/app_provider.dart';
 import 'package:tcm/providers/store.dart';
 import 'package:tcm/theme.dart';
@@ -61,7 +62,7 @@ class _MyAppState extends State<MyApp> {
             // 支持的语言
             supportedLocales: S.supportedLocales,
             locale: Locale(value.languageCode),
-            home: const HomePage(),
+            home: SPUtil.getIsDoctor() ? const HomePage() : const OperatePage(),
             navigatorObservers: [MyRouteObserver()],
             // builder: (context, child) => GestureDetector(
             //   onTap: () => CommonUtil.hideKeyboard(context),
