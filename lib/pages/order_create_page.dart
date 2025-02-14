@@ -112,8 +112,11 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
       final newImages = await Future.wait(
         _images.map((image) async {
           try {
-            final res =
-                await context.read<UploadRepo>().uploadImage(image.path);
+            final res = await context.read<UploadRepo>().uploadImage(
+                  image.path,
+                  type: 'medical',
+                  username: _selectedContact!.name,
+                );
             return res.data['key'] as String;
           } catch (e) {
             return null;
