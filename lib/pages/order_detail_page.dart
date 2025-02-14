@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ytnavigator/flutter_ytnavigator.dart';
@@ -211,9 +212,16 @@ class _ImageGalleryDialogState extends State<_ImageGalleryDialog> {
             scrollPhysics: const BouncingScrollPhysics(),
             builder: (BuildContext context, int index) {
               return PhotoViewGalleryPageOptions(
-                imageProvider: NetworkImage(widget.images[index]),
+                imageProvider: CachedNetworkImageProvider(widget.images[index]),
                 initialScale: PhotoViewComputedScale.contained,
                 heroAttributes: PhotoViewHeroAttributes(tag: index),
+                errorBuilder: (context, error, stackTrace) => const Center(
+                  child: Icon(
+                    Icons.error,
+                    size: 48,
+                    color: Colors.white54,
+                  ),
+                ),
               );
             },
             itemCount: widget.images.length,
