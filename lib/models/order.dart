@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:tcm/core/blocs/extension.dart';
 import 'package:tcm/models/contact.dart';
 import 'package:tcm/models/order_line.dart';
 
@@ -25,7 +26,7 @@ class Order {
       id: map['id'],
       images: (map['images'] as List).map((e) => e.toString()).toList(),
       contact: map['contact'] != null ? Contact.fromJson(map['contact']) : null,
-      createdAt: DateTime.parse(map['created_at']),
+      createdAt: map['created_at'].toString().toDateTime(),
       isCompleted: map['is_completed'],
       orderLines: List<OrderLine>.from(
           map['order_lines'].map((x) => OrderLine.fromJson(x)) ?? []),
