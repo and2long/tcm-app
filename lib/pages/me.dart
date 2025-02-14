@@ -159,8 +159,10 @@ class Me extends StatelessWidget {
         if (total <= 0) return;
         if (received == total) {
           Log.i(_tag, 'download success, execute silence install.');
-          const MethodChannel('tcm_common_method')
-              .invokeMethod('silence_install');
+          SmartDialog.dismiss();
+          const methodChannel = MethodChannel('tcm_common_method');
+          methodChannel.invokeMethod('silence_install');
+          // methodChannel.invokeMethod('common_install');
         }
       },
     );

@@ -2,9 +2,13 @@ package tech.and2long.tcm
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
+import androidx.core.content.ContextCompat.startActivity
+import androidx.core.content.FileProvider
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.io.BufferedReader
@@ -13,6 +17,7 @@ import java.io.File
 import java.io.IOException
 import java.io.InputStreamReader
 import java.nio.charset.Charset
+
 
 class CommonMethodCallHandler(private val context: Context) : MethodChannel.MethodCallHandler {
 
@@ -58,6 +63,11 @@ class CommonMethodCallHandler(private val context: Context) : MethodChannel.Meth
                 installSilent(apkFile.path)
             }
 
+            "common_install" -> {
+                val apkFile = File(context.cacheDir, "app.apk")
+                installAPK(apkFile)
+            }
+
         }
     }
 
@@ -99,4 +109,41 @@ class CommonMethodCallHandler(private val context: Context) : MethodChannel.Meth
         }
         return result
     }
+
+    private fun installAPK(apkFile: File) {
+        if (apkFile.exists()) {
+            val apkUri = FileProvider.getUriForFile(
+                context,
+                context.packageName + ".fileprovider", apkFile
+            )
+
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.setData(apkUri)
+
+            // Grant temporary read permission to the content URI
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+            //设置安装控制
+            intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                if (!context.packageManager.canRequestPackageInstalls()) {
+                    // 引导用户去设置安装APK
+                    val settingsIntent = Intent(
+                        Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                        Uri.parse("package:" + context.packageName)
+                    )
+                    context.startActivity(settingsIntent)
+                } else {
+                    context.startActivity(intent)
+                }
+            } else {
+                context.startActivity(intent)
+            }
+        } else {
+            // APK文件不存在的提示
+            println("APK file does not exist")
+        }
+    }
+
 }
