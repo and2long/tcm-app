@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ytnavigator/flutter_ytnavigator.dart';
+import 'package:tcm/components/yt_network_image.dart';
 import 'package:tcm/core/blocs/extension.dart';
 import 'package:tcm/core/blocs/order/order_cubit.dart';
 import 'package:tcm/core/blocs/order/order_state.dart';
@@ -120,8 +121,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               },
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
-                                child: Image.network(
-                                  image,
+                                child: YTNetworkImage(
+                                  imageUrl: image,
                                   width: 100,
                                   height: 100,
                                   fit: BoxFit.cover,
