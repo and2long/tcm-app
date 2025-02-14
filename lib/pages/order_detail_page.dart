@@ -35,41 +35,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   void _showImageGallery(int initialIndex) {
     showDialog(
       context: context,
-      builder: (context) => Dialog.fullscreen(
-        child: Stack(
-          children: [
-            PhotoViewGallery.builder(
-              scrollPhysics: const BouncingScrollPhysics(),
-              builder: (BuildContext context, int index) {
-                return PhotoViewGalleryPageOptions(
-                  imageProvider: NetworkImage(_order!.images[index]),
-                  initialScale: PhotoViewComputedScale.contained,
-                  heroAttributes: PhotoViewHeroAttributes(tag: index),
-                );
-              },
-              itemCount: _order!.images.length,
-              loadingBuilder: (context, event) => const Center(
-                child: CircularProgressIndicator(),
-              ),
-              pageController: PageController(initialPage: initialIndex),
-              backgroundDecoration: const BoxDecoration(
-                color: Colors.black,
-              ),
-            ),
-            Positioned(
-              top: 16,
-              right: 16,
-              child: IconButton(
-                icon: const Icon(
-                  HugeIcons.strokeRoundedCancelCircle,
-                  color: Colors.white,
-                  size: 30,
-                ),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ),
-          ],
-        ),
+      builder: (context) => _ImageGalleryDialog(
+        images: _order!.images,
+        initialIndex: initialIndex,
       ),
     );
   }
@@ -206,6 +174,105 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                   }),
                 ],
               ),
+      ),
+    );
+  }
+}
+
+class _ImageGalleryDialog extends StatefulWidget {
+  final List<String> images;
+  final int initialIndex;
+
+  const _ImageGalleryDialog({
+    required this.images,
+    required this.initialIndex,
+  });
+
+  @override
+  State<_ImageGalleryDialog> createState() => _ImageGalleryDialogState();
+}
+
+class _ImageGalleryDialogState extends State<_ImageGalleryDialog> {
+  late int currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    currentIndex = widget.initialIndex;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog.fullscreen(
+      child: Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          PhotoViewGallery.builder(
+            scrollPhysics: const BouncingScrollPhysics(),
+            builder: (BuildContext context, int index) {
+              return PhotoViewGalleryPageOptions(
+                imageProvider: NetworkImage(widget.images[index]),
+                initialScale: PhotoViewComputedScale.contained,
+                heroAttributes: PhotoViewHeroAttributes(tag: index),
+              );
+            },
+            itemCount: widget.images.length,
+            loadingBuilder: (context, event) => const Center(
+              child: CircularProgressIndicator(),
+            ),
+            pageController: PageController(initialPage: widget.initialIndex),
+            backgroundDecoration: const BoxDecoration(
+              color: Colors.black,
+            ),
+            onPageChanged: (index) {
+              setState(() {
+                currentIndex = index;
+              });
+            },
+          ),
+          Positioned(
+            top: 16,
+            right: 16,
+            child: IconButton(
+              icon: const Icon(
+                HugeIcons.strokeRoundedCancelCircle,
+                color: Colors.white,
+                size: 30,
+              ),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ),
+          Positioned(
+            bottom: 16,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 6,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.black54,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (int i = 0; i < widget.images.length; i++)
+                    Container(
+                      width: 8,
+                      height: 8,
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: i == currentIndex
+                            ? Colors.white
+                            : Colors.grey.shade800,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
