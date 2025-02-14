@@ -357,8 +357,8 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                         Expanded(
                           flex: 3,
                           child: SearchSelectField<Product>(
-                            label: '药品名称',
-                            hint: '请选择或输入药品',
+                            label: '产品名称',
+                            hint: '请选择或输入产品',
                             items: appProvider.products,
                             value: item.product,
                             getLabel: (product) => product.name,

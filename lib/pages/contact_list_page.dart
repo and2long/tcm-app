@@ -128,7 +128,7 @@ class _ContactListPageState extends State<ContactListPage>
                     ),
                   ],
                 ),
-                child: YTTile(title: contact.name),
+                child: YTTile(title: '${index + 1}. ${contact.name}'),
               );
             },
             itemCount: contacts.length,

@@ -48,7 +48,7 @@ class _ProductListPageState extends State<ProductListPage>
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('药品管理'),
+          title: const Text('产品管理'),
           actions: [
             IconButton(
               icon: const Icon(HugeIcons.strokeRoundedAddSquare),
@@ -124,7 +124,7 @@ class _ProductListPageState extends State<ProductListPage>
                     ),
                   ],
                 ),
-                child: YTTile(title: product.name),
+                child: YTTile(title: '${index + 1}. ${product.name}'),
               );
             },
             itemCount: products.length,

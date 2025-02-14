@@ -81,7 +81,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           ),
           BottomNavigationBarItem(
             icon: Icon(HugeIcons.strokeRoundedPlate),
-            label: '药品',
+            label: '产品',
           ),
           BottomNavigationBarItem(
             icon: Icon(HugeIcons.strokeRoundedUser),
