@@ -2,16 +2,23 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:flutter_ytlog/log.dart';
 import 'package:flutter_ytnavigator/flutter_ytnavigator.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:tcm/components/yt_tile.dart';
 import 'package:tcm/core/blocs/update/update_cubit.dart';
 import 'package:tcm/core/blocs/update/update_state.dart';
+import 'package:tcm/core/network/http.dart';
 import 'package:tcm/pages/operate_page.dart';
 import 'package:tcm/providers/app_provider.dart';
 import 'package:tcm/utils/sp_util.dart';
+
+const _tag = 'Me';
 
 class Me extends StatelessWidget {
   const Me({super.key});
@@ -59,7 +66,8 @@ class Me extends StatelessWidget {
                 ),
                 FilledButton(
                   onPressed: () {
-                    // TODO 打开下载链接
+                    Navigator.pop(context);
+                    _downloadAndUpgrade(state.downloadUrl);
                   },
                   child: const Text('立即更新'),
                 ),
@@ -138,6 +146,23 @@ class Me extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  void _downloadAndUpgrade(String downloadUrl) async {
+    Log.i(_tag, '_upgrade, download new version apk file: $downloadUrl');
+    SmartDialog.showLoading();
+    await XHttp.instance.download(
+      downloadUrl,
+      '${(await getTemporaryDirectory()).path}/app.apk',
+      onReceiveProgress: (received, total) {
+        if (total <= 0) return;
+        if (received == total) {
+          Log.i(_tag, 'download success, execute silence install.');
+          const MethodChannel('tcm_common_method')
+              .invokeMethod('silence_install');
+        }
+      },
     );
   }
 }
