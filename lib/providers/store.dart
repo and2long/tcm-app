@@ -4,9 +4,11 @@ import 'package:provider/provider.dart';
 import 'package:tcm/core/blocs/contact/contact_cubit.dart';
 import 'package:tcm/core/blocs/order/order_cubit.dart';
 import 'package:tcm/core/blocs/product/product_cubit.dart';
+import 'package:tcm/core/blocs/update/update_cubit.dart';
 import 'package:tcm/core/repos/contact_repo.dart';
 import 'package:tcm/core/repos/order_repo.dart';
 import 'package:tcm/core/repos/product_repo.dart';
+import 'package:tcm/core/repos/update_repo.dart';
 import 'package:tcm/core/repos/upload_repo.dart';
 import 'package:tcm/providers/app_provider.dart';
 import 'package:tcm/utils/sp_util.dart';
@@ -28,6 +30,8 @@ class Store {
         BlocProvider(create: (_) => ContactCubit(ContactRepo())),
         BlocProvider(create: (_) => ProductCubit(ProductRepo())),
         Provider(create: (_) => UploadRepo()),
+        Provider(create: (_) => UpdateRepo()),
+        BlocProvider(create: (_) => UpdateCubit(UpdateRepo())),
       ],
       child: child,
     );

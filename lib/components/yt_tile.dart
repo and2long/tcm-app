@@ -48,7 +48,10 @@ class YTTile extends StatelessWidget {
                     child: leading,
                   ),
                 ),
-                Text(title),
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
               ],
             ),
             Row(

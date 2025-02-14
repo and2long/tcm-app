@@ -23,6 +23,7 @@ class ConstantsHttp {
   static const String contacts = '/contacts';
   static const String products = '/products';
   static const String upload = '/upload';
+  static const String checkNewVersion = '/update/check-new-version';
 }
 
 const appBarHeight = kToolbarHeight;
