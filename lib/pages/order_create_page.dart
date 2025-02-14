@@ -126,19 +126,21 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
       allImages.addAll(newImages.where((item) => item != null).cast<String>());
     }
 
-    if (widget.order == null) {
-      context.read<OrderCubit>().createOrder(
-            contactId: _selectedContact!.id,
-            items: items,
-            images: allImages,
-          );
-    } else {
-      context.read<OrderCubit>().updateOrder(
-            id: widget.order!.id,
-            contactId: _selectedContact!.id,
-            items: items,
-            images: allImages,
-          );
+    if (mounted) {
+      if (widget.order == null) {
+        context.read<OrderCubit>().createOrder(
+              contactId: _selectedContact!.id,
+              items: items,
+              images: allImages,
+            );
+      } else {
+        context.read<OrderCubit>().updateOrder(
+              id: widget.order!.id,
+              contactId: _selectedContact!.id,
+              items: items,
+              images: allImages,
+            );
+      }
     }
   }
 

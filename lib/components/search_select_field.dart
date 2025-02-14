@@ -181,7 +181,7 @@ class _SearchSelectFieldState<T> extends State<SearchSelectField<T>> {
                                             .textTheme
                                             .bodyMedium
                                             ?.color
-                                            ?.withOpacity(0.5),
+                                            ?.withValues(alpha: 0.5),
                                   ),
                                 ),
                                 selected: isSelected,
