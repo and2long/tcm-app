@@ -26,16 +26,12 @@ class SearchSelectField<T> extends StatefulWidget {
 
 class _SearchSelectFieldState<T> extends State<SearchSelectField<T>> {
   final TextEditingController _controller = TextEditingController();
-  final FocusNode _focusNode = FocusNode();
-  final LayerLink _layerLink = LayerLink();
-  bool _isOpen = false;
+  final TextEditingController _searchController = TextEditingController();
   String _searchText = '';
-  OverlayEntry? _overlayEntry;
 
   @override
   void initState() {
     super.initState();
-    _focusNode.addListener(_onFocusChange);
     if (widget.value != null) {
       _controller.text = widget.getLabel(widget.value as T);
     }
@@ -52,120 +48,188 @@ class _SearchSelectFieldState<T> extends State<SearchSelectField<T>> {
 
   @override
   void dispose() {
-    _focusNode.removeListener(_onFocusChange);
-    _focusNode.dispose();
     _controller.dispose();
-    _removeOverlay();
+    _searchController.dispose();
     super.dispose();
   }
 
-  void _onFocusChange() {
-    if (_focusNode.hasFocus) {
-      _showOverlay();
-    } else {
-      _removeOverlay();
+  void _showSelectionSheet() {
+    if (widget.value != null) {
+      _searchController.text = widget.getLabel(widget.value as T);
+      _searchText = _searchController.text;
     }
-  }
 
-  void _showOverlay() {
-    _isOpen = true;
-    _overlayEntry = _createOverlayEntry();
-    Overlay.of(context).insert(_overlayEntry!);
-  }
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: DraggableScrollableSheet(
+              initialChildSize: 0.7,
+              minChildSize: 0.5,
+              maxChildSize: 0.9,
+              expand: false,
+              builder: (context, scrollController) {
+                return StatefulBuilder(
+                  builder: (context, setState) {
+                    final sortedItems = List<T>.from(widget.items);
+                    if (_searchText.isNotEmpty) {
+                      sortedItems.sort((a, b) {
+                        final labelA = widget.getLabel(a).toLowerCase();
+                        final labelB = widget.getLabel(b).toLowerCase();
+                        final searchLower = _searchText.toLowerCase();
+                        final aContains = labelA.contains(searchLower);
+                        final bContains = labelB.contains(searchLower);
 
-  void _removeOverlay() {
-    _isOpen = false;
-    _overlayEntry?.remove();
-    _overlayEntry = null;
-  }
+                        if (aContains && !bContains) return -1;
+                        if (!aContains && bContains) return 1;
 
-  OverlayEntry _createOverlayEntry() {
-    final RenderBox renderBox = context.findRenderObject() as RenderBox;
-    final size = renderBox.size;
+                        return labelA.compareTo(labelB);
+                      });
+                    }
 
-    return OverlayEntry(
-      builder: (context) => Stack(
-        children: [
-          Positioned.fill(
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () {
-                _focusNode.unfocus();
+                    return Column(
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          width: 40,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 8.0,
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  '选择${widget.label}',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.close),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: TextField(
+                            controller: _searchController,
+                            autofocus: true,
+                            decoration: InputDecoration(
+                              hintText: widget.hint,
+                              prefixIcon: const Icon(Icons.search),
+                              suffixIcon: _searchText.isNotEmpty
+                                  ? IconButton(
+                                      icon: const Icon(Icons.clear),
+                                      onPressed: () {
+                                        setState(() {
+                                          _searchController.clear();
+                                          _searchText = '';
+                                        });
+                                      },
+                                    )
+                                  : null,
+                              border: const OutlineInputBorder(),
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                _searchText = value;
+                              });
+                            },
+                          ),
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            controller: scrollController,
+                            itemCount: sortedItems.length,
+                            itemBuilder: (context, index) {
+                              final item = sortedItems[index];
+                              final isSelected = widget.value == item;
+                              final itemLabel = widget.getLabel(item);
+                              final isMatch = _searchText.isEmpty ||
+                                  itemLabel
+                                      .toLowerCase()
+                                      .contains(_searchText.toLowerCase());
+
+                              return ListTile(
+                                title: Text(
+                                  itemLabel,
+                                  style: TextStyle(
+                                    color: isMatch
+                                        ? null
+                                        : Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.color
+                                            ?.withOpacity(0.5),
+                                  ),
+                                ),
+                                selected: isSelected,
+                                trailing: isSelected
+                                    ? const Icon(Icons.check,
+                                        color: Colors.blue)
+                                    : null,
+                                onTap: () {
+                                  widget.onChanged(item);
+                                  _controller.text = itemLabel;
+                                  Navigator.pop(context);
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
               },
             ),
           ),
-          Positioned(
-            width: size.width,
-            child: CompositedTransformFollower(
-              link: _layerLink,
-              showWhenUnlinked: false,
-              offset: Offset(0.0, size.height + 5.0),
-              child: Material(
-                elevation: 4.0,
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxHeight: 200),
-                  child: ListView(
-                    padding: EdgeInsets.zero,
-                    shrinkWrap: true,
-                    children: widget.items
-                        .where((item) => widget
-                            .getLabel(item)
-                            .toLowerCase()
-                            .contains(_searchText.toLowerCase()))
-                        .map((item) => ListTile(
-                              title: Text(widget.getLabel(item)),
-                              onTap: () {
-                                widget.onChanged(item);
-                                _controller.text = widget.getLabel(item);
-                                _removeOverlay();
-                                _focusNode.unfocus();
-                              },
-                            ))
-                        .toList(),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+        );
+      },
+    ).whenComplete(() {
+      _searchController.clear();
+      _searchText = '';
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return CompositedTransformTarget(
-      link: _layerLink,
-      child: TextFormField(
-        autocorrect: false,
-        controller: _controller,
-        focusNode: _focusNode,
-        decoration: InputDecoration(
-          labelText: widget.label,
-          hintText: widget.hint,
-          suffixIcon: IconButton(
-            icon: Icon(_isOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down),
-            onPressed: () {
-              if (_isOpen) {
-                _focusNode.unfocus();
-              } else {
-                _focusNode.requestFocus();
-              }
-            },
-          ),
+    return TextFormField(
+      controller: _controller,
+      readOnly: true,
+      decoration: InputDecoration(
+        labelText: widget.label,
+        hintText: widget.hint,
+        suffixIcon: IconButton(
+          icon: const Icon(Icons.arrow_drop_down),
+          onPressed: _showSelectionSheet,
         ),
-        onChanged: (value) {
-          setState(() {
-            _searchText = value;
-            if (_overlayEntry != null) {
-              _overlayEntry!.markNeedsBuild();
-            }
-          });
-        },
-        validator: widget.validator != null
-            ? (value) => widget.validator!(widget.value)
-            : null,
       ),
+      onTap: _showSelectionSheet,
+      validator: widget.validator != null
+          ? (value) => widget.validator!(widget.value)
+          : null,
     );
   }
 }
