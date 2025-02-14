@@ -59,21 +59,27 @@ class _OperatePageState extends State<OperatePage> {
                       children: [
                         const Text(
                           '🎉 暂无待办订单',
-                          style: TextStyle(fontSize: 26),
+                          style: TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         FilledButton(
-                            onPressed: _loadPendingOrders,
-                            child: const Text(
-                              '刷新',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                              ),
-                            )),
+                          onPressed: _loadPendingOrders,
+                          child: const Text(
+                            '刷新',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ),
                         Text(
                           '点击刷新按钮检查是否有新订单',
-                          style:
-                              TextStyle(fontSize: 14, color: Colors.grey[600]),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[600],
+                          ),
                         )
                       ],
                     ),
@@ -105,47 +111,51 @@ class _OperatePageState extends State<OperatePage> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                  Row(
+                                    spacing: 20,
                                     children: [
                                       Text(
                                         _currentOrder?.contact?.name ?? '',
                                         style: const TextStyle(
-                                          fontSize: 18,
+                                          fontSize: 24,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                      const SizedBox(height: 4),
+                                      const SizedBox(height: 8),
                                       Text(
                                         '订单号: #${_currentOrder?.id}',
                                         style: TextStyle(
-                                          color: Colors.grey[600],
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.grey[700],
                                         ),
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
                                         '创建时间: ${_currentOrder?.createdAt.formatStyle1()}',
                                         style: TextStyle(
+                                          fontSize: 16,
                                           color: Colors.grey[600],
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ],
                                   ),
                                   Container(
                                     padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 6,
+                                      horizontal: 26,
+                                      vertical: 8,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: Theme.of(context).primaryColor,
-                                      borderRadius: BorderRadius.circular(16),
+                                      color: Colors.green,
+                                      borderRadius: BorderRadius.circular(50),
                                     ),
                                     child: Text(
-                                      '待办: ${_orders.length}',
+                                      '👉 剩余订单: ${_orders.length}',
                                       style: const TextStyle(
                                         color: Colors.white,
-                                        fontWeight: FontWeight.w500,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
                                       ),
                                     ),
                                   ),
@@ -188,16 +198,20 @@ class _OperatePageState extends State<OperatePage> {
                                               child: Container(
                                                 width: 280,
                                                 padding:
-                                                    const EdgeInsets.all(12.0),
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal: 16.0,
+                                                  vertical: 13,
+                                                ),
                                                 child: Row(
                                                   children: [
                                                     SizedBox(
-                                                      width: 24,
+                                                      width: 32,
                                                       child: Text(
                                                         '${i + 1}.',
                                                         style: const TextStyle(
+                                                          fontSize: 18,
                                                           fontWeight:
-                                                              FontWeight.w500,
+                                                              FontWeight.bold,
                                                         ),
                                                       ),
                                                     ),
@@ -209,8 +223,9 @@ class _OperatePageState extends State<OperatePage> {
                                                                 ?.name ??
                                                             '',
                                                         style: const TextStyle(
+                                                          fontSize: 18,
                                                           fontWeight:
-                                                              FontWeight.w500,
+                                                              FontWeight.bold,
                                                         ),
                                                       ),
                                                     ),
@@ -218,8 +233,10 @@ class _OperatePageState extends State<OperatePage> {
                                                     Text(
                                                       '× ${_currentOrder!.orderLines[i].quantity}',
                                                       style: TextStyle(
-                                                        color: Colors.grey[600],
-                                                        fontSize: 13,
+                                                        color: Colors.grey[700],
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold,
                                                       ),
                                                     ),
                                                   ],
@@ -280,7 +297,17 @@ class _OperatePageState extends State<OperatePage> {
                             );
                           }
                         },
-                        child: const Text('确认完成'),
+                        child: const Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Text(
+                            '完成这个订单',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ],
