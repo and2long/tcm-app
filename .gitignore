@@ -63,3 +63,7 @@ pubspec.lock
 Podfile.lock
 devtools_options.yaml
 native_debug_symbols.zip
+
+*.apk
+*.aab
+*.ipa
