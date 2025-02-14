@@ -223,6 +223,8 @@ class _OperatePageState extends State<OperatePage> {
                       right: 16,
                       bottom: 16,
                       child: FilledButton(
+                        style: FilledButton.styleFrom(
+                            backgroundColor: Colors.blue),
                         onPressed: () {
                           if (_currentOrder != null) {
                             showDialog(
@@ -252,7 +254,7 @@ class _OperatePageState extends State<OperatePage> {
                           }
                         },
                         child: const Padding(
-                          padding: EdgeInsets.all(16.0),
+                          padding: EdgeInsets.all(10.0),
                           child: Text(
                             '完成这个订单',
                             style: TextStyle(
@@ -317,13 +319,13 @@ class _OperatePageState extends State<OperatePage> {
             vertical: 8,
           ),
           decoration: BoxDecoration(
-            color: Colors.green,
-            borderRadius: BorderRadius.circular(50),
+            color: Colors.yellow.shade700,
+            borderRadius: BorderRadius.circular(10),
           ),
           child: Text(
-            '👉 剩余订单: ${_orders.length}',
+            '剩余订单: ${_orders.length}',
             style: const TextStyle(
-              color: Colors.white,
+              color: Colors.black,
               fontWeight: FontWeight.bold,
               fontSize: 18,
             ),
