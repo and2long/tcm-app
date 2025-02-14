@@ -38,6 +38,7 @@ class OrderCubit extends Cubit<OrderState> {
       Response res = await _repo.createOrder(
         contactId: contactId,
         items: items,
+        images: images,
       );
       Order order = Order.fromJson(res.data);
       maybeEmit(OrderCreateSuccessState(order));

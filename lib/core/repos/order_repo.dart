@@ -17,6 +17,7 @@ class OrderRepo {
       data: {
         'contact_id': contactId,
         'order_lines': items,
+        'images': images ?? [],
       },
     );
   }
