@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ytnavigator/flutter_ytnavigator.dart';
@@ -109,7 +112,11 @@ class Me extends StatelessWidget {
             ),
             YTTile(
               title: '当前版本',
-              onTap: () => context.read<UpdateCubit>().checkUpdate(),
+              onTap: () {
+                if (kDebugMode || Platform.isAndroid) {
+                  context.read<UpdateCubit>().checkUpdate();
+                }
+              },
               trailing: FutureBuilder<PackageInfo>(
                 future: PackageInfo.fromPlatform(),
                 builder: ((
