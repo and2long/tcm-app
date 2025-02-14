@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ytnavigator/flutter_ytnavigator.dart';
+import 'package:hugeicons/hugeicons.dart';
+import 'package:photo_view/photo_view.dart';
+import 'package:photo_view/photo_view_gallery.dart';
 import 'package:tcm/components/yt_network_image.dart';
 import 'package:tcm/core/blocs/extension.dart';
 import 'package:tcm/core/blocs/order/order_cubit.dart';
@@ -27,6 +30,48 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   void initState() {
     super.initState();
     context.read<OrderCubit>().getOrderDetail(widget.orderId);
+  }
+
+  void _showImageGallery(int initialIndex) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog.fullscreen(
+        child: Stack(
+          children: [
+            PhotoViewGallery.builder(
+              scrollPhysics: const BouncingScrollPhysics(),
+              builder: (BuildContext context, int index) {
+                return PhotoViewGalleryPageOptions(
+                  imageProvider: NetworkImage(_order!.images[index]),
+                  initialScale: PhotoViewComputedScale.contained,
+                  heroAttributes: PhotoViewHeroAttributes(tag: index),
+                );
+              },
+              itemCount: _order!.images.length,
+              loadingBuilder: (context, event) => const Center(
+                child: CircularProgressIndicator(),
+              ),
+              pageController: PageController(initialPage: initialIndex),
+              backgroundDecoration: const BoxDecoration(
+                color: Colors.black,
+              ),
+            ),
+            Positioned(
+              top: 16,
+              right: 16,
+              child: IconButton(
+                icon: const Icon(
+                  HugeIcons.strokeRoundedCancelCircle,
+                  color: Colors.white,
+                  size: 30,
+                ),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -102,30 +147,18 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                           final image = _order!.images[index];
                           return Padding(
                             padding: const EdgeInsets.only(right: 8.0),
-                            child: GestureDetector(
-                              onTap: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => Dialog(
-                                    child: GestureDetector(
-                                      onTap: () => Navigator.of(context).pop(),
-                                      child: InteractiveViewer(
-                                        child: Image.network(
-                                          image,
-                                          fit: BoxFit.contain,
-                                        ),
-                                      ),
-                                    ),
+                            child: Hero(
+                              tag: index,
+                              child: GestureDetector(
+                                onTap: () => _showImageGallery(index),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: YTNetworkImage(
+                                    imageUrl: image,
+                                    width: 100,
+                                    height: 100,
+                                    fit: BoxFit.cover,
                                   ),
-                                );
-                              },
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: YTNetworkImage(
-                                  imageUrl: image,
-                                  width: 100,
-                                  height: 100,
-                                  fit: BoxFit.cover,
                                 ),
                               ),
                             ),
