@@ -28,9 +28,25 @@ class Me extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('最新版本：${state.buildVersion}'),
+                  Text(
+                    '最新版本：${state.buildVersion}',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyLarge
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 8),
-                  Text('更新内容：\n${state.description}'),
+                  Text(
+                    '更新内容:',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyLarge
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    state.description,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                 ],
               ),
               actions: [
