@@ -29,6 +29,7 @@ dependencies:
   pinyin: ^3.3.0
   hugeicons: ^0.0.7
   photo_view: ^0.15.0
+  package_info_plus: ^8.2.1
 
 dev_dependencies:
   flutter_lints: ^4.0.0

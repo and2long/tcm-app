@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ytnavigator/flutter_ytnavigator.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:tcm/components/yt_tile.dart';
 import 'package:tcm/pages/operate_page.dart';
@@ -52,6 +53,26 @@ class Me extends StatelessWidget {
                   provider.setThemeMode(mode);
                 }
               },
+            ),
+          ),
+          YTTile(
+            title: '版本',
+            trailing: FutureBuilder<PackageInfo>(
+              future: PackageInfo.fromPlatform(),
+              builder: ((
+                BuildContext context,
+                AsyncSnapshot<PackageInfo> snapshot,
+              ) {
+                String version = '';
+                if (snapshot.hasData) {
+                  version =
+                      '${snapshot.data!.version} (${snapshot.data!.buildNumber})';
+                }
+                return Text(
+                  version,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                );
+              }),
             ),
           ),
         ],
