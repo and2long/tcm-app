@@ -53,13 +53,13 @@ class _OperatePageState extends State<OperatePage> {
         }
       },
       child: Scaffold(
-        body: Stack(
-          children: [
-            if (_currentOrder == null)
-              _buildEmptyContent()
-            else
-              SafeArea(
-                child: RefreshIndicator(
+        body: SafeArea(
+          child: Stack(
+            children: [
+              if (_currentOrder == null)
+                _buildEmptyContent()
+              else
+                RefreshIndicator(
                   onRefresh: _loadPendingOrders,
                   child: CustomScrollView(
                     slivers: [
@@ -73,10 +73,10 @@ class _OperatePageState extends State<OperatePage> {
                     ],
                   ),
                 ),
-              ),
-            _buildBackHomeButton(),
-            if (_currentOrder != null) _buildCompleteButton(),
-          ],
+              _buildBackHomeButton(),
+              if (_currentOrder != null) _buildCompleteButton(),
+            ],
+          ),
         ),
       ),
     );
