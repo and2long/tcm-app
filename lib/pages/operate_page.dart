@@ -32,7 +32,7 @@ class _OperatePageState extends State<OperatePage> {
     if (orders != null && orders.isNotEmpty) {
       setState(() {
         _orders = orders;
-        _currentOrder = orders.first;
+        _currentOrder ??= orders.first;
       });
     }
     if (orders == null || orders.isEmpty) {
@@ -46,211 +46,130 @@ class _OperatePageState extends State<OperatePage> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<OrderCubit, OrderState>(
-      listener: (context, state) {
+      listener: (BuildContext context, OrderState state) {
         if (state is OrderCompleteSuccessState) {
+          _currentOrder = null;
           _loadPendingOrders();
         }
       },
       child: Scaffold(
-        body: _currentOrder == null
-            ? Stack(
-                children: [
-                  Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      spacing: 20,
-                      children: [
-                        const Text(
-                          '🎉 暂无待办订单',
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        FilledButton(
-                          onPressed: _loadPendingOrders,
-                          child: const Text(
-                            '刷新',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                            ),
-                          ),
-                        ),
-                        Text(
-                          '点击刷新按钮检查是否有新订单',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey[600],
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  backHomeWidget(),
-                ],
-              )
-            : SafeArea(
-                child: Stack(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
+        body: Stack(
+          children: [
+            if (_currentOrder == null)
+              _buildEmptyContent()
+            else
+              SafeArea(
+                child: RefreshIndicator(
+                  onRefresh: _loadPendingOrders,
+                  child: CustomScrollView(
+                    slivers: [
+                      SliverToBoxAdapter(
+                        child: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: _buildOrderInfoWidget(),
                         ),
-                        Expanded(
-                          child: Scrollbar(
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    for (int columnIndex = 0;
-                                        columnIndex <
-                                            (_currentOrder!.orderLines.length /
-                                                    10)
-                                                .ceil();
-                                        columnIndex++)
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 16.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            for (int i = columnIndex * 10;
-                                                i < (columnIndex + 1) * 10 &&
-                                                    i <
-                                                        _currentOrder!
-                                                            .orderLines.length;
-                                                i++)
-                                              Card(
-                                                margin: const EdgeInsets.only(
-                                                    bottom: 8.0),
-                                                child: Container(
-                                                  width: 280,
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                    horizontal: 16.0,
-                                                    vertical: 13,
-                                                  ),
-                                                  child: Row(
-                                                    children: [
-                                                      SizedBox(
-                                                        width: 32,
-                                                        child: Text(
-                                                          '${i + 1}.',
-                                                          style:
-                                                              const TextStyle(
-                                                            fontSize: 18,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Expanded(
-                                                        child: Text(
-                                                          _currentOrder!
-                                                                  .orderLines[i]
-                                                                  .product
-                                                                  ?.name ??
-                                                              '',
-                                                          style:
-                                                              const TextStyle(
-                                                            fontSize: 18,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      const SizedBox(width: 8),
-                                                      Text(
-                                                        '× ${_currentOrder!.orderLines[i].quantity}',
-                                                        style: TextStyle(
-                                                          color:
-                                                              Colors.grey[700],
-                                                          fontSize: 16,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    backHomeWidget(),
-                    Positioned(
-                      right: 16,
-                      bottom: 16,
-                      child: FilledButton(
-                        style: FilledButton.styleFrom(
-                            backgroundColor: Colors.blue),
-                        onPressed: () {
-                          if (_currentOrder != null) {
-                            showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: const Text('确认'),
-                                content: const Text('确定要完成该订单吗？'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text('取消'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                      context
-                                          .read<OrderCubit>()
-                                          .toggleOrderStatus(
-                                              _currentOrder!.id, true);
-                                    },
-                                    child: const Text('确定'),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-                        },
-                        child: const Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: Text(
-                            '完成这个订单',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                            ),
-                          ),
-                        ),
                       ),
-                    ),
-                  ],
+                      _buildOrderLines(),
+                    ],
+                  ),
                 ),
               ),
+            _buildBackHomeButton(),
+            if (_currentOrder != null) _buildCompleteButton(),
+          ],
+        ),
       ),
     );
   }
 
-  Widget backHomeWidget() {
+  Widget _buildEmptyContent() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        spacing: 20,
+        children: [
+          const Text(
+            '🎉 暂无待办订单',
+            style: TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          _buildRefreshButton(),
+          Text(
+            '点击刷新按钮检查是否有新订单',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey[600],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRefreshButton() {
+    return FilledButton(
+      onPressed: _loadPendingOrders,
+      child: const Text(
+        '刷新',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCompleteButton() {
+    return Positioned(
+      right: 16,
+      bottom: 16,
+      child: FilledButton(
+        style: FilledButton.styleFrom(backgroundColor: Colors.blue),
+        onPressed: _showCompleteConfirmDialog,
+        child: const Padding(
+          padding: EdgeInsets.all(10.0),
+          child: Text(
+            '完成这个订单',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showCompleteConfirmDialog() {
+    if (_currentOrder == null) return;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('确认'),
+        content: const Text('确定要完成该订单吗？'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('取消'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              context
+                  .read<OrderCubit>()
+                  .toggleOrderStatus(_currentOrder!.id, true);
+            },
+            child: const Text('确定'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBackHomeButton() {
     return Positioned(
       left: 16,
       bottom: 16,
@@ -267,7 +186,31 @@ class _OperatePageState extends State<OperatePage> {
   }
 
   _buildOrderInfoWidget() {
-    final items = [
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Platform.isIOS ? _buildOrderInfo() : _buildOrderInfoRow(),
+        _buildRemainingOrdersButton(),
+      ],
+    );
+  }
+
+  Widget _buildOrderInfo() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: _buildOrderInfoItems(),
+    );
+  }
+
+  Widget _buildOrderInfoRow() {
+    return Row(
+      spacing: 20,
+      children: _buildOrderInfoItems(),
+    );
+  }
+
+  List<Widget> _buildOrderInfoItems() {
+    return [
       Text(
         _currentOrder?.contact?.name ?? '',
         style: const TextStyle(
@@ -294,40 +237,105 @@ class _OperatePageState extends State<OperatePage> {
         ),
       ),
     ];
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Platform.isIOS
-            ? Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: items,
-              )
-            : Row(
-                spacing: 20,
-                children: items,
-              ),
-        GestureDetector(
-          onTap: _showPendingOrdersList,
-          child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 26,
-              vertical: 8,
-            ),
-            decoration: BoxDecoration(
-              color: Colors.yellow.shade700,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Text(
-              '剩余订单: ${_orders.length}',
-              style: const TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
-            ),
+  }
+
+  Widget _buildRemainingOrdersButton() {
+    return GestureDetector(
+      onTap: _showPendingOrdersList,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 26,
+          vertical: 8,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.yellow.shade700,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Text(
+          '剩余订单: ${_orders.length}',
+          style: const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
           ),
         ),
-      ],
+      ),
+    );
+  }
+
+  Widget _buildOrderLines() {
+    return SliverFillRemaining(
+      hasScrollBody: false,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (int columnIndex = 0;
+                  columnIndex < (_currentOrder!.orderLines.length / 10).ceil();
+                  columnIndex++)
+                Padding(
+                  padding: const EdgeInsets.only(right: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      for (int i = columnIndex * 10;
+                          i < (columnIndex + 1) * 10 &&
+                              i < _currentOrder!.orderLines.length;
+                          i++)
+                        Card(
+                          margin: const EdgeInsets.only(bottom: 8.0),
+                          child: Container(
+                            width: 280,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                              vertical: 13,
+                            ),
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 32,
+                                  child: Text(
+                                    '${i + 1}.',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    _currentOrder!
+                                            .orderLines[i].product?.name ??
+                                        '',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  '× ${_currentOrder!.orderLines[i].quantity}',
+                                  style: TextStyle(
+                                    color: Colors.grey[700],
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
