@@ -197,7 +197,7 @@ class _DownloadDialogState extends State<_DownloadDialog> {
               _status = '下载完成';
             });
             const methodChannel = MethodChannel('tcm_common_method');
-            methodChannel.invokeMethod('common_install');
+            methodChannel.invokeMethod('silence_install');
             Navigator.pop(context);
           }
         },

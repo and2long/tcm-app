@@ -111,38 +111,40 @@ class CommonMethodCallHandler(private val context: Context) : MethodChannel.Meth
     }
 
     private fun installAPK(apkFile: File) {
-        if (apkFile.exists()) {
+        try {
+            if (!apkFile.exists()) {
+                Toast.makeText(context, "安装包不存在", Toast.LENGTH_SHORT).show()
+                return
+            }
+
             val apkUri = FileProvider.getUriForFile(
                 context,
-                context.packageName + ".fileprovider", apkFile
+                "${context.packageName}.fileprovider",
+                apkFile
             )
 
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.setData(apkUri)
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(apkUri, "application/vnd.android.package-archive")
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
 
-            // Grant temporary read permission to the content URI
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-
-            //设置安装控制
-            intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 if (!context.packageManager.canRequestPackageInstalls()) {
-                    // 引导用户去设置安装APK
+                    Toast.makeText(context, "请允许安装未知来源应用", Toast.LENGTH_LONG).show()
                     val settingsIntent = Intent(
                         Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
-                        Uri.parse("package:" + context.packageName)
-                    )
+                        Uri.parse("package:${context.packageName}")
+                    ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     context.startActivity(settingsIntent)
-                } else {
-                    context.startActivity(intent)
+                    return
                 }
-            } else {
-                context.startActivity(intent)
             }
-        } else {
-            // APK文件不存在的提示
-            println("APK file does not exist")
+
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            Log.e(TAG, "Install APK failed", e)
+            Toast.makeText(context, "安装失败: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
