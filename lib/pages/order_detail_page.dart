@@ -240,7 +240,7 @@ class _ImageGalleryDialogState extends State<_ImageGalleryDialog> {
           ),
           Positioned(
             top: 16,
-            right: 16,
+            left: 16,
             child: IconButton(
               icon: const Icon(
                 HugeIcons.strokeRoundedCancelCircle,
