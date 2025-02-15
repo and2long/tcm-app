@@ -305,25 +305,140 @@ class _OperatePageState extends State<OperatePage> {
                 spacing: 20,
                 children: items,
               ),
-        Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 26,
-            vertical: 8,
-          ),
-          decoration: BoxDecoration(
-            color: Colors.yellow.shade700,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Text(
-            '剩余订单: ${_orders.length}',
-            style: const TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
+        GestureDetector(
+          onTap: _showPendingOrdersList,
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 26,
+              vertical: 8,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.yellow.shade700,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              '剩余订单: ${_orders.length}',
+              style: const TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
             ),
           ),
         ),
       ],
+    );
+  }
+
+  void _showPendingOrdersList() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('待处理订单'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: _orders.length,
+            itemBuilder: (context, index) {
+              final order = _orders[index];
+              final isCurrentOrder = order.id == _currentOrder?.id;
+              return Card(
+                margin: const EdgeInsets.only(bottom: 8),
+                color: isCurrentOrder
+                    ? Theme.of(context).primaryColor.withOpacity(0.1)
+                    : null,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 订单头部信息
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              '#${order.id} ${order.contact?.name}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: isCurrentOrder
+                                    ? Theme.of(context).primaryColor
+                                    : null,
+                              ),
+                            ),
+                          ),
+                          if (isCurrentOrder)
+                            Icon(
+                              Icons.check_circle,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                        ],
+                      ),
+                      Text(
+                        order.createdAt.formatStyle1(),
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 12,
+                        ),
+                      ),
+                      const Divider(),
+                      // 订单行信息
+                      Wrap(
+                        spacing: 16, // 水平间距
+                        runSpacing: 8, // 垂直间距
+                        children: order.orderLines
+                            .map((line) => Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[100],
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        line.product?.name ?? '',
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        '× ${line.quantity}',
+                                        style: TextStyle(
+                                          color: Colors.grey[700],
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ))
+                            .toList(),
+                      ),
+                      // 点击切换按钮
+                      if (!isCurrentOrder)
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () {
+                              setState(() {
+                                _currentOrder = order;
+                              });
+                              Navigator.pop(context);
+                            },
+                            child: const Text('切换到此订单'),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
     );
   }
 }
