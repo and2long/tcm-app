@@ -4,8 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:flutter_ytlog/log.dart';
 import 'package:flutter_ytnavigator/flutter_ytnavigator.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -18,11 +16,14 @@ import 'package:tcm/pages/operate_page.dart';
 import 'package:tcm/providers/app_provider.dart';
 import 'package:tcm/utils/sp_util.dart';
 
-const _tag = 'Me';
-
-class Me extends StatelessWidget {
+class Me extends StatefulWidget {
   const Me({super.key});
 
+  @override
+  State<Me> createState() => _MeState();
+}
+
+class _MeState extends State<Me> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<AppProvider>();
@@ -149,27 +150,87 @@ class Me extends StatelessWidget {
     );
   }
 
-  void _downloadAndUpgrade(String downloadUrl) async {
-    Log.i(_tag, '_upgrade, download new version apk file: $downloadUrl');
-    SmartDialog.showLoading(msg: '准备下载...');
-    await XHttp.instance.download(
-      downloadUrl,
-      '${(await getTemporaryDirectory()).path}/app.apk',
-      onReceiveProgress: (received, total) {
-        if (total <= 0) return;
+  void _downloadAndUpgrade(String downloadUrl) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => _DownloadDialog(url: downloadUrl),
+    );
+  }
+}
 
-        // 计算下载进度百分比
-        final progress = (received / total * 100).toStringAsFixed(1);
-        SmartDialog.showLoading(msg: '下载中 $progress%');
+class _DownloadDialog extends StatefulWidget {
+  final String url;
 
-        if (received == total) {
-          Log.i(_tag, 'download success, execute silence install.');
-          SmartDialog.dismiss();
-          const methodChannel = MethodChannel('tcm_common_method');
-          methodChannel.invokeMethod('silence_install');
-          // methodChannel.invokeMethod('common_install');
-        }
-      },
+  const _DownloadDialog({required this.url});
+
+  @override
+  State<_DownloadDialog> createState() => _DownloadDialogState();
+}
+
+class _DownloadDialogState extends State<_DownloadDialog> {
+  double _progress = 0;
+  String _status = '准备下载...';
+  bool _isDownloading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _startDownload();
+  }
+
+  Future<void> _startDownload() async {
+    try {
+      await XHttp.instance.download(
+        widget.url,
+        '${(await getTemporaryDirectory()).path}/app.apk',
+        onReceiveProgress: (received, total) {
+          if (total <= 0) return;
+          setState(() {
+            _progress = received / total;
+            _status = '下载中 ${(_progress * 100).toStringAsFixed(0)}%';
+          });
+
+          if (received == total) {
+            setState(() {
+              _isDownloading = false;
+              _status = '下载完成';
+            });
+            const methodChannel = MethodChannel('tcm_common_method');
+            methodChannel.invokeMethod('common_install');
+            Navigator.pop(context);
+          }
+        },
+      );
+    } catch (e) {
+      setState(() {
+        _isDownloading = false;
+        _status = '下载失败';
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(_status),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          LinearProgressIndicator(value: _progress),
+          const SizedBox(height: 16),
+          if (!_isDownloading)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('关闭'),
+                ),
+              ],
+            ),
+        ],
+      ),
     );
   }
 }
