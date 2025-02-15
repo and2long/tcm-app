@@ -335,7 +335,22 @@ class _OperatePageState extends State<OperatePage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('待处理订单'),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text('待处理订单'),
+            IconButton(
+              icon: const Icon(
+                HugeIcons.strokeRoundedCancelCircle,
+                size: 30,
+              ),
+              onPressed: () => Navigator.pop(context),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+              visualDensity: VisualDensity.compact,
+            ),
+          ],
+        ),
         content: SizedBox(
           width: double.maxFinite,
           child: ListView.builder(
