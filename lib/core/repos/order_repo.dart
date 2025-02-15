@@ -54,4 +54,11 @@ class OrderRepo {
     return XHttp.instance
         .patch('${ConstantsHttp.orders}/$id', data: {'is_completed': true});
   }
+
+  Future<Response> updateOrderStatus(int id, bool isCompleted) async {
+    return XHttp.instance.patch(
+      '${ConstantsHttp.orders}/$id',
+      data: {'is_completed': isCompleted},
+    );
+  }
 }

@@ -220,7 +220,8 @@ class _OperatePageState extends State<OperatePage> {
                                       Navigator.pop(context);
                                       context
                                           .read<OrderCubit>()
-                                          .completeOrder(_currentOrder!.id);
+                                          .toggleOrderStatus(
+                                              _currentOrder!.id, true);
                                     },
                                     child: const Text('确定'),
                                   ),

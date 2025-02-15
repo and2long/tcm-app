@@ -57,12 +57,26 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             _order = state.order;
           });
         }
+        if (state is OrderCompleteSuccessState) {
+          setState(() {
+            if (_order?.id == state.id) {
+              _order = _order?.copyWith(isCompleted: state.isCompleted);
+            }
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                state.isCompleted ? '订单已完成' : '订单已标记为未完成',
+              ),
+            ),
+          );
+        }
       },
       child: Scaffold(
         appBar: AppBar(
           title: Text('#${widget.orderId} ${_order?.contact?.name}'),
           actions: [
-            if (_order != null)
+            if (_order != null && !_order!.isCompleted)
               IconButton(
                 icon: const Icon(Icons.edit_outlined),
                 onPressed: () {
@@ -94,7 +108,51 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                         children: [
                           Text('创建时间：${_order!.createdAt.formatStyle1()}'),
                           const SizedBox(height: 8),
-                          Text('状态：${_order!.isCompleted ? "已完成" : "未完成"}'),
+                          Row(
+                            children: [
+                              Text('状态：${_order!.isCompleted ? "已完成" : "未完成"}'),
+                              const SizedBox(width: 16),
+                              TextButton(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: Text(
+                                        _order!.isCompleted ? '取消完成' : '确认完成',
+                                      ),
+                                      content: Text(
+                                        _order!.isCompleted
+                                            ? '确定要将订单标记为未完成吗？'
+                                            : '确定要将订单标记为已完成吗？',
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context),
+                                          child: const Text('取消'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            context
+                                                .read<OrderCubit>()
+                                                .toggleOrderStatus(
+                                                  _order!.id,
+                                                  !_order!.isCompleted,
+                                                );
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Text('确定'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                                child: Text(
+                                  _order!.isCompleted ? '标记为未完成' : '标记为已完成',
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),

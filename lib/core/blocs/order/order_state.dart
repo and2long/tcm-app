@@ -36,5 +36,6 @@ class PendingOrdersSuccessState extends OrderState {
 
 class OrderCompleteSuccessState extends OrderState {
   final int id;
-  OrderCompleteSuccessState(this.id);
+  final bool isCompleted;
+  OrderCompleteSuccessState(this.id, this.isCompleted);
 }

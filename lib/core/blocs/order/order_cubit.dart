@@ -113,11 +113,11 @@ class OrderCubit extends Cubit<OrderState> {
     }
   }
 
-  Future completeOrder(int id) async {
+  Future toggleOrderStatus(int id, bool isCompleted) async {
     try {
       SmartDialog.showLoading();
-      await _repo.completeOrder(id);
-      maybeEmit(OrderCompleteSuccessState(id));
+      await _repo.updateOrderStatus(id, isCompleted);
+      maybeEmit(OrderCompleteSuccessState(id, isCompleted));
     } catch (e, s) {
       handleError(e, stackTrace: s);
     } finally {

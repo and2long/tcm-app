@@ -48,4 +48,22 @@ class Order {
   String toString() {
     return json.encode(toJson());
   }
+
+  Order copyWith({
+    int? id,
+    bool? isCompleted,
+    Contact? contact,
+    List<OrderLine>? orderLines,
+    List<String>? images,
+    DateTime? createdAt,
+  }) {
+    return Order(
+      id: id ?? this.id,
+      isCompleted: isCompleted ?? this.isCompleted,
+      contact: contact ?? this.contact,
+      orderLines: orderLines ?? this.orderLines,
+      images: images ?? this.images,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
 }

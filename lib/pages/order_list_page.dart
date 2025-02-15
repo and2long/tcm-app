@@ -62,6 +62,14 @@ class _OrderListPageState extends State<OrderListPage>
             setState(() {});
           }
         }
+        if (state is OrderCompleteSuccessState) {
+          final index = _orders.indexWhere((o) => o.id == state.id);
+          if (index != -1) {
+            _orders[index] =
+                _orders[index].copyWith(isCompleted: state.isCompleted);
+            setState(() {});
+          }
+        }
       },
       child: Scaffold(
         appBar: AppBar(
