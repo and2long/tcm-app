@@ -174,13 +174,34 @@ class _OperatePageState extends State<OperatePage> {
       left: 16,
       bottom: 16,
       child: IconButton(
-        onPressed: () {
-          SPUtil.saveIsDoctor(true);
-          NavigatorUtil.pushReplacement(context, const HomePage());
-        },
+        onPressed: _showBackHomeConfirmDialog,
         icon: const Icon(
           HugeIcons.strokeRoundedArrowTurnBackward,
         ),
+      ),
+    );
+  }
+
+  void _showBackHomeConfirmDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('返回主页'),
+        content: const Text('确定要返回主页吗？'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('取消'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              SPUtil.saveIsDoctor(true);
+              NavigatorUtil.pushReplacement(context, const HomePage());
+            },
+            child: const Text('确定'),
+          ),
+        ],
       ),
     );
   }
