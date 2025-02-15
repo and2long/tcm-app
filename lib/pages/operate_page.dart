@@ -126,17 +126,17 @@ class _OperatePageState extends State<OperatePage> {
       right: 16,
       bottom: 16,
       child: FilledButton(
-        style: FilledButton.styleFrom(backgroundColor: Colors.blue),
+        style: FilledButton.styleFrom(
+          backgroundColor: Colors.blue,
+          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+        ),
         onPressed: _showCompleteConfirmDialog,
-        child: const Padding(
-          padding: EdgeInsets.all(10.0),
-          child: Text(
-            '完成这个订单',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-            ),
+        child: const Text(
+          '完成这个订单',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
           ),
         ),
       ),
@@ -261,24 +261,18 @@ class _OperatePageState extends State<OperatePage> {
   }
 
   Widget _buildRemainingOrdersButton() {
-    return GestureDetector(
-      onTap: _showPendingOrdersList,
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 26,
-          vertical: 8,
-        ),
-        decoration: BoxDecoration(
-          color: Colors.yellow.shade700,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Text(
-          '剩余订单: ${_orders.length}',
-          style: const TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
+    return FilledButton(
+      onPressed: _showPendingOrdersList,
+      style: FilledButton.styleFrom(
+        backgroundColor: Colors.yellow.shade700,
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+      ),
+      child: Text(
+        '剩余订单: ${_orders.length}',
+        style: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
         ),
       ),
     );
@@ -391,7 +385,7 @@ class _OperatePageState extends State<OperatePage> {
               return Card(
                 margin: const EdgeInsets.only(bottom: 8),
                 color: isCurrentOrder
-                    ? Theme.of(context).primaryColor.withOpacity(0.1)
+                    ? Theme.of(context).primaryColor.withValues(alpha: 0.1)
                     : null,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
