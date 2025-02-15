@@ -66,7 +66,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                state.isCompleted ? '订单已完成' : '订单已标记为未完成',
+                state.isCompleted
+                    ? '#${_order?.id} 订单已完成'
+                    : '#${_order?.id} 订单已标记为未完成',
               ),
             ),
           );
