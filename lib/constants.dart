@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class ConstantsKeyCache {
@@ -17,8 +18,8 @@ class ConstantsKeyCache {
 class ConstantsHttp {
   ConstantsHttp._();
 
-  // static const String baseUrl = 'http://127.0.0.1:5000';
-  static const String baseUrl = 'https://tcm.and2long.tech';
+  static const String baseUrl =
+      kDebugMode ? 'http://127.0.0.1:5000' : 'https://tcm.and2long.tech';
   static const String orders = '/orders';
   static const String pendingOrders = '/orders/pending';
   static const String contacts = '/contacts';
