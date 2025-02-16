@@ -29,6 +29,8 @@ class YTSearchField extends StatelessWidget {
                     controller.clear();
                     onChanged('');
                   },
+                  padding: EdgeInsets.zero,
+                  visualDensity: VisualDensity.compact,
                 )
               : null,
           border: OutlineInputBorder(
@@ -52,6 +54,11 @@ class YTSearchField extends StatelessWidget {
             borderSide: BorderSide(
               color: Theme.of(context).primaryColor,
             ),
+          ),
+          isDense: true,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 10,
           ),
         ),
         onChanged: onChanged,
