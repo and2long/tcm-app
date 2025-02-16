@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class SearchSelectField<T> extends StatefulWidget {
   final String label;
@@ -137,10 +138,12 @@ class _SearchSelectFieldState<T> extends State<SearchSelectField<T>> {
                             autofocus: true,
                             decoration: InputDecoration(
                               hintText: widget.hint,
-                              prefixIcon: const Icon(Icons.search),
+                              prefixIcon:
+                                  const Icon(HugeIcons.strokeRoundedSearch01),
                               suffixIcon: _searchText.isNotEmpty
                                   ? IconButton(
-                                      icon: const Icon(Icons.clear),
+                                      icon: const Icon(
+                                          HugeIcons.strokeRoundedCancelCircle),
                                       onPressed: () {
                                         setState(() {
                                           _searchController.clear();
@@ -149,7 +152,9 @@ class _SearchSelectFieldState<T> extends State<SearchSelectField<T>> {
                                       },
                                     )
                                   : null,
-                              border: const OutlineInputBorder(),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              isDense: true,
                             ),
                             onChanged: (value) {
                               setState(() {

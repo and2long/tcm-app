@@ -33,33 +33,9 @@ class YTSearchField extends StatelessWidget {
                   visualDensity: VisualDensity.compact,
                 )
               : null,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(50),
-            borderSide: BorderSide(
-              color: Theme.of(context).brightness == Brightness.light
-                  ? Colors.grey[300]!
-                  : Colors.grey[800]!,
-            ),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(50),
-            borderSide: BorderSide(
-              color: Theme.of(context).brightness == Brightness.light
-                  ? Colors.grey[300]!
-                  : Colors.grey[800]!,
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(50),
-            borderSide: BorderSide(
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
           isDense: true,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 10,
-          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16),
         ),
         onChanged: onChanged,
       ),
