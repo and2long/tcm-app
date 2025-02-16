@@ -9,6 +9,7 @@ import 'package:tcm/core/blocs/order/order_cubit.dart';
 import 'package:tcm/core/blocs/order/order_state.dart';
 import 'package:tcm/models/order.dart';
 import 'package:tcm/pages/home.dart';
+import 'package:tcm/theme.dart';
 import 'package:tcm/utils/sp_util.dart';
 
 class OperatePage extends StatefulWidget {
@@ -384,7 +385,7 @@ class _OperatePageState extends State<OperatePage> {
               return Card(
                 margin: const EdgeInsets.only(bottom: 8),
                 color: isCurrentOrder
-                    ? Theme.of(context).primaryColor.withValues(alpha: 0.1)
+                    ? Theme.of(context).colorScheme.secondary
                     : null,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -397,26 +398,22 @@ class _OperatePageState extends State<OperatePage> {
                           Expanded(
                             child: Text(
                               '#${order.id} ${order.contact?.name}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
-                                color: isCurrentOrder
-                                    ? Theme.of(context).primaryColor
-                                    : null,
                               ),
                             ),
                           ),
                           if (isCurrentOrder)
-                            Icon(
+                            const Icon(
                               Icons.check_circle,
-                              color: Theme.of(context).primaryColor,
+                              color: themeColor,
                             ),
                         ],
                       ),
                       Text(
                         order.createdAt.formatStyle1(),
-                        style: TextStyle(
-                          color: Colors.grey[600],
+                        style: const TextStyle(
                           fontSize: 12,
                         ),
                       ),
@@ -428,7 +425,7 @@ class _OperatePageState extends State<OperatePage> {
                         children: order.orderLines
                             .map((line) => Container(
                                   decoration: BoxDecoration(
-                                    color: Colors.grey[100],
+                                    color: Colors.grey[200],
                                     borderRadius: BorderRadius.circular(6),
                                   ),
                                   padding: const EdgeInsets.symmetric(
@@ -440,7 +437,9 @@ class _OperatePageState extends State<OperatePage> {
                                     children: [
                                       Text(
                                         line.product?.name ?? '',
-                                        style: const TextStyle(fontSize: 14),
+                                        style: TextStyle(
+                                          color: Colors.grey[700],
+                                        ),
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
