@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_ytnavigator/flutter_ytnavigator.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:pinyin/pinyin.dart';
 import 'package:tcm/components/yt_tile.dart';
 import 'package:tcm/core/blocs/extension.dart';
 import 'package:tcm/core/blocs/order/order_cubit.dart';
@@ -24,6 +25,9 @@ class _OrderListPageState extends State<OrderListPage>
   bool get wantKeepAlive => true;
   final List<Order> _orders = [];
 
+  final _searchController = TextEditingController();
+  String _searchText = '';
+
   @override
   void initState() {
     super.initState();
@@ -31,8 +35,60 @@ class _OrderListPageState extends State<OrderListPage>
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  List<Order> _getFilteredOrders(List<Order> orders) {
+    if (_searchText.isEmpty) return orders;
+    return orders
+        .where((order) =>
+            (order.contact?.name ?? '')
+                .toLowerCase()
+                .contains(_searchText.toLowerCase()) ||
+            PinyinHelper.getShortPinyin(order.contact?.name ?? '')
+                .contains(_searchText.toLowerCase()))
+        .toList();
+  }
+
+  Widget _buildSearchBar() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: TextField(
+        controller: _searchController,
+        decoration: InputDecoration(
+          hintText: '搜索处方...',
+          prefixIcon: const Icon(HugeIcons.strokeRoundedSearch01),
+          suffixIcon: _searchText.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(HugeIcons.strokeRoundedCancelCircle),
+                  onPressed: () {
+                    setState(() {
+                      _searchController.clear();
+                      _searchText = '';
+                    });
+                  },
+                )
+              : null,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(50),
+          ),
+        ),
+        onChanged: (value) {
+          setState(() {
+            _searchText = value;
+          });
+        },
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     super.build(context);
+    final filteredOrders = _getFilteredOrders(_orders);
+
     return BlocListener<OrderCubit, OrderState>(
       listener: (BuildContext context, OrderState state) {
         if (state is OrderListSuccessState) {
@@ -83,90 +139,98 @@ class _OrderListPageState extends State<OrderListPage>
             ),
           ],
         ),
-        body: RefreshIndicator(
-          onRefresh: () {
-            context.read<OrderCubit>().getOrderList();
-            return Future.value();
-          },
-          child: ListView.builder(
-            itemBuilder: (context, index) {
-              final order = _orders[index];
-              final previousOrder = index > 0 ? _orders[index - 1] : null;
-              final showDateHeader = previousOrder == null ||
-                  order.createdAt.formatStyle3() !=
-                      previousOrder.createdAt.formatStyle3();
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (showDateHeader)
-                    Container(
-                      margin: const EdgeInsets.only(top: 16),
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        order.createdAt.formatStyle3(),
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                    ),
-                  Slidable(
-                    endActionPane: ActionPane(
-                      motion: const ScrollMotion(),
+        body: Column(
+          children: [
+            _buildSearchBar(),
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: () {
+                  context.read<OrderCubit>().getOrderList();
+                  return Future.value();
+                },
+                child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    final order = filteredOrders[index];
+                    final previousOrder =
+                        index > 0 ? filteredOrders[index - 1] : null;
+                    final showDateHeader = previousOrder == null ||
+                        order.createdAt.formatStyle3() !=
+                            previousOrder.createdAt.formatStyle3();
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        SlidableAction(
-                          onPressed: (c) {
-                            showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: const Text('确认删除'),
-                                content: const Text('确定要删除这个处方吗？'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.pop(context, false),
-                                    child: const Text('取消'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      context
-                                          .read<OrderCubit>()
-                                          .deleteOrder(order.id);
-                                      Navigator.pop(context, true);
-                                    },
-                                    child: const Text('确定'),
-                                  ),
-                                ],
+                        if (showDateHeader)
+                          Container(
+                            margin: const EdgeInsets.only(top: 16),
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(
+                              order.createdAt.formatStyle3(),
+                              style: const TextStyle(fontSize: 18),
+                            ),
+                          ),
+                        Slidable(
+                          endActionPane: ActionPane(
+                            motion: const ScrollMotion(),
+                            children: [
+                              SlidableAction(
+                                onPressed: (c) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: const Text('确认删除'),
+                                      content: const Text('确定要删除这个处方吗？'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, false),
+                                          child: const Text('取消'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            context
+                                                .read<OrderCubit>()
+                                                .deleteOrder(order.id);
+                                            Navigator.pop(context, true);
+                                          },
+                                          child: const Text('确定'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                                backgroundColor: Colors.red,
+                                foregroundColor: Colors.white,
+                                icon: HugeIcons.strokeRoundedDelete02,
                               ),
-                            );
-                          },
-                          backgroundColor: Colors.red,
-                          foregroundColor: Colors.white,
-                          icon: HugeIcons.strokeRoundedDelete02,
+                            ],
+                          ),
+                          child: YTTile(
+                            title: '#${order.id} ${order.contact?.name}',
+                            showTopBorder: showDateHeader,
+                            onTap: () {
+                              NavigatorUtil.push(
+                                context,
+                                OrderDetailPage(orderId: order.id),
+                              );
+                            },
+                            trailing: Icon(
+                              order.isCompleted
+                                  ? HugeIcons.strokeRoundedCheckmarkCircle01
+                                  : null,
+                              color: order.isCompleted
+                                  ? Colors.green
+                                  : Colors.grey.shade300,
+                            ),
+                          ),
                         ),
                       ],
-                    ),
-                    child: YTTile(
-                      title: '#${order.id} ${order.contact?.name}',
-                      showTopBorder: showDateHeader,
-                      onTap: () {
-                        NavigatorUtil.push(
-                          context,
-                          OrderDetailPage(orderId: order.id),
-                        );
-                      },
-                      trailing: Icon(
-                        order.isCompleted
-                            ? HugeIcons.strokeRoundedCheckmarkCircle01
-                            : null,
-                        color: order.isCompleted
-                            ? Colors.green
-                            : Colors.grey.shade300,
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-            itemCount: _orders.length,
-          ),
+                    );
+                  },
+                  itemCount: filteredOrders.length,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

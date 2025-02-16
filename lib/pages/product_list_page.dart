@@ -22,10 +22,62 @@ class _ProductListPageState extends State<ProductListPage>
   @override
   bool get wantKeepAlive => true;
 
+  final _searchController = TextEditingController();
+  String _searchText = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  List<Product> _getFilteredProducts(List<Product> products) {
+    if (_searchText.isEmpty) return products;
+    return products
+        .where((product) =>
+            product.name.toLowerCase().contains(_searchText.toLowerCase()) ||
+            PinyinHelper.getShortPinyin(product.name)
+                .contains(_searchText.toLowerCase()))
+        .toList();
+  }
+
+  Widget _buildSearchBar() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: TextField(
+        controller: _searchController,
+        decoration: InputDecoration(
+          hintText: '搜索产品...',
+          prefixIcon: const Icon(HugeIcons.strokeRoundedSearch01),
+          suffixIcon: _searchText.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(HugeIcons.strokeRoundedCancelCircle),
+                  onPressed: () {
+                    setState(() {
+                      _searchController.clear();
+                      _searchText = '';
+                    });
+                  },
+                )
+              : null,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(50),
+          ),
+        ),
+        onChanged: (value) {
+          setState(() {
+            _searchText = value;
+          });
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final products = context.watch<AppProvider>().products;
+    final allProducts = context.watch<AppProvider>().products;
+    final filteredProducts = _getFilteredProducts(allProducts);
 
     return BlocListener<ProductCubit, ProductState>(
       listener: (context, state) {
@@ -61,74 +113,82 @@ class _ProductListPageState extends State<ProductListPage>
             ),
           ],
         ),
-        body: RefreshIndicator(
-          onRefresh: () async {
-            final cubit = context.read<ProductCubit>();
-            final provider = context.read<AppProvider>();
-            final products = await cubit.getProductList();
-            if (!mounted) return;
-            if (products != null) {
-              provider.setProducts(products);
-            }
-          },
-          child: ListView.builder(
-            itemBuilder: (context, index) {
-              final product = products[index];
-              return Slidable(
-                endActionPane: ActionPane(
-                  motion: const ScrollMotion(),
-                  children: [
-                    SlidableAction(
-                      onPressed: (c) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ProductEditPage(
-                              product: product,
-                            ),
+        body: Column(
+          children: [
+            _buildSearchBar(),
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  final cubit = context.read<ProductCubit>();
+                  final provider = context.read<AppProvider>();
+                  final products = await cubit.getProductList();
+                  if (!mounted) return;
+                  if (products != null) {
+                    provider.setProducts(products);
+                  }
+                },
+                child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    final product = filteredProducts[index];
+                    return Slidable(
+                      endActionPane: ActionPane(
+                        motion: const ScrollMotion(),
+                        children: [
+                          SlidableAction(
+                            onPressed: (c) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ProductEditPage(
+                                    product: product,
+                                  ),
+                                ),
+                              );
+                            },
+                            backgroundColor: Colors.blue,
+                            foregroundColor: Colors.white,
+                            icon: HugeIcons.strokeRoundedEdit02,
                           ),
-                        );
-                      },
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                      icon: HugeIcons.strokeRoundedEdit02,
-                    ),
-                    SlidableAction(
-                      onPressed: (c) {
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: const Text('确认删除'),
-                            content: Text('确定要删除 ${product.name} 吗？'),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context, false),
-                                child: const Text('取消'),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  context
-                                      .read<ProductCubit>()
-                                      .deleteProduct(product.id);
-                                  Navigator.pop(context, true);
-                                },
-                                child: const Text('确定'),
-                              ),
-                            ],
+                          SlidableAction(
+                            onPressed: (c) {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text('确认删除'),
+                                  content: Text('确定要删除 ${product.name} 吗？'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(context, false),
+                                      child: const Text('取消'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        context
+                                            .read<ProductCubit>()
+                                            .deleteProduct(product.id);
+                                        Navigator.pop(context, true);
+                                      },
+                                      child: const Text('确定'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            backgroundColor: Colors.red,
+                            foregroundColor: Colors.white,
+                            icon: HugeIcons.strokeRoundedDelete02,
                           ),
-                        );
-                      },
-                      backgroundColor: Colors.red,
-                      foregroundColor: Colors.white,
-                      icon: HugeIcons.strokeRoundedDelete02,
-                    ),
-                  ],
+                        ],
+                      ),
+                      child: YTTile(title: '${index + 1}. ${product.name}'),
+                    );
+                  },
+                  itemCount: filteredProducts.length,
                 ),
-                child: YTTile(title: '${index + 1}. ${product.name}'),
-              );
-            },
-            itemCount: products.length,
-          ),
+              ),
+            ),
+          ],
         ),
       ),
     );

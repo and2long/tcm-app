@@ -70,10 +70,14 @@ class _MyAppState extends State<MyApp> {
               home:
                   SPUtil.getIsDoctor() ? const HomePage() : const OperatePage(),
               navigatorObservers: [MyRouteObserver()],
-              // builder: (context, child) => GestureDetector(
-              //   onTap: () => CommonUtil.hideKeyboard(context),
-              // ),
               builder: FlutterSmartDialog.init(
+                builder: (context, child) => GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: () {
+                    FocusManager.instance.primaryFocus?.unfocus();
+                  },
+                  child: child ?? const SizedBox(),
+                ),
                 loadingBuilder: (String msg) => CustomLoadingWidget(msg: msg),
               ),
             );
