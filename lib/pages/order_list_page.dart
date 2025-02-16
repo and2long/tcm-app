@@ -4,6 +4,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_ytnavigator/flutter_ytnavigator.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:pinyin/pinyin.dart';
+import 'package:tcm/components/yt_search_field.dart';
 import 'package:tcm/components/yt_tile.dart';
 import 'package:tcm/core/blocs/extension.dart';
 import 'package:tcm/core/blocs/order/order_cubit.dart';
@@ -53,34 +54,14 @@ class _OrderListPageState extends State<OrderListPage>
   }
 
   Widget _buildSearchBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: TextField(
-        controller: _searchController,
-        decoration: InputDecoration(
-          hintText: '搜索处方...',
-          prefixIcon: const Icon(HugeIcons.strokeRoundedSearch01),
-          suffixIcon: _searchText.isNotEmpty
-              ? IconButton(
-                  icon: const Icon(HugeIcons.strokeRoundedCancelCircle),
-                  onPressed: () {
-                    setState(() {
-                      _searchController.clear();
-                      _searchText = '';
-                    });
-                  },
-                )
-              : null,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(50),
-          ),
-        ),
-        onChanged: (value) {
-          setState(() {
-            _searchText = value;
-          });
-        },
-      ),
+    return YTSearchField(
+      controller: _searchController,
+      hintText: '搜索处方...',
+      onChanged: (value) {
+        setState(() {
+          _searchText = value;
+        });
+      },
     );
   }
 
