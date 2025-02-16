@@ -191,8 +191,23 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         appBar: AppBar(
           title: Text('#${widget.orderId} ${_order?.contact?.name}'),
           actions: [
+            if (_order != null)
+              IconButton(
+                icon: const Icon(HugeIcons.strokeRoundedCopy01),
+                tooltip: '复制处方',
+                onPressed: () {
+                  NavigatorUtil.push(
+                    context,
+                    OrderCreatePage(
+                      order: _order,
+                      isClone: true,
+                    ),
+                  );
+                },
+              ),
             if (_order != null && !_order!.isCompleted)
               IconButton(
+                tooltip: '编辑处方',
                 icon: const Icon(Icons.edit_outlined),
                 onPressed: () {
                   NavigatorUtil.push(

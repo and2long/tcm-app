@@ -11,14 +11,17 @@ import 'package:tcm/core/repos/upload_repo.dart';
 import 'package:tcm/models/contact.dart';
 import 'package:tcm/models/order.dart';
 import 'package:tcm/models/product.dart';
+import 'package:tcm/pages/home.dart';
 import 'package:tcm/providers/app_provider.dart';
 
 class OrderCreatePage extends StatefulWidget {
   final Order? order;
+  final bool isClone;
 
   const OrderCreatePage({
     super.key,
     this.order,
+    this.isClone = false,
   });
 
   @override
@@ -28,6 +31,11 @@ class OrderCreatePage extends StatefulWidget {
 class OrderLineItem {
   Product? product;
   int quantity = 1;
+
+  OrderLineItem({
+    this.product,
+    this.quantity = 1,
+  });
 }
 
 class _OrderCreatePageState extends State<OrderCreatePage> {
@@ -43,15 +51,14 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
   @override
   void initState() {
     super.initState();
-    if (widget.order != null) {
+    if (widget.isClone || widget.order != null) {
       _selectedContact = widget.order!.contact;
       _lineItems.clear();
       _lineItems.addAll(
-        widget.order!.orderLines.map(
-          (line) => OrderLineItem()
-            ..product = line.product
-            ..quantity = line.quantity,
-        ),
+        widget.order!.orderLines.map((line) => OrderLineItem(
+              product: line.product,
+              quantity: line.quantity,
+            )),
       );
       _uploadedImages.addAll(widget.order!.images);
     }
@@ -127,7 +134,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
     }
 
     if (mounted) {
-      if (widget.order == null) {
+      if (widget.order == null || widget.isClone) {
         context.read<OrderCubit>().createOrder(
               contactId: _selectedContact!.id,
               items: items,
@@ -153,7 +160,11 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
         BlocListener<OrderCubit, OrderState>(
           listener: (context, state) {
             if (state is OrderCreateSuccessState) {
-              Navigator.pop(context);
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const HomePage()),
+                (route) => false,
+              );
             }
             if (state is OrderUpdateSuccessState) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -166,8 +177,9 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
       ],
       child: Scaffold(
         appBar: AppBar(
-          title:
-              Text(widget.order == null ? '创建处方' : '修改处方 #${widget.order!.id}'),
+          title: Text((widget.order == null || widget.isClone)
+              ? '创建处方'
+              : '修改处方 #${widget.order!.id}'),
         ),
         body: Form(
           key: _formKey,
@@ -427,7 +439,8 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
               const SizedBox(height: 32),
               FilledButton(
                 onPressed: _handleSubmit,
-                child: Text(widget.order == null ? '创建' : '保存'),
+                child: Text(
+                    (widget.order == null || widget.isClone) ? '创建' : '保存'),
               ),
             ],
           ),
