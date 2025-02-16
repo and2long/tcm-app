@@ -304,19 +304,19 @@ class _OperatePageState extends State<OperatePage> {
                           margin: const EdgeInsets.only(bottom: 8.0),
                           child: Container(
                             width: 280,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0,
-                              vertical: 13,
-                            ),
+                            height: 50,
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
                             child: Row(
                               children: [
-                                SizedBox(
-                                  width: 32,
+                                Container(
+                                  width: 50,
+                                  alignment: Alignment.center,
                                   child: Text(
                                     '${i + 1}.',
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
+                                    style: TextStyle(
+                                      fontSize: 28,
+                                      color: Colors.grey[700],
                                     ),
                                   ),
                                 ),
@@ -326,7 +326,7 @@ class _OperatePageState extends State<OperatePage> {
                                             .orderLines[i].product?.name ??
                                         '',
                                     style: const TextStyle(
-                                      fontSize: 18,
+                                      fontSize: 28,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -334,9 +334,8 @@ class _OperatePageState extends State<OperatePage> {
                                 const SizedBox(width: 8),
                                 Text(
                                   '× ${_currentOrder!.orderLines[i].quantity}',
-                                  style: TextStyle(
-                                    color: Colors.grey[700],
-                                    fontSize: 16,
+                                  style: const TextStyle(
+                                    fontSize: 28,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
