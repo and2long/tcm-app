@@ -32,6 +32,10 @@ class AppTheme {
       seedColor: themeColor,
     ),
     appBarTheme: const AppBarTheme(centerTitle: true, elevation: 1),
+    dividerTheme: DividerThemeData(
+      color: Colors.grey[200],
+      thickness: 1,
+    ),
   );
 
   static ThemeData dark = ThemeData(
@@ -40,5 +44,9 @@ class AppTheme {
       seedColor: themeColor,
     ),
     appBarTheme: const AppBarTheme(centerTitle: true, elevation: 1),
+    dividerTheme: DividerThemeData(
+      color: Colors.grey[900],
+      thickness: 1,
+    ),
   );
 }
