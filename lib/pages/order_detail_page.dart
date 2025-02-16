@@ -11,6 +11,7 @@ import 'package:tcm/core/blocs/order/order_cubit.dart';
 import 'package:tcm/core/blocs/order/order_state.dart';
 import 'package:tcm/models/order.dart';
 import 'package:tcm/pages/order_create_page.dart';
+import 'package:tcm/utils/sp_util.dart';
 
 class OrderDetailPage extends StatefulWidget {
   final int orderId;
@@ -26,11 +27,20 @@ class OrderDetailPage extends StatefulWidget {
 
 class _OrderDetailPageState extends State<OrderDetailPage> {
   Order? _order;
+  late bool _isSingleColumn;
 
   @override
   void initState() {
     super.initState();
+    _isSingleColumn = SPUtil.getOrderListLayout();
     context.read<OrderCubit>().getOrderDetail(widget.orderId);
+  }
+
+  void _toggleLayout() {
+    setState(() {
+      _isSingleColumn = !_isSingleColumn;
+      SPUtil.saveOrderListLayout(_isSingleColumn);
+    });
   }
 
   void _showImageGallery(int initialIndex) {
@@ -40,6 +50,109 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         images: _order!.images,
         initialIndex: initialIndex,
       ),
+    );
+  }
+
+  Widget _buildOrderLines() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              '处方明细',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            IconButton(
+              icon: Icon(_isSingleColumn
+                  ? HugeIcons.strokeRoundedLayout02
+                  : HugeIcons.strokeRoundedLayout3Row),
+              onPressed: _toggleLayout,
+              tooltip: _isSingleColumn ? '切换为网格视图' : '切换为列表视图',
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        if (_isSingleColumn)
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: _order!.orderLines.length,
+            itemBuilder: (context, index) {
+              final line = _order!.orderLines[index];
+              return Card(
+                margin: const EdgeInsets.only(bottom: 8),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 24,
+                        child: Text(
+                          '${index + 1}',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(line.product?.name ?? 'Unknown'),
+                      ),
+                      const SizedBox(width: 16),
+                      Text('× ${line.quantity}'),
+                    ],
+                  ),
+                ),
+              );
+            },
+          )
+        else
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 0,
+              crossAxisSpacing: 0,
+              childAspectRatio:
+                  (MediaQuery.of(context).size.width - 40) / 2 / 60,
+            ),
+            itemCount: _order!.orderLines.length,
+            itemBuilder: (context, index) {
+              final line = _order!.orderLines[index];
+              return Card(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 24,
+                        child: Text(
+                          '${index + 1}',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          line.product?.name ?? 'Unknown',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text('× ${line.quantity}'),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+      ],
     );
   }
 
@@ -198,41 +311,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     const SizedBox(height: 24),
                   ],
 
-                  // 处方明细
-                  Text(
-                    '处方明细',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  ..._order!.orderLines.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final line = entry.value;
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              width: 24,
-                              child: Text(
-                                '${index + 1}',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(line.product?.name ?? 'Unknown'),
-                            ),
-                            const SizedBox(width: 16),
-                            Text('× ${line.quantity}'),
-                          ],
-                        ),
-                      ),
-                    );
-                  }),
+                  _buildOrderLines(),
                 ],
               ),
       ),
