@@ -65,6 +65,61 @@ class _OrderListPageState extends State<OrderListPage>
     );
   }
 
+  Widget _buildDateHeader(String date, List<Order> orders) {
+    // 计算当天的订单数量
+    final count =
+        orders.where((order) => order.createdAt.formatStyle3() == date).length;
+
+    return Container(
+      margin: const EdgeInsets.only(top: 16, bottom: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
+            Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
+          ],
+        ),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            HugeIcons.strokeRoundedCalendar03,
+            size: 20,
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            date,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+          const Spacer(),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              '$count',
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -141,13 +196,9 @@ class _OrderListPageState extends State<OrderListPage>
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         if (showDateHeader)
-                          Container(
-                            margin: const EdgeInsets.only(top: 16),
-                            padding: const EdgeInsets.all(16.0),
-                            child: Text(
-                              order.createdAt.formatStyle3(),
-                              style: const TextStyle(fontSize: 18),
-                            ),
+                          _buildDateHeader(
+                            order.createdAt.formatStyle3(),
+                            filteredOrders,
                           ),
                         Slidable(
                           endActionPane: ActionPane(
@@ -187,7 +238,7 @@ class _OrderListPageState extends State<OrderListPage>
                           ),
                           child: YTTile(
                             title: '#${order.id} ${order.contact?.name}',
-                            showTopBorder: showDateHeader,
+                            // showTopBorder: showDateHeader,
                             onTap: () {
                               NavigatorUtil.push(
                                 context,
