@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tcm/constants.dart';
@@ -83,5 +85,23 @@ class SPUtil {
 
   static bool getOrderListLayout() {
     return _spf.getBool(ConstantsKeyCache.keyOrderListSingleColumn) ?? true;
+  }
+
+  static Future<bool> saveOrderDraft(Map<String, dynamic> draft) {
+    return _spf.setString(ConstantsKeyCache.keyOrderDraft, jsonEncode(draft));
+  }
+
+  static Map<String, dynamic>? getOrderDraft() {
+    final String? draft = _spf.getString(ConstantsKeyCache.keyOrderDraft);
+    if (draft == null) return null;
+    try {
+      return jsonDecode(draft) as Map<String, dynamic>;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static Future<bool> clearOrderDraft() {
+    return _spf.remove(ConstantsKeyCache.keyOrderDraft);
   }
 }
