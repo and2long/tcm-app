@@ -196,7 +196,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                 icon: const Icon(HugeIcons.strokeRoundedCopy01),
                 tooltip: '复制处方',
                 onPressed: () {
-                  NavigatorUtil.push(
+                  NavigatorUtil.pushReplacement(
                     context,
                     OrderCreatePage(
                       order: _order,

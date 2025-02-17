@@ -5,13 +5,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tcm/components/search_select_field.dart';
+import 'package:tcm/components/yt_network_image.dart';
 import 'package:tcm/core/blocs/order/order_cubit.dart';
 import 'package:tcm/core/blocs/order/order_state.dart';
 import 'package:tcm/core/repos/upload_repo.dart';
 import 'package:tcm/models/contact.dart';
 import 'package:tcm/models/order.dart';
 import 'package:tcm/models/product.dart';
-import 'package:tcm/pages/home.dart';
 import 'package:tcm/providers/app_provider.dart';
 import 'package:tcm/utils/sp_util.dart';
 
@@ -253,11 +253,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
             listener: (context, state) {
               if (state is OrderCreateSuccessState) {
                 SPUtil.clearOrderDraft(); // 创建成功后清除草稿
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => const HomePage()),
-                  (route) => false,
-                );
+                Navigator.pop(context);
               }
               if (state is OrderUpdateSuccessState) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -337,8 +333,8 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                               children: [
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(8),
-                                  child: Image.network(
-                                    imageUrl,
+                                  child: YTNetworkImage(
+                                    imageUrl: imageUrl,
                                     width: 100,
                                     height: 100,
                                     fit: BoxFit.cover,
