@@ -163,6 +163,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
       if (image != null) {
         setState(() {
           _images.add(image);
+          _isDirty = true;
         });
       }
     } else {
@@ -171,6 +172,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
       if (images.isNotEmpty) {
         setState(() {
           _images.addAll(images);
+          _isDirty = true;
         });
       }
     }
@@ -275,9 +277,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
           body: Form(
             key: _formKey,
             onChanged: () {
-              setState(() {
-                _isDirty = true;
-              });
+              _isDirty = true;
             },
             child: ListView(
               padding: const EdgeInsets.only(
