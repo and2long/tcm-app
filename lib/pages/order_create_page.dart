@@ -89,6 +89,14 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
               )),
         );
         _uploadedImages.addAll(List<String>.from(draft['images'] ?? []));
+
+        // 加载本地图片
+        final localImages = List<String>.from(draft['local_images'] ?? []);
+        _images.addAll(
+          localImages
+              .map((path) => XFile(path))
+              .where((file) => File(file.path).existsSync()),
+        );
       });
     }
   }
@@ -104,6 +112,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
               })
           .toList(),
       'images': _uploadedImages,
+      'local_images': _images.map((image) => image.path).toList(), // 保存本地图片路径
     };
   }
 
