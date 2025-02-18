@@ -224,12 +224,10 @@ class _SearchSelectFieldState<T> extends State<SearchSelectField<T>> {
       controller: _controller,
       readOnly: true,
       decoration: InputDecoration(
-        labelText: widget.label,
+        label: Text(widget.label),
         hintText: widget.hint,
-        suffixIcon: IconButton(
-          icon: const Icon(Icons.arrow_drop_down),
-          onPressed: _showSelectionSheet,
-        ),
+        suffixIcon: const Icon(Icons.arrow_drop_down),
+        isDense: true,
       ),
       onTap: _showSelectionSheet,
       validator: widget.validator != null

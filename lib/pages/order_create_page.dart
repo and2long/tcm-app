@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tcm/components/search_select_field.dart';
 import 'package:tcm/components/yt_network_image.dart';
@@ -445,7 +446,6 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
                             width: 32,
@@ -481,15 +481,15 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                               },
                             ),
                           ),
-                          const SizedBox(width: 16),
+                          const SizedBox(width: 8),
                           Expanded(
                             flex: 1,
                             child: TextFormField(
                               autocorrect: false,
                               decoration: const InputDecoration(
-                                labelText: '数量',
-                                hintText: '请输入数量',
-                              ),
+                                  label: Text('数量'),
+                                  hintText: '请输入数量',
+                                  isDense: true),
                               keyboardType: TextInputType.number,
                               initialValue: item.quantity.toString(),
                               onChanged: (value) {
@@ -508,9 +508,8 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                             ),
                           ),
                           if (_lineItems.length > 1) ...[
-                            const SizedBox(width: 8),
                             IconButton(
-                              icon: const Icon(Icons.delete_outline),
+                              icon: const Icon(HugeIcons.strokeRoundedDelete02),
                               onPressed: () => _removeLineItem(index),
                               color: Colors.red,
                               padding: EdgeInsets.zero,
