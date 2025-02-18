@@ -47,7 +47,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('编辑产品'),
+          title: const Text('编辑药品'),
         ),
         body: Form(
           key: _formKey,
@@ -57,12 +57,12 @@ class _ProductEditPageState extends State<ProductEditPage> {
               TextFormField(
                 controller: _nameController,
                 decoration: const InputDecoration(
-                  labelText: '产品名称',
-                  hintText: '请输入产品名称',
+                  labelText: '药品名',
+                  hintText: '请输入药品名',
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return '请输入产品名称';
+                    return '请输入药品名';
                   }
                   return null;
                 },

@@ -438,89 +438,98 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                ..._lineItems.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final item = entry.value;
-                  return Card(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            width: 32,
-                            child: Center(
-                              child: Text(
-                                '${index + 1}',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 16,
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio:
+                        (MediaQuery.of(context).size.width - 40) / 2 / 70,
+                    crossAxisSpacing: 0,
+                    mainAxisSpacing: 0,
+                  ),
+                  itemCount: _lineItems.length,
+                  itemBuilder: (context, index) {
+                    final item = _lineItems[index];
+                    return Dismissible(
+                      key: ValueKey(item),
+                      direction: DismissDirection.endToStart,
+                      onDismissed: (direction) {
+                        _removeLineItem(index);
+                      },
+                      background: Container(
+                        color: Colors.red,
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: const Icon(
+                          HugeIcons.strokeRoundedDelete02,
+                          color: Colors.white,
+                        ),
+                      ),
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              Container(
+                                constraints: const BoxConstraints(minWidth: 24),
+                                child: Text('${index + 1}'),
+                              ),
+                              Expanded(
+                                flex: 3,
+                                child: SearchSelectField<Product>(
+                                  label: '药品',
+                                  hint: '请选择或输入药品名',
+                                  items: appProvider.products,
+                                  value: item.product,
+                                  getLabel: (product) => product.name,
+                                  onChanged: (product) {
+                                    setState(() {
+                                      item.product = product;
+                                    });
+                                  },
+                                  validator: (value) {
+                                    if (value == null) {
+                                      return '请选择药品';
+                                    }
+                                    return null;
+                                  },
                                 ),
                               ),
-                            ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                flex: 1,
+                                child: TextFormField(
+                                  autocorrect: false,
+                                  decoration: const InputDecoration(
+                                    label: Text('数量'),
+                                    hintText: '请输入数量',
+                                    isDense: true,
+                                  ),
+                                  keyboardType: TextInputType.number,
+                                  initialValue: item.quantity.toString(),
+                                  onChanged: (value) {
+                                    item.quantity = int.tryParse(value) ?? 1;
+                                  },
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return '请输入数量';
+                                    }
+                                    final number = int.tryParse(value);
+                                    if (number == null || number < 1) {
+                                      return '请输入有效数量';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            flex: 3,
-                            child: SearchSelectField<Product>(
-                              label: '产品名称',
-                              hint: '请选择或输入产品',
-                              items: appProvider.products,
-                              value: item.product,
-                              getLabel: (product) => product.name,
-                              onChanged: (product) {
-                                setState(() {
-                                  item.product = product;
-                                });
-                              },
-                              validator: (value) {
-                                if (value == null) {
-                                  return '请选择产品';
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            flex: 1,
-                            child: TextFormField(
-                              autocorrect: false,
-                              decoration: const InputDecoration(
-                                  label: Text('数量'),
-                                  hintText: '请输入数量',
-                                  isDense: true),
-                              keyboardType: TextInputType.number,
-                              initialValue: item.quantity.toString(),
-                              onChanged: (value) {
-                                item.quantity = int.tryParse(value) ?? 1;
-                              },
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return '请输入数量';
-                                }
-                                final number = int.tryParse(value);
-                                if (number == null || number < 1) {
-                                  return '请输入有效数量';
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
-                          if (_lineItems.length > 1) ...[
-                            IconButton(
-                              icon: const Icon(HugeIcons.strokeRoundedDelete02),
-                              onPressed: () => _removeLineItem(index),
-                              color: Colors.red,
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                            ),
-                          ],
-                        ],
+                        ),
                       ),
-                    ),
-                  );
-                }),
+                    );
+                  },
+                ),
                 const SizedBox(height: 16),
                 OutlinedButton.icon(
                   onPressed: _addLineItem,

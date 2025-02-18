@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       appProvider.setContacts(contacts);
     }
 
-    // 获取产品列表
+    // 获取药品列表
     final products = await context.read<ProductCubit>().getProductList();
     if (!mounted) return;
     if (products != null) {
@@ -81,7 +81,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           ),
           BottomNavigationBarItem(
             icon: Icon(HugeIcons.strokeRoundedPlate),
-            label: '产品',
+            label: '药品',
           ),
           BottomNavigationBarItem(
             icon: Icon(HugeIcons.strokeRoundedUser),

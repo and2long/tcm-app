@@ -226,7 +226,7 @@ class _SearchSelectFieldState<T> extends State<SearchSelectField<T>> {
       decoration: InputDecoration(
         label: Text(widget.label),
         hintText: widget.hint,
-        suffixIcon: const Icon(Icons.arrow_drop_down),
+        // suffixIcon: const Icon(Icons.arrow_drop_down),
         isDense: true,
       ),
       onTap: _showSelectionSheet,

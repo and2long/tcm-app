@@ -45,7 +45,7 @@ class _ProductListPageState extends State<ProductListPage>
   Widget _buildSearchBar() {
     return YTSearchField(
       controller: _searchController,
-      hintText: '搜索产品...',
+      hintText: '搜索药品...',
       onChanged: (value) {
         setState(() {
           _searchText = value;
@@ -81,7 +81,7 @@ class _ProductListPageState extends State<ProductListPage>
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('产品管理'),
+          title: const Text('药品管理'),
           actions: [
             IconButton(
               icon: const Icon(HugeIcons.strokeRoundedAddSquare),
@@ -194,19 +194,19 @@ class _CreateProductDialogState extends State<_CreateProductDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('创建产品'),
+      title: const Text('添加药品'),
       content: Form(
         key: _formKey,
         child: TextFormField(
           autocorrect: false,
           controller: _nameController,
           decoration: const InputDecoration(
-            labelText: '产品名称',
-            hintText: '请输入产品名称',
+            labelText: '药品名',
+            hintText: '请输入药品名',
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return '请输入产品名称';
+              return '请输入药品名';
             }
             return null;
           },
