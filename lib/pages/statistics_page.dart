@@ -96,11 +96,51 @@ class _StatisticsPageState extends State<StatisticsPage>
     return '${grams}g';
   }
 
+  Widget _buildSummaryCard({
+    required String title,
+    required String value,
+    Color? valueColor,
+  }) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: valueColor,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final orders = context.watch<AppProvider>().orders;
     final customerOrders = _getCustomerOrders(orders);
     final productUsage = _getProductUsage(orders);
+
+    // 计算当月总订单数
+    final monthlyOrderCount =
+        customerOrders.values.fold(0, (sum, orders) => sum + orders.length);
+
+    // 计算当月总用药量
+    final monthlyTotalUsage =
+        productUsage.values.fold(0, (sum, usage) => sum + usage);
 
     return Scaffold(
       appBar: AppBar(
@@ -149,32 +189,47 @@ class _StatisticsPageState extends State<StatisticsPage>
                         ? Center(
                             child: Text(
                                 '${DateFormat('yyyy年MM月').format(_selectedMonth)}暂无订单'))
-                        : ListView.builder(
-                            padding: const EdgeInsets.all(16),
-                            itemCount: customerOrders.length,
-                            itemBuilder: (context, index) {
-                              final entry =
-                                  customerOrders.entries.elementAt(index);
-                              return Card(
-                                child: ListTile(
-                                  title: Text(entry.key),
-                                  trailing: Text(
-                                    '${entry.value.length}单',
-                                    style:
-                                        Theme.of(context).textTheme.titleMedium,
-                                  ),
-                                  onTap: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => _OrderDetailDialog(
-                                        customerName: entry.key,
-                                        orders: entry.value,
+                        : Column(
+                            children: [
+                              _buildSummaryCard(
+                                title: '本月总订单数',
+                                value: '$monthlyOrderCount单',
+                                valueColor:
+                                    Theme.of(context).colorScheme.primary,
+                              ),
+                              const SizedBox(height: 8),
+                              Expanded(
+                                child: ListView.builder(
+                                  padding: const EdgeInsets.all(16),
+                                  itemCount: customerOrders.length,
+                                  itemBuilder: (context, index) {
+                                    final entry =
+                                        customerOrders.entries.elementAt(index);
+                                    return Card(
+                                      child: ListTile(
+                                        title: Text(entry.key),
+                                        trailing: Text(
+                                          '${entry.value.length}单',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleMedium,
+                                        ),
+                                        onTap: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) =>
+                                                _OrderDetailDialog(
+                                              customerName: entry.key,
+                                              orders: entry.value,
+                                            ),
+                                          );
+                                        },
                                       ),
                                     );
                                   },
                                 ),
-                              );
-                            },
+                              ),
+                            ],
                           ),
                 // 药品使用量统计
                 orders.isEmpty
@@ -183,23 +238,37 @@ class _StatisticsPageState extends State<StatisticsPage>
                         ? Center(
                             child: Text(
                                 '${DateFormat('yyyy年MM月').format(_selectedMonth)}暂无数据'))
-                        : ListView.builder(
-                            padding: const EdgeInsets.all(16),
-                            itemCount: productUsage.length,
-                            itemBuilder: (context, index) {
-                              final entry =
-                                  productUsage.entries.elementAt(index);
-                              return Card(
-                                child: ListTile(
-                                  title: Text(entry.key),
-                                  trailing: Text(
-                                    _formatWeight(entry.value),
-                                    style:
-                                        Theme.of(context).textTheme.titleMedium,
-                                  ),
+                        : Column(
+                            children: [
+                              _buildSummaryCard(
+                                title: '本月总用药量',
+                                value: _formatWeight(monthlyTotalUsage),
+                                valueColor:
+                                    Theme.of(context).colorScheme.primary,
+                              ),
+                              const SizedBox(height: 8),
+                              Expanded(
+                                child: ListView.builder(
+                                  padding: const EdgeInsets.all(16),
+                                  itemCount: productUsage.length,
+                                  itemBuilder: (context, index) {
+                                    final entry =
+                                        productUsage.entries.elementAt(index);
+                                    return Card(
+                                      child: ListTile(
+                                        title: Text(entry.key),
+                                        trailing: Text(
+                                          _formatWeight(entry.value),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleMedium,
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 ),
-                              );
-                            },
+                              ),
+                            ],
                           ),
               ],
             ),
