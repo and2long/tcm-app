@@ -13,6 +13,7 @@ import 'package:tcm/core/blocs/update/update_cubit.dart';
 import 'package:tcm/core/blocs/update/update_state.dart';
 import 'package:tcm/core/network/http.dart';
 import 'package:tcm/pages/operate_page.dart';
+import 'package:tcm/pages/statistics_page.dart';
 import 'package:tcm/providers/app_provider.dart';
 import 'package:tcm/utils/sp_util.dart';
 
@@ -92,6 +93,16 @@ class _MeState extends State<Me> {
               onTap: () {
                 SPUtil.saveIsDoctor(false);
                 NavigatorUtil.pushReplacement(context, const OperatePage());
+              },
+            ),
+            YTTile(
+              leading: const Icon(
+                HugeIcons.strokeRoundedChart,
+                size: 20,
+              ),
+              title: '数据统计',
+              onTap: () {
+                NavigatorUtil.push(context, const StatisticsPage());
               },
             ),
             YTTile(

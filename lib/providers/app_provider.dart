@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:tcm/models/contact.dart';
+import 'package:tcm/models/order.dart';
 import 'package:tcm/models/product.dart';
 import 'package:tcm/utils/sp_util.dart';
 
 class AppProvider extends ChangeNotifier {
+  ThemeMode _themeMode = ThemeMode.system;
   List<Contact> _contacts = [];
   List<Product> _products = [];
+  List<Order> _orders = [];
 
+  ThemeMode get themeMode => _themeMode;
   List<Contact> get contacts => _contacts;
   List<Product> get products => _products;
-
-  ThemeMode _themeMode = ThemeMode.system;
-  ThemeMode get themeMode => _themeMode;
+  List<Order> get orders => _orders;
 
   AppProvider({ThemeMode? themeMode}) {
     _themeMode = themeMode ?? ThemeMode.system;
@@ -32,6 +34,29 @@ class AppProvider extends ChangeNotifier {
 
   void setProducts(List<Product> products) {
     _products = products;
+    notifyListeners();
+  }
+
+  void setOrders(List<Order> orders) {
+    _orders = orders;
+    notifyListeners();
+  }
+
+  void addOrder(Order order) {
+    _orders.insert(0, order);
+    notifyListeners();
+  }
+
+  void updateOrder(Order order) {
+    final index = _orders.indexWhere((o) => o.id == order.id);
+    if (index != -1) {
+      _orders[index] = order;
+      notifyListeners();
+    }
+  }
+
+  void removeOrder(int id) {
+    _orders.removeWhere((order) => order.id == id);
     notifyListeners();
   }
 

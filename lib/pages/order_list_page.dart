@@ -12,6 +12,7 @@ import 'package:tcm/core/blocs/order/order_state.dart';
 import 'package:tcm/models/order.dart';
 import 'package:tcm/pages/order_create_page.dart';
 import 'package:tcm/pages/order_detail_page.dart';
+import 'package:tcm/providers/app_provider.dart';
 
 class OrderListPage extends StatefulWidget {
   const OrderListPage({super.key});
@@ -128,6 +129,7 @@ class _OrderListPageState extends State<OrderListPage>
     return BlocListener<OrderCubit, OrderState>(
       listener: (BuildContext context, OrderState state) {
         if (state is OrderListSuccessState) {
+          context.read<AppProvider>().setOrders(state.orders);
           setState(() {
             _orders.clear();
             _orders.addAll(state.orders);
