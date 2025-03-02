@@ -189,7 +189,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('#${widget.orderId} ${_order?.contact?.name}'),
+          title: Text(
+              '#${widget.orderId} ${_order?.contact?.name} ${_order?.isVip == true ? '🚀' : ''}'),
           actions: [
             if (_order != null)
               IconButton(

@@ -239,7 +239,8 @@ class _OrderListPageState extends State<OrderListPage>
                             ],
                           ),
                           child: YTTile(
-                            title: '#${order.id} ${order.contact?.name}',
+                            title:
+                                '#${order.id} ${order.contact?.name} ${order.isVip ? '🚀' : ''}',
                             // showTopBorder: showDateHeader,
                             onTap: () {
                               NavigatorUtil.push(

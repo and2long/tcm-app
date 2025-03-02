@@ -7,6 +7,7 @@ import 'package:tcm/models/order_line.dart';
 class Order {
   int id;
   bool isCompleted;
+  bool isVip;
   Contact? contact;
   List<OrderLine> orderLines;
   List<String> images;
@@ -17,6 +18,7 @@ class Order {
     required this.contact,
     required this.images,
     required this.isCompleted,
+    required this.isVip,
     required this.createdAt,
     required this.orderLines,
   });
@@ -24,6 +26,7 @@ class Order {
   factory Order.fromJson(Map<String, dynamic> map) {
     return Order(
       id: map['id'],
+      isVip: map['is_vip'] ?? false,
       images: (map['images'] as List).map((e) => e.toString()).toList(),
       contact: map['contact'] != null ? Contact.fromJson(map['contact']) : null,
       createdAt: map['created_at'].toString().toDateTime(),
@@ -39,6 +42,7 @@ class Order {
       'images': images,
       'contact': contact?.toJson(),
       'is_completed': isCompleted,
+      'is_vip': isVip,
       'order_lines': orderLines.map((x) => x.toJson()).toList(),
       'created_at': createdAt.toIso8601String(),
     };
@@ -52,6 +56,7 @@ class Order {
   Order copyWith({
     int? id,
     bool? isCompleted,
+    bool? isVip,
     Contact? contact,
     List<OrderLine>? orderLines,
     List<String>? images,
@@ -60,6 +65,7 @@ class Order {
     return Order(
       id: id ?? this.id,
       isCompleted: isCompleted ?? this.isCompleted,
+      isVip: isVip ?? this.isVip,
       contact: contact ?? this.contact,
       orderLines: orderLines ?? this.orderLines,
       images: images ?? this.images,

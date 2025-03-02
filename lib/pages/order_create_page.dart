@@ -51,6 +51,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
   // 最大图片数量
   final int _maxImageCount = 3;
   bool _isDirty = false; // 标记表单是否被修改
+  bool _isVip = false; // 是否为加急订单
 
   @override
   void initState() {
@@ -65,6 +66,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
             )),
       );
       _uploadedImages.addAll(widget.order!.images);
+      _isVip = widget.order!.isVip; // 初始化加急状态
     } else {
       _loadDraft(); // 加载草稿
     }
@@ -91,6 +93,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
               )),
         );
         _uploadedImages.addAll(List<String>.from(draft['images'] ?? []));
+        _isVip = draft['is_vip'] ?? false; // 加载加急状态
 
         // 加载本地图片
         final localImages = List<String>.from(draft['local_images'] ?? []);
@@ -115,6 +118,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
           .toList(),
       'images': _uploadedImages,
       'local_images': _images.map((image) => image.path).toList(), // 保存本地图片路径
+      'is_vip': _isVip, // 保存加急状态
     };
   }
 
@@ -224,6 +228,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
               contactId: _selectedContact!.id,
               items: items,
               images: allImages,
+              isVip: _isVip, // 添加加急状态
             );
       } else {
         context.read<OrderCubit>().updateOrder(
@@ -231,6 +236,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
               contactId: _selectedContact!.id,
               items: items,
               images: allImages,
+              isVip: _isVip, // 添加加急状态
             );
       }
     }
@@ -336,6 +342,29 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                     }
                     return null;
                   },
+                ),
+                const SizedBox(height: 16),
+                // 加急订单开关
+                Row(
+                  children: [
+                    const Text(
+                      '加急订单',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const Spacer(),
+                    Switch(
+                      value: _isVip,
+                      onChanged: (value) {
+                        setState(() {
+                          _isVip = value;
+                          _isDirty = true;
+                        });
+                      },
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 16),
                 Row(
