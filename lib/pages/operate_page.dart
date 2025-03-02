@@ -242,7 +242,7 @@ class _OperatePageState extends State<OperatePage> {
       ),
       const SizedBox(height: 8),
       Text(
-        '订单号: #${_currentOrder?.id}',
+        '订单号: #${_currentOrder?.id} ${_currentOrder?.isVip == true ? '🚀' : ''}',
         style: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.bold,
@@ -397,7 +397,7 @@ class _OperatePageState extends State<OperatePage> {
                         children: [
                           Expanded(
                             child: Text(
-                              '#${order.id} ${order.contact?.name}',
+                              '#${order.id} ${order.contact?.name} ${order.isVip == true ? '🚀' : ''}',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,

@@ -107,6 +107,13 @@ class OrderCubit extends Cubit<OrderState> {
       Response res = await _repo.getPendingOrders();
       List<Order> orders =
           (res.data as List).map((e) => Order.fromJson(e)).toList();
+
+      // 按照加急状态排序，加急订单排在前面
+      orders.sort((a, b) {
+        if (a.isVip == b.isVip) return 0;
+        return a.isVip ? -1 : 1;
+      });
+
       maybeEmit(PendingOrdersSuccessState(orders));
       return orders;
     } catch (e, s) {
