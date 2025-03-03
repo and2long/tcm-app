@@ -12,6 +12,7 @@ class OrderRepo {
     required List<Map<String, int>> items,
     List<String>? images,
     bool isVip = false,
+    String? remark,
   }) async {
     return XHttp.instance.post(
       ConstantsHttp.orders,
@@ -20,6 +21,7 @@ class OrderRepo {
         'order_lines': items,
         'images': images ?? [],
         'is_vip': isVip,
+        'remark': remark,
       },
     );
   }
@@ -38,6 +40,7 @@ class OrderRepo {
     required List<Map<String, int>> items,
     List<String>? images,
     bool isVip = false,
+    String? remark,
   }) async {
     return XHttp.instance.patch(
       '${ConstantsHttp.orders}/$id',
@@ -46,6 +49,7 @@ class OrderRepo {
         'order_lines': items,
         'images': images ?? [],
         'is_vip': isVip,
+        'remark': remark,
       },
     );
   }

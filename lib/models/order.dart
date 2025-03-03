@@ -12,6 +12,7 @@ class Order {
   List<OrderLine> orderLines;
   List<String> images;
   DateTime createdAt;
+  String? remark;
 
   Order({
     required this.id,
@@ -21,6 +22,7 @@ class Order {
     required this.isVip,
     required this.createdAt,
     required this.orderLines,
+    this.remark,
   });
 
   factory Order.fromJson(Map<String, dynamic> map) {
@@ -33,6 +35,7 @@ class Order {
       isCompleted: map['is_completed'],
       orderLines: List<OrderLine>.from(
           map['order_lines'].map((x) => OrderLine.fromJson(x)) ?? []),
+      remark: map['remark'],
     );
   }
 
@@ -45,6 +48,7 @@ class Order {
       'is_vip': isVip,
       'order_lines': orderLines.map((x) => x.toJson()).toList(),
       'created_at': createdAt.toIso8601String(),
+      'remark': remark,
     };
   }
 
@@ -61,6 +65,7 @@ class Order {
     List<OrderLine>? orderLines,
     List<String>? images,
     DateTime? createdAt,
+    String? remark,
   }) {
     return Order(
       id: id ?? this.id,
@@ -70,6 +75,7 @@ class Order {
       orderLines: orderLines ?? this.orderLines,
       images: images ?? this.images,
       createdAt: createdAt ?? this.createdAt,
+      remark: remark ?? this.remark,
     );
   }
 }

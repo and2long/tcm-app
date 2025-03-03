@@ -33,6 +33,7 @@ class OrderCubit extends Cubit<OrderState> {
     required List<Map<String, int>> items,
     required List<String>? images,
     bool isVip = false,
+    String? remark,
   }) async {
     try {
       SmartDialog.showLoading();
@@ -41,6 +42,7 @@ class OrderCubit extends Cubit<OrderState> {
         items: items,
         images: images,
         isVip: isVip,
+        remark: remark,
       );
       Order order = Order.fromJson(res.data);
       maybeEmit(OrderCreateSuccessState(order));
@@ -82,6 +84,7 @@ class OrderCubit extends Cubit<OrderState> {
     required List<Map<String, int>> items,
     List<String>? images,
     bool isVip = false,
+    String? remark,
   }) async {
     try {
       SmartDialog.showLoading();
@@ -91,6 +94,7 @@ class OrderCubit extends Cubit<OrderState> {
         items: items,
         images: images,
         isVip: isVip,
+        remark: remark,
       );
       Order order = Order.fromJson(res.data);
       maybeEmit(OrderUpdateSuccessState(order));

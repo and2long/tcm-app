@@ -52,6 +52,8 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
   final int _maxImageCount = 3;
   bool _isDirty = false; // 标记表单是否被修改
   bool _isVip = false; // 是否为加急订单
+  final TextEditingController _remarkController =
+      TextEditingController(); // 备注控制器
 
   @override
   void initState() {
@@ -67,9 +69,16 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
       );
       _uploadedImages.addAll(widget.order!.images);
       _isVip = widget.order!.isVip; // 初始化加急状态
+      _remarkController.text = widget.order!.remark ?? ''; // 初始化备注
     } else {
       _loadDraft(); // 加载草稿
     }
+  }
+
+  @override
+  void dispose() {
+    _remarkController.dispose(); // 释放控制器
+    super.dispose();
   }
 
   void _loadDraft() {
@@ -94,6 +103,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
         );
         _uploadedImages.addAll(List<String>.from(draft['images'] ?? []));
         _isVip = draft['is_vip'] ?? false; // 加载加急状态
+        _remarkController.text = draft['remark'] ?? ''; // 加载备注
 
         // 加载本地图片
         final localImages = List<String>.from(draft['local_images'] ?? []);
@@ -119,6 +129,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
       'images': _uploadedImages,
       'local_images': _images.map((image) => image.path).toList(), // 保存本地图片路径
       'is_vip': _isVip, // 保存加急状态
+      'remark': _remarkController.text, // 保存备注
     };
   }
 
@@ -229,6 +240,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
               items: items,
               images: allImages,
               isVip: _isVip, // 添加加急状态
+              remark: _remarkController.text, // 添加备注
             );
       } else {
         context.read<OrderCubit>().updateOrder(
@@ -237,6 +249,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
               items: items,
               images: allImages,
               isVip: _isVip, // 添加加急状态
+              remark: _remarkController.text, // 添加备注
             );
       }
     }
@@ -314,7 +327,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
           appBar: AppBar(
             title: Text((widget.order == null || widget.isClone)
                 ? '创建处方'
-                : '修改处方 #${widget.order!.id}'),
+                : '修改处方 #${widget.order!.id}${widget.order!.isVip ? ' 🚀' : ''}'),
           ),
           body: Form(
             key: _formKey,
@@ -365,6 +378,20 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                       },
                     ),
                   ],
+                ),
+                const SizedBox(height: 16),
+                // 备注输入框
+                TextFormField(
+                  controller: _remarkController,
+                  decoration: const InputDecoration(
+                    labelText: '备注',
+                    hintText: '请输入备注信息（选填）',
+                    border: OutlineInputBorder(),
+                  ),
+                  maxLines: 3,
+                  onChanged: (_) {
+                    _isDirty = true;
+                  },
                 ),
                 const SizedBox(height: 16),
                 Row(
