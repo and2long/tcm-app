@@ -290,20 +290,10 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                             const SizedBox(height: 16),
                             const Text(
                               '备注：',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 4),
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade100,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(_order!.remark!),
-                            ),
+                            Text(_order!.remark!),
                           ],
                         ],
                       ),
