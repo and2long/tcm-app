@@ -30,6 +30,19 @@ class ContactCubit extends Cubit<ContactState> {
     }
   }
 
+  /// 获取联系人列表，无等待框
+  Future<List<Contact>?> list() async {
+    try {
+      Response res = await _repo.getContactList();
+      List<Contact> contacts =
+          (res.data as List).map((e) => Contact.fromJson(e)).toList();
+      return contacts;
+    } catch (e, s) {
+      handleError(e, stackTrace: s);
+      return null;
+    }
+  }
+
   Future createContact(String name) async {
     try {
       SmartDialog.showLoading();

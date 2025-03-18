@@ -31,14 +31,14 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     final appProvider = context.read<AppProvider>();
 
     // 获取联系人列表
-    final contacts = await context.read<ContactCubit>().getContactList();
+    final contacts = await context.read<ContactCubit>().list();
     if (!mounted) return;
     if (contacts != null) {
       appProvider.setContacts(contacts);
     }
 
     // 获取药品列表
-    final products = await context.read<ProductCubit>().getProductList();
+    final products = await context.read<ProductCubit>().list();
     if (!mounted) return;
     if (products != null) {
       appProvider.setProducts(products);

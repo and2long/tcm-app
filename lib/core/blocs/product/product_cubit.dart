@@ -30,6 +30,19 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
+  /// 获取产品列表，无等待框
+  Future<List<Product>?> list() async {
+    try {
+      Response res = await _repo.getProductList();
+      List<Product> products =
+          (res.data as List).map((e) => Product.fromJson(e)).toList();
+      return products;
+    } catch (e, s) {
+      handleError(e, stackTrace: s);
+      return null;
+    }
+  }
+
   Future createProduct(String name) async {
     try {
       SmartDialog.showLoading();
