@@ -208,26 +208,65 @@ class _OperatePageState extends State<OperatePage> {
   }
 
   _buildOrderInfoWidget() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Platform.isIOS ? _buildOrderInfo() : _buildOrderInfoRow(),
-        _buildRemainingOrdersButton(),
-      ],
-    );
+    if (Platform.isIOS) {
+      return Stack(
+        children: [
+          _buildOrderInfoColumn(),
+          Positioned(
+            right: 0,
+            top: 20,
+            child: _buildRemainingOrdersButton(),
+          ),
+        ],
+      );
+    } else {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Column(
+              spacing: 8,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildOrderInfoRow(),
+                if (_currentOrder?.remark != null) _buildRemarkWidget()
+              ],
+            ),
+          ),
+          _buildRemainingOrdersButton(),
+        ],
+      );
+    }
   }
 
-  Widget _buildOrderInfo() {
+  Widget _buildOrderInfoColumn() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: _buildOrderInfoItems(),
+      spacing: 8,
+      children: [
+        ..._buildOrderInfoItems(),
+        if (_currentOrder?.remark != null) _buildRemarkWidget()
+      ],
     );
   }
 
   Widget _buildOrderInfoRow() {
     return Row(
       spacing: 20,
-      children: _buildOrderInfoItems(),
+      children: [
+        ..._buildOrderInfoItems(),
+      ],
+    );
+  }
+
+  Widget _buildRemarkWidget() {
+    return Text(
+      '👉 ${(_currentOrder?.remark ?? '')}',
+      style: TextStyle(
+        fontSize: 16,
+        color: Colors.grey[200],
+        fontWeight: FontWeight.bold,
+      ),
     );
   }
 
@@ -240,7 +279,6 @@ class _OperatePageState extends State<OperatePage> {
           fontWeight: FontWeight.bold,
         ),
       ),
-      const SizedBox(height: 8),
       Text(
         '订单号: #${_currentOrder?.id} ${_currentOrder?.isVip == true ? '🚀' : ''}',
         style: TextStyle(
@@ -249,7 +287,6 @@ class _OperatePageState extends State<OperatePage> {
           color: Colors.grey[700],
         ),
       ),
-      const SizedBox(height: 4),
       Text(
         '${_currentOrder?.createdAt.formatStyle1()}',
         style: TextStyle(
