@@ -12,7 +12,6 @@ import 'package:tcm/core/blocs/order/order_state.dart';
 import 'package:tcm/models/order.dart';
 import 'package:tcm/pages/order_create_page.dart';
 import 'package:tcm/pages/order_detail_page.dart';
-import 'package:tcm/providers/app_provider.dart';
 
 class OrderListPage extends StatefulWidget {
   const OrderListPage({super.key});
@@ -164,7 +163,6 @@ class _OrderListPageState extends State<OrderListPage>
     return BlocListener<OrderCubit, OrderState>(
       listener: (BuildContext context, OrderState state) {
         if (state is OrderListSuccessState) {
-          context.read<AppProvider>().setOrders(state.orders);
           setState(() {
             if (state.orders.isEmpty) {
               _hasMore = false;
@@ -231,7 +229,7 @@ class _OrderListPageState extends State<OrderListPage>
                     if (index == filteredOrders.length) {
                       if (_isLoading && !_isRefreshing) {
                         return Container(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          padding: const EdgeInsets.symmetric(vertical: 20.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -247,7 +245,7 @@ class _OrderListPageState extends State<OrderListPage>
                               ),
                               const SizedBox(width: 12),
                               Text(
-                                '加载更多...',
+                                '加载中...',
                                 style: TextStyle(
                                   color: Theme.of(context).colorScheme.primary,
                                   fontSize: 14,

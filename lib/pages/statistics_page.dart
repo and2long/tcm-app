@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
 import 'package:tcm/models/order.dart';
-import 'package:tcm/providers/app_provider.dart';
 
 class StatisticsPage extends StatefulWidget {
   const StatisticsPage({super.key});
@@ -130,7 +128,7 @@ class _StatisticsPageState extends State<StatisticsPage>
 
   @override
   Widget build(BuildContext context) {
-    final orders = context.watch<AppProvider>().orders;
+    List<Order> orders = [];
     final customerOrders = _getCustomerOrders(orders);
     final productUsage = _getProductUsage(orders);
 
