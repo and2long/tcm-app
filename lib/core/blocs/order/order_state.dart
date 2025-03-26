@@ -4,6 +4,10 @@ abstract class OrderState {}
 
 class OrderInitialState extends OrderState {}
 
+class OrderListLoadingState extends OrderState {}
+
+class OrderListLoadFinishState extends OrderState {}
+
 class OrderListSuccessState extends OrderState {
   final List<Order> orders;
   OrderListSuccessState(this.orders);

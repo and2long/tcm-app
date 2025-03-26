@@ -26,6 +26,11 @@ class _OrderListPageState extends State<OrderListPage>
   @override
   bool get wantKeepAlive => true;
   final List<Order> _orders = [];
+  int _currentPage = 1;
+  bool _hasMore = true;
+  bool _isLoading = false;
+  bool _isRefreshing = false;
+  final ScrollController _scrollController = ScrollController();
 
   final _searchController = TextEditingController();
   String _searchText = '';
@@ -33,12 +38,42 @@ class _OrderListPageState extends State<OrderListPage>
   @override
   void initState() {
     super.initState();
-    context.read<OrderCubit>().getOrderList();
+    _loadOrders();
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      _loadOrders();
+    }
+  }
+
+  Future<void> _loadOrders({bool refresh = false}) async {
+    if (_isLoading) return;
+    if (refresh) {
+      _currentPage = 1;
+      _hasMore = true;
+      _orders.clear();
+      _isRefreshing = true;
+    }
+    if (!_hasMore) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    await context.read<OrderCubit>().getOrderList(page: _currentPage);
+    setState(() {
+      _isLoading = false;
+      _isRefreshing = false;
+    });
   }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -131,8 +166,12 @@ class _OrderListPageState extends State<OrderListPage>
         if (state is OrderListSuccessState) {
           context.read<AppProvider>().setOrders(state.orders);
           setState(() {
-            _orders.clear();
-            _orders.addAll(state.orders);
+            if (state.orders.isEmpty) {
+              _hasMore = false;
+            } else {
+              _orders.addAll(state.orders);
+              _currentPage++;
+            }
           });
         }
         if (state is OrderCreateSuccessState) {
@@ -183,11 +222,43 @@ class _OrderListPageState extends State<OrderListPage>
             Expanded(
               child: RefreshIndicator(
                 onRefresh: () {
-                  context.read<OrderCubit>().getOrderList();
-                  return Future.value();
+                  return _loadOrders(refresh: true);
                 },
                 child: ListView.builder(
+                  controller: _scrollController,
+                  itemCount: filteredOrders.length + 1,
                   itemBuilder: (context, index) {
+                    if (index == filteredOrders.length) {
+                      if (_isLoading && !_isRefreshing) {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Theme.of(context).colorScheme.primary,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                '加载更多...',
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    }
                     final order = filteredOrders[index];
                     final previousOrder =
                         index > 0 ? filteredOrders[index - 1] : null;
@@ -261,7 +332,6 @@ class _OrderListPageState extends State<OrderListPage>
                       ],
                     );
                   },
-                  itemCount: filteredOrders.length,
                 ),
               ),
             ),

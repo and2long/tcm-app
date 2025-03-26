@@ -14,17 +14,17 @@ class OrderCubit extends Cubit<OrderState> {
       : _repo = repo,
         super(OrderInitialState());
 
-  Future getOrderList() async {
+  Future getOrderList({int? page, String? month}) async {
     try {
-      SmartDialog.showLoading();
-      Response res = await _repo.getOrderList();
+      maybeEmit(OrderListLoadingState());
+      Response res = await _repo.getOrderList(page: page, month: month);
       List<Order> orders =
           (res.data as List).map((e) => Order.fromJson(e)).toList();
       maybeEmit(OrderListSuccessState(orders));
     } catch (e, s) {
       handleError(e, stackTrace: s);
     } finally {
-      SmartDialog.dismiss();
+      maybeEmit(OrderListLoadFinishState());
     }
   }
 
