@@ -118,13 +118,7 @@ class _StatisticsPageState extends State<StatisticsPage>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey,
-                ),
-              ),
+              Text(title),
               Text(
                 value,
                 style: TextStyle(
