@@ -110,28 +110,31 @@ class _StatisticsPageState extends State<StatisticsPage>
     required String value,
     Color? valueColor,
   }) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: valueColor,
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: valueColor,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -242,10 +245,11 @@ class _StatisticsPageState extends State<StatisticsPage>
         customerOrders.values.fold(0, (sum, orders) => sum + orders.length);
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _buildSummaryCard(
           title: '本月总订单数',
-          value: '$monthlyOrderCount单',
+          value: '$monthlyOrderCount 单',
           valueColor: Theme.of(context).colorScheme.primary,
         ),
         const SizedBox(height: 8),
@@ -259,7 +263,7 @@ class _StatisticsPageState extends State<StatisticsPage>
                 child: ListTile(
                   title: Text(entry.key),
                   trailing: Text(
-                    '${entry.value.length}单',
+                    '${entry.value.length} 单',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   onTap: () {
@@ -286,6 +290,7 @@ class _StatisticsPageState extends State<StatisticsPage>
         productUsage.values.fold(0, (sum, usage) => sum + usage);
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _buildSummaryCard(
           title: '本月总用药量',
