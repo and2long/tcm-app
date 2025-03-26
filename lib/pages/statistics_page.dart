@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
+import 'package:tcm/core/blocs/order/order_cubit.dart';
+import 'package:tcm/core/blocs/order/order_state.dart';
 import 'package:tcm/models/order.dart';
 
 class StatisticsPage extends StatefulWidget {
@@ -14,11 +17,23 @@ class _StatisticsPageState extends State<StatisticsPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   DateTime _selectedMonth = DateTime.now();
+  List<Order> _orders = [];
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _loadOrders();
+  }
+
+  Future<void> _loadOrders() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final month = DateFormat('yyyy-MM').format(_selectedMonth);
+    await context.read<OrderCubit>().getOrderList(month: month);
   }
 
   @override
@@ -31,6 +46,7 @@ class _StatisticsPageState extends State<StatisticsPage>
     setState(() {
       _selectedMonth = DateTime(_selectedMonth.year, _selectedMonth.month - 1);
     });
+    _loadOrders();
   }
 
   void _nextMonth() {
@@ -41,20 +57,18 @@ class _StatisticsPageState extends State<StatisticsPage>
     setState(() {
       _selectedMonth = DateTime(_selectedMonth.year, _selectedMonth.month + 1);
     });
+    _loadOrders();
   }
 
   Map<String, List<Order>> _getCustomerOrders(List<Order> orders) {
     final Map<String, List<Order>> customerOrders = {};
 
     for (var order in orders) {
-      if (order.createdAt.year == _selectedMonth.year &&
-          order.createdAt.month == _selectedMonth.month) {
-        final customerName = order.contact?.name ?? '未知客户';
-        customerOrders[customerName] = [
-          ...(customerOrders[customerName] ?? []),
-          order
-        ];
-      }
+      final customerName = order.contact?.name ?? '未知客户';
+      customerOrders[customerName] = [
+        ...(customerOrders[customerName] ?? []),
+        order
+      ];
     }
 
     // 转换为List并排序
@@ -69,13 +83,10 @@ class _StatisticsPageState extends State<StatisticsPage>
     final Map<String, int> productUsage = {};
 
     for (var order in orders) {
-      if (order.createdAt.year == _selectedMonth.year &&
-          order.createdAt.month == _selectedMonth.month) {
-        for (var line in order.orderLines) {
-          final productName = line.product?.name ?? '未知产品';
-          productUsage[productName] =
-              (productUsage[productName] ?? 0) + line.quantity;
-        }
+      for (var line in order.orderLines) {
+        final productName = line.product?.name ?? '未知产品';
+        productUsage[productName] =
+            (productUsage[productName] ?? 0) + line.quantity;
       }
     }
 
@@ -128,151 +139,179 @@ class _StatisticsPageState extends State<StatisticsPage>
 
   @override
   Widget build(BuildContext context) {
-    List<Order> orders = [];
-    final customerOrders = _getCustomerOrders(orders);
-    final productUsage = _getProductUsage(orders);
-
-    // 计算当月总订单数
-    final monthlyOrderCount =
-        customerOrders.values.fold(0, (sum, orders) => sum + orders.length);
-
-    // 计算当月总用药量
-    final monthlyTotalUsage =
-        productUsage.values.fold(0, (sum, usage) => sum + usage);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('数据统计'),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: '客户订单'),
-            Tab(text: '药品使用量'),
+    return BlocListener<OrderCubit, OrderState>(
+      listener: (context, state) {
+        if (state is OrderListSuccessState) {
+          setState(() {
+            _orders = state.orders;
+            _isLoading = false;
+          });
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('数据统计'),
+          bottom: TabBar(
+            controller: _tabController,
+            tabs: const [
+              Tab(text: '客户订单'),
+              Tab(text: '药品使用量'),
+            ],
+          ),
+        ),
+        body: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    onPressed: _isLoading ? null : _previousMonth,
+                    icon: const Icon(HugeIcons.strokeRoundedArrowLeft01),
+                  ),
+                  Text(
+                    DateFormat('yyyy年MM月').format(_selectedMonth),
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  IconButton(
+                    onPressed: (_isLoading ||
+                            (_selectedMonth.year == DateTime.now().year &&
+                                _selectedMonth.month == DateTime.now().month))
+                        ? null
+                        : _nextMonth,
+                    icon: const Icon(HugeIcons.strokeRoundedArrowRight01),
+                  ),
+                ],
+              ),
+            ),
+            if (_isLoading)
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 30,
+                        height: 30,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 3,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        '加载中...',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    // 客户订单统计
+                    _orders.isEmpty
+                        ? const Center(child: Text('暂无订单数据'))
+                        : _buildCustomerOrdersTab(),
+                    // 药品使用量统计
+                    _orders.isEmpty
+                        ? const Center(child: Text('暂无订单数据'))
+                        : _buildProductUsageTab(),
+                  ],
+                ),
+              ),
           ],
         ),
       ),
-      body: Column(
-        children: [
-          Container(
+    );
+  }
+
+  Widget _buildCustomerOrdersTab() {
+    final customerOrders = _getCustomerOrders(_orders);
+    final monthlyOrderCount =
+        customerOrders.values.fold(0, (sum, orders) => sum + orders.length);
+
+    return Column(
+      children: [
+        _buildSummaryCard(
+          title: '本月总订单数',
+          value: '$monthlyOrderCount单',
+          valueColor: Theme.of(context).colorScheme.primary,
+        ),
+        const SizedBox(height: 8),
+        Expanded(
+          child: ListView.builder(
             padding: const EdgeInsets.all(16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  onPressed: _previousMonth,
-                  icon: const Icon(HugeIcons.strokeRoundedArrowLeft01),
+            itemCount: customerOrders.length,
+            itemBuilder: (context, index) {
+              final entry = customerOrders.entries.elementAt(index);
+              return Card(
+                child: ListTile(
+                  title: Text(entry.key),
+                  trailing: Text(
+                    '${entry.value.length}单',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => _OrderDetailDialog(
+                        customerName: entry.key,
+                        orders: entry.value,
+                      ),
+                    );
+                  },
                 ),
-                Text(
-                  DateFormat('yyyy年MM月').format(_selectedMonth),
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                IconButton(
-                  onPressed: _selectedMonth.year == DateTime.now().year &&
-                          _selectedMonth.month == DateTime.now().month
-                      ? null
-                      : _nextMonth,
-                  icon: const Icon(HugeIcons.strokeRoundedArrowRight01),
-                ),
-              ],
-            ),
+              );
+            },
           ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                // 客户订单统计
-                orders.isEmpty
-                    ? const Center(child: Text('暂无订单数据'))
-                    : customerOrders.isEmpty
-                        ? Center(
-                            child: Text(
-                                '${DateFormat('yyyy年MM月').format(_selectedMonth)}暂无订单'))
-                        : Column(
-                            children: [
-                              _buildSummaryCard(
-                                title: '本月总订单数',
-                                value: '$monthlyOrderCount单',
-                                valueColor:
-                                    Theme.of(context).colorScheme.primary,
-                              ),
-                              const SizedBox(height: 8),
-                              Expanded(
-                                child: ListView.builder(
-                                  padding: const EdgeInsets.all(16),
-                                  itemCount: customerOrders.length,
-                                  itemBuilder: (context, index) {
-                                    final entry =
-                                        customerOrders.entries.elementAt(index);
-                                    return Card(
-                                      child: ListTile(
-                                        title: Text(entry.key),
-                                        trailing: Text(
-                                          '${entry.value.length}单',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleMedium,
-                                        ),
-                                        onTap: () {
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) =>
-                                                _OrderDetailDialog(
-                                              customerName: entry.key,
-                                              orders: entry.value,
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                // 药品使用量统计
-                orders.isEmpty
-                    ? const Center(child: Text('暂无订单数据'))
-                    : productUsage.isEmpty
-                        ? Center(
-                            child: Text(
-                                '${DateFormat('yyyy年MM月').format(_selectedMonth)}暂无数据'))
-                        : Column(
-                            children: [
-                              _buildSummaryCard(
-                                title: '本月总用药量',
-                                value: _formatWeight(monthlyTotalUsage),
-                                valueColor:
-                                    Theme.of(context).colorScheme.primary,
-                              ),
-                              const SizedBox(height: 8),
-                              Expanded(
-                                child: ListView.builder(
-                                  padding: const EdgeInsets.all(16),
-                                  itemCount: productUsage.length,
-                                  itemBuilder: (context, index) {
-                                    final entry =
-                                        productUsage.entries.elementAt(index);
-                                    return Card(
-                                      child: ListTile(
-                                        title: Text(entry.key),
-                                        trailing: Text(
-                                          _formatWeight(entry.value),
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleMedium,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-              ],
-            ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProductUsageTab() {
+    final productUsage = _getProductUsage(_orders);
+    final monthlyTotalUsage =
+        productUsage.values.fold(0, (sum, usage) => sum + usage);
+
+    return Column(
+      children: [
+        _buildSummaryCard(
+          title: '本月总用药量',
+          value: _formatWeight(monthlyTotalUsage),
+          valueColor: Theme.of(context).colorScheme.primary,
+        ),
+        const SizedBox(height: 8),
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: productUsage.length,
+            itemBuilder: (context, index) {
+              final entry = productUsage.entries.elementAt(index);
+              return Card(
+                child: ListTile(
+                  title: Text(entry.key),
+                  trailing: Text(
+                    _formatWeight(entry.value),
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+              );
+            },
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
