@@ -14,10 +14,11 @@ class OrderCubit extends Cubit<OrderState> {
       : _repo = repo,
         super(OrderInitialState());
 
-  Future getOrderList({int? page, String? month}) async {
+  Future getOrderList({int? page, String? month, String? keyword}) async {
     try {
       maybeEmit(OrderListLoadingState());
-      Response res = await _repo.getOrderList(page: page, month: month);
+      Response res =
+          await _repo.getOrderList(page: page, month: month, keyword: keyword);
       List<Order> orders =
           (res.data as List).map((e) => Order.fromJson(e)).toList();
       maybeEmit(OrderListSuccessState(orders));

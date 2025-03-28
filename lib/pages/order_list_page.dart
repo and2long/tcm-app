@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -29,10 +31,12 @@ class _OrderListPageState extends State<OrderListPage>
   bool _hasMore = true;
   bool _isLoading = false;
   bool _isRefreshing = false;
+  bool _isSearching = false;
   final ScrollController _scrollController = ScrollController();
 
   final _searchController = TextEditingController();
   String _searchText = '';
+  Timer? _searchDebounce;
 
   @override
   void initState() {
@@ -62,10 +66,14 @@ class _OrderListPageState extends State<OrderListPage>
       _isLoading = true;
     });
 
-    await context.read<OrderCubit>().getOrderList(page: _currentPage);
+    await context.read<OrderCubit>().getOrderList(
+          page: _currentPage,
+          keyword: _searchText.isEmpty ? null : _searchText,
+        );
     setState(() {
       _isLoading = false;
       _isRefreshing = false;
+      _isSearching = false;
     });
   }
 
@@ -73,6 +81,7 @@ class _OrderListPageState extends State<OrderListPage>
   void dispose() {
     _searchController.dispose();
     _scrollController.dispose();
+    _searchDebounce?.cancel();
     super.dispose();
   }
 
@@ -95,6 +104,12 @@ class _OrderListPageState extends State<OrderListPage>
       onChanged: (value) {
         setState(() {
           _searchText = value;
+          _isSearching = true;
+        });
+        // 添加防抖，避免频繁请求
+        _searchDebounce?.cancel();
+        _searchDebounce = Timer(const Duration(milliseconds: 500), () {
+          _loadOrders(refresh: true);
         });
       },
     );
@@ -222,115 +237,168 @@ class _OrderListPageState extends State<OrderListPage>
                 onRefresh: () {
                   return _loadOrders(refresh: true);
                 },
-                child: ListView.builder(
-                  controller: _scrollController,
-                  itemCount: filteredOrders.length + 1,
-                  itemBuilder: (context, index) {
-                    if (index == filteredOrders.length) {
-                      if (_isLoading && !_isRefreshing) {
-                        return Container(
-                          padding: const EdgeInsets.symmetric(vertical: 20.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    Theme.of(context).colorScheme.primary,
+                child: _isSearching
+                    ? Center(
+                        child: SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                      )
+                    : _orders.isEmpty && _searchText.isNotEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  HugeIcons.strokeRoundedSearch01,
+                                  size: 40,
+                                  color: Colors.grey[400],
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  '未找到相关处方',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey[600],
                                   ),
                                 ),
-                              ),
-                              const SizedBox(width: 12),
-                              Text(
-                                '加载中...',
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  fontSize: 14,
+                                const SizedBox(height: 8),
+                                Text(
+                                  '请尝试其他关键词',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey[400],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-                      return const SizedBox.shrink();
-                    }
-                    final order = filteredOrders[index];
-                    final previousOrder =
-                        index > 0 ? filteredOrders[index - 1] : null;
-                    final showDateHeader = previousOrder == null ||
-                        order.createdAt.formatStyle3() !=
-                            previousOrder.createdAt.formatStyle3();
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        if (showDateHeader)
-                          _buildDateHeader(
-                            order.createdAt.formatStyle3(),
-                            filteredOrders,
-                          ),
-                        Slidable(
-                          endActionPane: ActionPane(
-                            motion: const ScrollMotion(),
-                            children: [
-                              SlidableAction(
-                                onPressed: (c) {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                      title: const Text('确认删除'),
-                                      content: const Text('确定要删除这个处方吗？'),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context, false),
-                                          child: const Text('取消'),
+                              ],
+                            ),
+                          )
+                        : ListView.builder(
+                            controller: _scrollController,
+                            itemCount: filteredOrders.length + 1,
+                            itemBuilder: (context, index) {
+                              if (index == filteredOrders.length) {
+                                if (_isLoading && !_isRefreshing) {
+                                  return Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 20.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                            ),
+                                          ),
                                         ),
-                                        TextButton(
-                                          onPressed: () {
-                                            context
-                                                .read<OrderCubit>()
-                                                .deleteOrder(order.id);
-                                            Navigator.pop(context, true);
-                                          },
-                                          child: const Text('确定'),
+                                        const SizedBox(width: 12),
+                                        Text(
+                                          '加载中...',
+                                          style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                            fontSize: 14,
+                                          ),
                                         ),
                                       ],
                                     ),
                                   );
-                                },
-                                backgroundColor: Colors.red,
-                                foregroundColor: Colors.white,
-                                icon: HugeIcons.strokeRoundedDelete02,
-                              ),
-                            ],
-                          ),
-                          child: YTTile(
-                            title:
-                                '#${order.id} ${order.contact?.name} ${order.isVip ? '🚀' : ''}',
-                            // showTopBorder: showDateHeader,
-                            onTap: () {
-                              NavigatorUtil.push(
-                                context,
-                                OrderDetailPage(orderId: order.id),
+                                }
+                                return const SizedBox.shrink();
+                              }
+                              final order = filteredOrders[index];
+                              final previousOrder =
+                                  index > 0 ? filteredOrders[index - 1] : null;
+                              final showDateHeader = previousOrder == null ||
+                                  order.createdAt.formatStyle3() !=
+                                      previousOrder.createdAt.formatStyle3();
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  if (showDateHeader)
+                                    _buildDateHeader(
+                                      order.createdAt.formatStyle3(),
+                                      filteredOrders,
+                                    ),
+                                  Slidable(
+                                    endActionPane: ActionPane(
+                                      motion: const ScrollMotion(),
+                                      children: [
+                                        SlidableAction(
+                                          onPressed: (c) {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) => AlertDialog(
+                                                title: const Text('确认删除'),
+                                                content:
+                                                    const Text('确定要删除这个处方吗？'),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.pop(
+                                                            context, false),
+                                                    child: const Text('取消'),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      context
+                                                          .read<OrderCubit>()
+                                                          .deleteOrder(
+                                                              order.id);
+                                                      Navigator.pop(
+                                                          context, true);
+                                                    },
+                                                    child: const Text('确定'),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                          backgroundColor: Colors.red,
+                                          foregroundColor: Colors.white,
+                                          icon: HugeIcons.strokeRoundedDelete02,
+                                        ),
+                                      ],
+                                    ),
+                                    child: YTTile(
+                                      title:
+                                          '#${order.id} ${order.contact?.name} ${order.isVip ? '🚀' : ''}',
+                                      onTap: () {
+                                        NavigatorUtil.push(
+                                          context,
+                                          OrderDetailPage(orderId: order.id),
+                                        );
+                                      },
+                                      trailing: Icon(
+                                        order.isCompleted
+                                            ? HugeIcons
+                                                .strokeRoundedCheckmarkCircle01
+                                            : null,
+                                        color: order.isCompleted
+                                            ? Colors.green
+                                            : Colors.grey.shade300,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               );
                             },
-                            trailing: Icon(
-                              order.isCompleted
-                                  ? HugeIcons.strokeRoundedCheckmarkCircle01
-                                  : null,
-                              color: order.isCompleted
-                                  ? Colors.green
-                                  : Colors.grey.shade300,
-                            ),
                           ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
               ),
             ),
           ],

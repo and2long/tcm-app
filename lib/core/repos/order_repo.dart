@@ -3,10 +3,12 @@ import 'package:tcm/constants.dart';
 import 'package:tcm/core/network/http.dart';
 
 class OrderRepo {
-  Future<Response> getOrderList({int? page, String? month}) async {
+  Future<Response> getOrderList(
+      {int? page, String? month, String? keyword}) async {
     return XHttp.instance.get(ConstantsHttp.orders, queryParameters: {
       'page': page,
       'month': month,
+      'keyword': keyword,
     });
   }
 
