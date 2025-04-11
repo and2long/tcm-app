@@ -68,8 +68,14 @@ class CommonMethodCallHandler(private val context: Context) : MethodChannel.Meth
                 installAPK(apkFile)
             }
 
+            "check_root" -> {
+                result.success(isRooted())
+            }
+
         }
     }
+
+    
 
     private fun installSilent(path: String): Boolean {
         var result = false
@@ -145,6 +151,29 @@ class CommonMethodCallHandler(private val context: Context) : MethodChannel.Meth
         } catch (e: Exception) {
             Log.e(TAG, "Install APK failed", e)
             Toast.makeText(context, "安装失败: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun isRooted(): Boolean {
+        var process: Process? = null
+        var os: DataOutputStream? = null
+        try {
+            process = Runtime.getRuntime().exec("su")
+            os = DataOutputStream(process.outputStream)
+            os.writeBytes("exit\n")
+            os.flush()
+            val exitValue = process.waitFor()
+            return exitValue == 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Root check failed", e)
+            return false
+        } finally {
+            try {
+                os?.close()
+                process?.destroy()
+            } catch (e: IOException) {
+                Log.e(TAG, "Error closing streams", e)
+            }
         }
     }
 

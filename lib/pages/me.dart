@@ -195,7 +195,7 @@ class _DownloadDialogState extends State<_DownloadDialog> {
       await XHttp.instance.download(
         widget.url,
         '${(await getTemporaryDirectory()).path}/app.apk',
-        onReceiveProgress: (received, total) {
+        onReceiveProgress: (received, total) async {
           if (total <= 0) return;
           setState(() {
             _progress = received / total;
@@ -207,9 +207,14 @@ class _DownloadDialogState extends State<_DownloadDialog> {
               _isDownloading = false;
               _status = '下载完成';
             });
-            const methodChannel = MethodChannel('tcm_common_method');
-            methodChannel.invokeMethod('silence_install');
             Navigator.pop(context);
+            const methodChannel = MethodChannel('tcm_common_method');
+            bool isRooted = await methodChannel.invokeMethod('check_root');
+            if (isRooted) {
+              methodChannel.invokeMethod('silence_install');
+            } else {
+              methodChannel.invokeMethod('common_install');
+            }
           }
         },
       );
