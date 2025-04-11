@@ -178,14 +178,17 @@ class _OrderListPageState extends State<OrderListPage>
     return BlocListener<OrderCubit, OrderState>(
       listener: (BuildContext context, OrderState state) {
         if (state is OrderListSuccessState) {
-          setState(() {
-            if (state.orders.isEmpty) {
-              _hasMore = false;
-            } else {
-              _orders.addAll(state.orders);
-              _currentPage++;
-            }
-          });
+          // 判断是否在当前界面
+          if (ModalRoute.of(context)?.isCurrent == true) {
+            setState(() {
+              if (state.orders.isEmpty) {
+                _hasMore = false;
+              } else {
+                _orders.addAll(state.orders);
+                _currentPage++;
+              }
+            });
+          }
         }
         if (state is OrderCreateSuccessState) {
           _orders.insert(0, state.order);
