@@ -118,7 +118,13 @@ class _StatisticsPageState extends State<StatisticsPage>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(title),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               Text(
                 value,
                 style: TextStyle(
@@ -154,6 +160,10 @@ class _StatisticsPageState extends State<StatisticsPage>
               Tab(text: '客户订单'),
               Tab(text: '药品使用量'),
             ],
+            labelStyle: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         body: Column(
@@ -187,18 +197,18 @@ class _StatisticsPageState extends State<StatisticsPage>
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
+                    spacing: 12,
                     children: [
                       SizedBox(
-                        width: 30,
-                        height: 30,
+                        width: 20,
+                        height: 20,
                         child: CircularProgressIndicator(
-                          strokeWidth: 3,
+                          strokeWidth: 2,
                           valueColor: AlwaysStoppedAnimation<Color>(
                             Theme.of(context).colorScheme.primary,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 16),
                       Text(
                         '加载中...',
                         style: TextStyle(
@@ -242,7 +252,7 @@ class _StatisticsPageState extends State<StatisticsPage>
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _buildSummaryCard(
-          title: '本月总订单数',
+          title: '总订单数',
           value: '$monthlyOrderCount 单',
           valueColor: Theme.of(context).colorScheme.primary,
         ),
@@ -287,11 +297,10 @@ class _StatisticsPageState extends State<StatisticsPage>
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _buildSummaryCard(
-          title: '本月总用药量',
+          title: '总用药量',
           value: _formatWeight(monthlyTotalUsage),
           valueColor: Theme.of(context).colorScheme.primary,
         ),
-        const SizedBox(height: 8),
         Expanded(
           child: ListView.builder(
             padding: const EdgeInsets.all(16),
