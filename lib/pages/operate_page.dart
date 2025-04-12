@@ -76,6 +76,7 @@ class _OperatePageState extends State<OperatePage> {
                 ),
               _buildBackHomeButton(),
               if (_currentOrder != null) _buildCompleteButton(),
+              if (_currentOrder != null) _buildRemarkWidget(),
             ],
           ),
         ),
@@ -224,14 +225,7 @@ class _OperatePageState extends State<OperatePage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
-            child: Column(
-              spacing: 8,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildOrderInfoRow(),
-                if (_currentOrder?.remark != null) _buildRemarkWidget()
-              ],
-            ),
+            child: _buildOrderInfoRow(),
           ),
           _buildRemainingOrdersButton(),
         ],
@@ -245,7 +239,6 @@ class _OperatePageState extends State<OperatePage> {
       spacing: 8,
       children: [
         ..._buildOrderInfoItems(),
-        if (_currentOrder?.remark != null) _buildRemarkWidget()
       ],
     );
   }
@@ -260,12 +253,38 @@ class _OperatePageState extends State<OperatePage> {
   }
 
   Widget _buildRemarkWidget() {
-    return Text(
-      '👉 ${(_currentOrder?.remark ?? '')}',
-      style: TextStyle(
-        fontSize: 16,
-        color: Colors.grey[200],
-        fontWeight: FontWeight.bold,
+    return Positioned(
+      bottom: 100,
+      right: 20,
+      child: Offstage(
+        offstage: _currentOrder?.remark == null || _currentOrder?.remark == '',
+        child: Card(
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            width: 300,
+            child: Column(
+              spacing: 10,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  '备注:',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  (_currentOrder?.remark ?? ''),
+                  style: const TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
