@@ -256,7 +256,6 @@ class _StatisticsPageState extends State<StatisticsPage>
           value: '$monthlyOrderCount 单',
           valueColor: Theme.of(context).colorScheme.primary,
         ),
-        const SizedBox(height: 8),
         Expanded(
           child: ListView.builder(
             padding: const EdgeInsets.all(16),

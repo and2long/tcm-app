@@ -200,7 +200,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                   NavigatorUtil.pushReplacement(
                     context,
                     OrderCreatePage(
-                      order: _order,
+                      order: _order!.copyWith(isVip: false),
                       isClone: true,
                     ),
                   );
@@ -240,9 +240,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                           Text('创建时间：${_order!.createdAt.formatStyle1()}'),
                           const SizedBox(height: 8),
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text('状态：${_order!.isCompleted ? "已完成" : "未完成"}'),
-                              const SizedBox(width: 16),
                               TextButton(
                                 onPressed: () {
                                   showDialog(
