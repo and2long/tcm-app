@@ -221,21 +221,22 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               ),
                             ],
                           ),
-                          // 显示备注信息
-                          if (_order!.remark != null &&
-                              _order!.remark!.isNotEmpty) ...[
-                            const SizedBox(height: 16),
-                            const Text(
-                              '备注：',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(_order!.remark!),
-                          ],
                         ],
                       ),
                     ),
                   ),
+                  // 显示备注信息
+                  if (_order!.remark != null && _order!.remark!.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    const CustomLabel(title: '备注'),
+                    const SizedBox(height: 8),
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(_order!.remark!),
+                      ),
+                    ),
+                  ],
                   // 图片
                   const SizedBox(height: 24),
                   if (_order!.images.isNotEmpty) ...[

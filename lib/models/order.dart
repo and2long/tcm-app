@@ -75,7 +75,7 @@ class Order {
       orderLines: orderLines ?? this.orderLines,
       images: images ?? this.images,
       createdAt: createdAt ?? this.createdAt,
-      remark: remark ?? this.remark,
+      remark: remark,
     );
   }
 }

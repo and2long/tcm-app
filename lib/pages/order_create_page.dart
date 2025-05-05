@@ -6,6 +6,7 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:tcm/components/custom_label.dart';
 import 'package:tcm/components/search_select_field.dart';
 import 'package:tcm/components/yt_network_image.dart';
 import 'package:tcm/core/blocs/order/order_cubit.dart';
@@ -360,13 +361,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                 // 加急订单开关
                 Row(
                   children: [
-                    const Text(
-                      '加急订单',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                    const CustomLabel(title: '加急订单'),
                     const Spacer(),
                     Switch(
                       value: _isVip,
@@ -381,10 +376,11 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                 ),
                 const SizedBox(height: 16),
                 // 备注输入框
+                const CustomLabel(title: '备注'),
+                const SizedBox(height: 8),
                 TextFormField(
                   controller: _remarkController,
                   decoration: const InputDecoration(
-                    labelText: '备注',
                     hintText: '请输入备注信息（选填）',
                     border: OutlineInputBorder(),
                   ),
@@ -396,13 +392,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    const Text(
-                      '图片',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                    const CustomLabel(title: '图片'),
                     const SizedBox(width: 8),
                     Text(
                       '(${_images.length + _uploadedImages.length}/$_maxImageCount)',
@@ -533,13 +523,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                const Text(
-                  '处方明细',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                const CustomLabel(title: '处方明细'),
                 const SizedBox(height: 8),
                 GridView.builder(
                   shrinkWrap: true,
