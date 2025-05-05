@@ -66,8 +66,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             ),
             IconButton(
               icon: Icon(_isSingleColumn
-                  ? HugeIcons.strokeRoundedLayout02
-                  : HugeIcons.strokeRoundedLayout3Row),
+                  ? HugeIcons.strokeRoundedLayoutGrid
+                  : HugeIcons.strokeRoundedListView),
               onPressed: _toggleLayout,
               tooltip: _isSingleColumn ? '切换为网格视图' : '切换为列表视图',
             ),
