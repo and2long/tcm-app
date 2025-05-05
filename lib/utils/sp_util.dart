@@ -84,7 +84,7 @@ class SPUtil {
   }
 
   static bool getOrderListLayout() {
-    return _spf.getBool(ConstantsKeyCache.keyOrderListSingleColumn) ?? true;
+    return _spf.getBool(ConstantsKeyCache.keyOrderListSingleColumn) ?? false;
   }
 
   static Future<bool> saveOrderDraft(Map<String, dynamic> draft) {
