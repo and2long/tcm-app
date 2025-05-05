@@ -104,4 +104,12 @@ class SPUtil {
   static Future<bool> clearOrderDraft() {
     return _spf.remove(ConstantsKeyCache.keyOrderDraft);
   }
+
+  static Future<bool> saveOrderScaleFactor(double scaleFactor) {
+    return _spf.setDouble(ConstantsKeyCache.keyOrderScaleFactor, scaleFactor);
+  }
+
+  static double getOrderScaleFactor() {
+    return _spf.getDouble(ConstantsKeyCache.keyOrderScaleFactor) ?? 1.0;
+  }
 }

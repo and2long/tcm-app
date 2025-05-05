@@ -22,10 +22,13 @@ class OperatePage extends StatefulWidget {
 class _OperatePageState extends State<OperatePage> {
   Order? _currentOrder;
   List<Order> _orders = [];
+  double _scaleFactor = 1.0;
+
   @override
   void initState() {
     super.initState();
     _loadPendingOrders();
+    _loadScaleFactor();
   }
 
   Future<void> _loadPendingOrders() async {
@@ -42,6 +45,19 @@ class _OperatePageState extends State<OperatePage> {
         _currentOrder = null;
       });
     }
+  }
+
+  Future<void> _loadScaleFactor() async {
+    setState(() {
+      _scaleFactor = SPUtil.getOrderScaleFactor();
+    });
+  }
+
+  Future<void> _updateScaleFactor(double newScaleFactor) async {
+    setState(() {
+      _scaleFactor = newScaleFactor;
+    });
+    await SPUtil.saveOrderScaleFactor(newScaleFactor);
   }
 
   @override
@@ -77,6 +93,7 @@ class _OperatePageState extends State<OperatePage> {
               _buildBackHomeButton(),
               if (_currentOrder != null) _buildCompleteButton(),
               if (_currentOrder != null) _buildRemarkWidget(),
+              if (_currentOrder != null) _buildScaleButtons(),
             ],
           ),
         ),
@@ -254,7 +271,7 @@ class _OperatePageState extends State<OperatePage> {
 
   Widget _buildRemarkWidget() {
     return Positioned(
-      bottom: 100,
+      bottom: 150,
       right: 20,
       child: Offstage(
         offstage: _currentOrder?.remark == null || _currentOrder?.remark == '',
@@ -360,19 +377,19 @@ class _OperatePageState extends State<OperatePage> {
                         Card(
                           margin: const EdgeInsets.only(bottom: 8.0),
                           child: Container(
-                            width: 280,
-                            height: 50,
+                            width: 280 * _scaleFactor,
+                            height: 50 * _scaleFactor,
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 16.0),
                             child: Row(
                               children: [
                                 Container(
-                                  width: 50,
+                                  width: 50 * _scaleFactor,
                                   alignment: Alignment.center,
                                   child: Text(
                                     '${i + 1}.',
                                     style: TextStyle(
-                                      fontSize: 28,
+                                      fontSize: 28 * _scaleFactor,
                                       color: Colors.grey[700],
                                     ),
                                   ),
@@ -382,8 +399,8 @@ class _OperatePageState extends State<OperatePage> {
                                     _currentOrder!
                                             .orderLines[i].product?.name ??
                                         '',
-                                    style: const TextStyle(
-                                      fontSize: 28,
+                                    style: TextStyle(
+                                      fontSize: 28 * _scaleFactor,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -391,8 +408,8 @@ class _OperatePageState extends State<OperatePage> {
                                 const SizedBox(width: 8),
                                 Text(
                                   '× ${_currentOrder!.orderLines[i].quantity}',
-                                  style: const TextStyle(
-                                    fontSize: 28,
+                                  style: TextStyle(
+                                    fontSize: 28 * _scaleFactor,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -406,6 +423,38 @@ class _OperatePageState extends State<OperatePage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildScaleButtons() {
+    return Positioned(
+      right: 16,
+      bottom: 80,
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: () {
+              _updateScaleFactor((_scaleFactor - 0.1).clamp(0.5, 2.0));
+            },
+            icon: const Icon(Icons.zoom_out),
+            style: IconButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.black,
+            ),
+          ),
+          const SizedBox(width: 8),
+          IconButton(
+            onPressed: () {
+              _updateScaleFactor((_scaleFactor + 0.1).clamp(0.5, 2.0));
+            },
+            icon: const Icon(Icons.zoom_in),
+            style: IconButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.black,
+            ),
+          ),
+        ],
       ),
     );
   }
