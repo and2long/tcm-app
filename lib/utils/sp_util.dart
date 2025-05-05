@@ -78,15 +78,6 @@ class SPUtil {
     return await _spf.setBool(ConstantsKeyCache.keyIsDoctor, isDoctor);
   }
 
-  static Future<bool> saveOrderListLayout(bool isSingleColumn) {
-    return _spf.setBool(
-        ConstantsKeyCache.keyOrderListSingleColumn, isSingleColumn);
-  }
-
-  static bool getOrderListLayout() {
-    return _spf.getBool(ConstantsKeyCache.keyOrderListSingleColumn) ?? false;
-  }
-
   static Future<bool> saveOrderDraft(Map<String, dynamic> draft) {
     return _spf.setString(ConstantsKeyCache.keyOrderDraft, jsonEncode(draft));
   }

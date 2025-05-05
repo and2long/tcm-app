@@ -12,7 +12,6 @@ class ConstantsKeyCache {
   static String keyUser = "USER";
   static String keyThemeMode = "THEME_MODE";
   static String keyIsDoctor = "IS_DOCTOR";
-  static const String keyOrderListSingleColumn = 'ORDER_LIST_SINGLE_COLUME';
   static const String keyOrderDraft = 'ORDER_DRAFT';
   static const String keyOrderScaleFactor = 'ORDER_SCALE_FACTOR';
 }
