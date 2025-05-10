@@ -49,7 +49,10 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 8,
       children: [
-        const CustomLabel(title: '处方明细'),
+        CustomLabel(
+          title: '处方明细',
+          value: '总重量：${_order!.getQuantity()}g',
+        ),
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),

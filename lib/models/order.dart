@@ -52,6 +52,10 @@ class Order {
     };
   }
 
+  int getQuantity() {
+    return orderLines.fold(0, (sum, line) => sum + line.quantity);
+  }
+
   @override
   String toString() {
     return json.encode(toJson());
