@@ -432,26 +432,33 @@ class _OperatePageState extends State<OperatePage> {
       right: 16,
       bottom: 80,
       child: Row(
+        spacing: 8,
         children: [
+          Text(
+            '总重量: ${_currentOrder!.getQuantity()}g',
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           IconButton(
             onPressed: () {
               _updateScaleFactor((_scaleFactor - 0.1).clamp(0.5, 2.0));
             },
             icon: const Icon(Icons.zoom_out),
             style: IconButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.black,
+              backgroundColor: Colors.lightGreen,
+              foregroundColor: Colors.white,
             ),
           ),
-          const SizedBox(width: 8),
           IconButton(
             onPressed: () {
               _updateScaleFactor((_scaleFactor + 0.1).clamp(0.5, 2.0));
             },
             icon: const Icon(Icons.zoom_in),
             style: IconButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.black,
+              backgroundColor: Colors.lightGreen,
+              foregroundColor: Colors.white,
             ),
           ),
         ],
