@@ -20,7 +20,7 @@ class ConstantsHttp {
   ConstantsHttp._();
 
   static const String baseUrl =
-      kDebugMode ? 'http://127.0.0.1:5000' : 'https://tcm.and2long.tech';
+      kDebugMode ? 'http://127.0.0.1:5000' : 'http://8.152.207.43:5000';
   static const String orders = '/orders';
   static const String pendingOrders = '/orders/pending';
   static const String contacts = '/contacts';
