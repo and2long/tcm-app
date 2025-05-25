@@ -87,9 +87,9 @@ class _ContactListPageState extends State<ContactListPage>
             IconButton(
               icon: const Icon(HugeIcons.strokeRoundedUserAdd01),
               onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => _CreateContactDialog(),
+                NavigatorUtil.push(
+                  context,
+                  const ContactEditPage(), // 创建模式
                 );
               },
             ),
@@ -172,63 +172,6 @@ class _ContactListPageState extends State<ContactListPage>
           ],
         ),
       ),
-    );
-  }
-}
-
-class _CreateContactDialog extends StatefulWidget {
-  @override
-  State<_CreateContactDialog> createState() => _CreateContactDialogState();
-}
-
-class _CreateContactDialogState extends State<_CreateContactDialog> {
-  final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('新建联系人'),
-      content: Form(
-        key: _formKey,
-        child: TextFormField(
-          autocorrect: false,
-          controller: _nameController,
-          decoration: const InputDecoration(
-            labelText: '姓名',
-            hintText: '请输入姓名',
-          ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return '请输入姓名';
-            }
-            return null;
-          },
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('取消'),
-        ),
-        TextButton(
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              context
-                  .read<ContactCubit>()
-                  .createContact(_nameController.text.trim());
-              Navigator.pop(context);
-            }
-          },
-          child: const Text('确定'),
-        ),
-      ],
     );
   }
 }

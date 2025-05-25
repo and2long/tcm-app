@@ -43,10 +43,10 @@ class ContactCubit extends Cubit<ContactState> {
     }
   }
 
-  Future createContact(String name) async {
+  Future createContact(ContactPayload payload) async {
     try {
       SmartDialog.showLoading();
-      Response res = await _repo.createContact(name);
+      Response res = await _repo.createContact(payload);
       Contact contact = Contact.fromJson(res.data);
       maybeEmit(ContactCreateSuccessState(contact));
     } catch (e, s) {
@@ -68,10 +68,10 @@ class ContactCubit extends Cubit<ContactState> {
     }
   }
 
-  Future updateContact(int id, String name) async {
+  Future updateContact(int id, ContactPayload payload) async {
     try {
       SmartDialog.showLoading();
-      Response res = await _repo.updateContact(id, name);
+      Response res = await _repo.updateContact(id, payload);
       Contact contact = Contact.fromJson(res.data);
       maybeEmit(ContactUpdateSuccessState(contact));
     } catch (e, s) {
