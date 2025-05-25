@@ -9,6 +9,7 @@ import 'package:tcm/components/yt_tile.dart';
 import 'package:tcm/core/blocs/contact/contact_cubit.dart';
 import 'package:tcm/core/blocs/contact/contact_state.dart';
 import 'package:tcm/models/contact.dart';
+import 'package:tcm/pages/contact_detail_page.dart';
 import 'package:tcm/pages/contact_edit_page.dart';
 import 'package:tcm/providers/app_provider.dart';
 
@@ -162,7 +163,15 @@ class _ContactListPageState extends State<ContactListPage>
                           ),
                         ],
                       ),
-                      child: YTTile(title: '${index + 1}. ${contact.name}'),
+                      child: YTTile(
+                        title: '${index + 1}. ${contact.name}',
+                        onTap: () {
+                          NavigatorUtil.push(
+                            context,
+                            ContactDetailPage(contact: contact),
+                          );
+                        },
+                      ),
                     );
                   },
                   itemCount: filteredContacts.length,
