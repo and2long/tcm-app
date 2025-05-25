@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_ytnavigator/flutter_ytnavigator.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:pinyin/pinyin.dart';
 import 'package:tcm/components/yt_search_field.dart';
@@ -117,13 +118,9 @@ class _ProductListPageState extends State<ProductListPage>
                         children: [
                           SlidableAction(
                             onPressed: (c) {
-                              Navigator.push(
+                              NavigatorUtil.push(
                                 context,
-                                MaterialPageRoute(
-                                  builder: (context) => ProductEditPage(
-                                    product: product,
-                                  ),
-                                ),
+                                ProductEditPage(product: product),
                               );
                             },
                             backgroundColor: Colors.blue,
