@@ -92,7 +92,7 @@ class _ContactEditPageState extends State<ContactEditPage> {
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
         ),
       ),
       child: ValueListenableBuilder<TextEditingValue>(
@@ -117,7 +117,7 @@ class _ContactEditPageState extends State<ContactEditPage> {
                         color: Theme.of(context)
                             .colorScheme
                             .primary
-                            .withOpacity(0.1),
+                            .withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Icon(
@@ -151,7 +151,7 @@ class _ContactEditPageState extends State<ContactEditPage> {
                       color: Theme.of(context)
                           .colorScheme
                           .onSurfaceVariant
-                          .withOpacity(0.6),
+                          .withValues(alpha: 0.6),
                     ),
                   ),
                 );
@@ -171,7 +171,7 @@ class _ContactEditPageState extends State<ContactEditPage> {
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
         ),
       ),
       child: InkWell(
@@ -186,7 +186,10 @@ class _ContactEditPageState extends State<ContactEditPage> {
                 margin: const EdgeInsets.only(right: 12),
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .primary
+                      .withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
@@ -217,7 +220,7 @@ class _ContactEditPageState extends State<ContactEditPage> {
                                 : Theme.of(context)
                                     .colorScheme
                                     .onSurfaceVariant
-                                    .withOpacity(0.6),
+                                    .withValues(alpha: 0.6),
                           ),
                     ),
                   ],
@@ -314,11 +317,9 @@ class _ContactEditPageState extends State<ContactEditPage> {
         }
       },
       child: Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.background,
         appBar: AppBar(
           title: Text(_isEditMode ? '编辑联系人' : '新建联系人'),
           elevation: 0,
-          backgroundColor: Theme.of(context).colorScheme.surface,
         ),
         body: Form(
           key: _formKey,
