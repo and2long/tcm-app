@@ -20,6 +20,7 @@ class ContactEditPage extends StatefulWidget {
 
 class _ContactEditPageState extends State<ContactEditPage> {
   final _formKey = GlobalKey<FormState>();
+  final _genderFieldKey = GlobalKey(); // 添加性别输入框的key
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _address1Controller = TextEditingController();
@@ -94,38 +95,70 @@ class _ContactEditPageState extends State<ContactEditPage> {
           color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
         ),
       ),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: keyboardType,
-        maxLines: maxLines,
-        validator: validator,
-        decoration: InputDecoration(
-          labelText: isRequired ? '$label *' : label,
-          hintText: hint,
-          prefixIcon: Container(
-            margin: const EdgeInsets.all(12),
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
+      child: ValueListenableBuilder<TextEditingValue>(
+        valueListenable: controller,
+        builder: (context, value, child) {
+          return Focus(
+            child: Builder(
+              builder: (context) {
+                final hasFocus = Focus.of(context).hasFocus;
+                return TextFormField(
+                  controller: controller,
+                  keyboardType: keyboardType,
+                  maxLines: maxLines,
+                  validator: validator,
+                  decoration: InputDecoration(
+                    labelText: isRequired ? '$label *' : label,
+                    hintText: hint,
+                    prefixIcon: Container(
+                      margin: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(
+                        icon,
+                        color: Theme.of(context).colorScheme.primary,
+                        size: 20,
+                      ),
+                    ),
+                    suffixIcon: (value.text.isNotEmpty && hasFocus)
+                        ? IconButton(
+                            icon: Icon(
+                              HugeIcons.strokeRoundedCancel01,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
+                              size: 20,
+                            ),
+                            onPressed: () {
+                              controller.clear();
+                            },
+                            tooltip: '清空$label',
+                          )
+                        : null,
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 16),
+                    labelStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                    hintStyle: TextStyle(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurfaceVariant
+                          .withOpacity(0.6),
+                    ),
+                  ),
+                );
+              },
             ),
-            child: Icon(
-              icon,
-              color: Theme.of(context).colorScheme.primary,
-              size: 20,
-            ),
-          ),
-          border: InputBorder.none,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          labelStyle: TextStyle(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
-          hintStyle: TextStyle(
-            color:
-                Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.6),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
@@ -133,6 +166,7 @@ class _ContactEditPageState extends State<ContactEditPage> {
   // 构建性别选择字段
   Widget _buildGenderField() {
     return Container(
+      key: _genderFieldKey, // 添加key
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
@@ -140,44 +174,122 @@ class _ContactEditPageState extends State<ContactEditPage> {
           color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
         ),
       ),
-      child: DropdownButtonFormField<String>(
-        value: _selectedGender,
-        decoration: InputDecoration(
-          labelText: '性别',
-          hintText: '请选择性别',
-          prefixIcon: Container(
-            margin: const EdgeInsets.all(12),
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              HugeIcons.strokeRoundedUser,
-              color: Theme.of(context).colorScheme.primary,
-              size: 20,
-            ),
-          ),
-          border: InputBorder.none,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          labelStyle: TextStyle(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => _showGenderMenu(),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          child: Row(
+            children: [
+              // 前缀图标
+              Container(
+                margin: const EdgeInsets.only(right: 12),
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  HugeIcons.strokeRoundedUser,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 20,
+                ),
+              ),
+              // 标签和值
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '性别',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      _selectedGender ?? '请选择性别',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: _selectedGender != null
+                                ? Theme.of(context).colorScheme.onSurface
+                                : Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant
+                                    .withOpacity(0.6),
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+              // 下拉箭头
+              Icon(
+                HugeIcons.strokeRoundedArrowDown01,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                size: 20,
+              ),
+            ],
           ),
         ),
-        items: _genderOptions.map((gender) {
-          return DropdownMenuItem<String>(
-            value: gender,
-            child: Text(gender),
-          );
-        }).toList(),
-        onChanged: (value) {
-          setState(() {
-            _selectedGender = value;
-          });
-        },
       ),
     );
+  }
+
+  // 显示性别选择菜单
+  void _showGenderMenu() async {
+    // 先关闭键盘
+    FocusScope.of(context).unfocus();
+
+    // 等待键盘关闭动画完成
+    await Future.delayed(const Duration(milliseconds: 100));
+
+    // 获取性别输入框的位置
+    final RenderBox? renderBox =
+        _genderFieldKey.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+
+    final size = renderBox.size;
+    final offset = renderBox.localToGlobal(Offset.zero);
+
+    final selected = await showMenu<String>(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        offset.dx, // 与输入框左边对齐
+        offset.dy + size.height + 4, // 在输入框下方4像素
+        offset.dx + size.width, // 与输入框右边对齐
+        offset.dy + size.height + 150, // 限制菜单高度
+      ),
+      constraints: BoxConstraints(
+        minWidth: size.width, // 设置最小宽度为输入框宽度
+        maxWidth: size.width, // 设置最大宽度为输入框宽度
+      ),
+      items: _genderOptions.map((gender) {
+        return PopupMenuItem<String>(
+          value: gender,
+          padding: EdgeInsets.zero, // 移除默认padding
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Text(
+              gender,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+        );
+      }).toList(),
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      color: Theme.of(context).colorScheme.surface,
+    );
+
+    if (selected != null) {
+      setState(() {
+        _selectedGender = selected;
+      });
+    }
   }
 
   @override
@@ -189,12 +301,11 @@ class _ContactEditPageState extends State<ContactEditPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('修改成功')),
           );
-          Navigator.pop(context);
+          Navigator.pop(context, state.contact);
         } else if (state is ContactCreateSuccessState) {
           final provider = context.read<AppProvider>();
           final contacts = List<Contact>.from(provider.contacts);
           contacts.add(state.contact);
-          contacts.sort((a, b) => a.name.compareTo(b.name));
           provider.setContacts(contacts);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('创建成功')),
@@ -274,7 +385,7 @@ class _ContactEditPageState extends State<ContactEditPage> {
                         controller: _address2Controller,
                         label: '地址2',
                         hint: '请输入备用地址信息',
-                        icon: HugeIcons.strokeRoundedLocation02,
+                        icon: HugeIcons.strokeRoundedLocation01,
                         maxLines: 2,
                       ),
                       const SizedBox(height: 40),

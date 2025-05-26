@@ -67,8 +67,6 @@ class _ContactListPageState extends State<ContactListPage>
         if (state is ContactCreateSuccessState) {
           List<Contact> items = context.read<AppProvider>().contacts;
           items.add(state.contact);
-          items.sort((a, b) => PinyinHelper.getShortPinyin(a.name)
-              .compareTo(PinyinHelper.getShortPinyin(b.name)));
           context.read<AppProvider>().setContacts(items);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('创建成功')),

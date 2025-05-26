@@ -5,13 +5,26 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:tcm/models/contact.dart';
 import 'package:tcm/pages/contact_edit_page.dart';
 
-class ContactDetailPage extends StatelessWidget {
+class ContactDetailPage extends StatefulWidget {
   final Contact contact;
 
   const ContactDetailPage({
     super.key,
     required this.contact,
   });
+
+  @override
+  State<ContactDetailPage> createState() => _ContactDetailPageState();
+}
+
+class _ContactDetailPageState extends State<ContactDetailPage> {
+  late Contact _contact;
+
+  @override
+  void initState() {
+    super.initState();
+    _contact = widget.contact;
+  }
 
   // 复制文本到剪贴板
   void _copyToClipboard(BuildContext context, String text, String label) {
@@ -91,10 +104,14 @@ class ContactDetailPage extends StatelessWidget {
           IconButton(
             icon: const Icon(HugeIcons.strokeRoundedEditUser02),
             onPressed: () {
-              NavigatorUtil.push(
-                context,
-                ContactEditPage(contact: contact),
-              );
+              NavigatorUtil.push(context, ContactEditPage(contact: _contact))
+                  .then((value) {
+                if (value != null) {
+                  setState(() {
+                    _contact = value;
+                  });
+                }
+              });
             },
             tooltip: '编辑联系人',
           ),
@@ -122,7 +139,7 @@ class ContactDetailPage extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        contact.name,
+                        _contact.name,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -136,7 +153,7 @@ class ContactDetailPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        'ID: ${contact.id}',
+                        'ID: ${_contact.id}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: Theme.of(context)
                                   .colorScheme
@@ -147,15 +164,15 @@ class ContactDetailPage extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 24),
 
                 // 紧凑的信息行
                 _buildCompactInfoRow(
                   context,
                   icon: HugeIcons.strokeRoundedUser,
                   label: '性别',
-                  value: contact.gender?.isNotEmpty == true
-                      ? contact.gender!
+                  value: _contact.gender?.isNotEmpty == true
+                      ? _contact.gender!
                       : '未设置',
                 ),
                 const SizedBox(height: 8),
@@ -164,12 +181,12 @@ class ContactDetailPage extends StatelessWidget {
                   context,
                   icon: HugeIcons.strokeRoundedCall,
                   label: '手机',
-                  value: contact.phone?.isNotEmpty == true
-                      ? contact.phone!
+                  value: _contact.phone?.isNotEmpty == true
+                      ? _contact.phone!
                       : '未设置',
-                  showCopy: contact.phone?.isNotEmpty == true,
-                  onCopy: contact.phone?.isNotEmpty == true
-                      ? () => _copyToClipboard(context, contact.phone!, '手机号')
+                  showCopy: _contact.phone?.isNotEmpty == true,
+                  onCopy: _contact.phone?.isNotEmpty == true
+                      ? () => _copyToClipboard(context, _contact.phone!, '手机号')
                       : null,
                 ),
                 const SizedBox(height: 8),
@@ -178,28 +195,28 @@ class ContactDetailPage extends StatelessWidget {
                   context,
                   icon: HugeIcons.strokeRoundedLocation01,
                   label: '地址1',
-                  value: contact.address1?.isNotEmpty == true
-                      ? contact.address1!
+                  value: _contact.address1?.isNotEmpty == true
+                      ? _contact.address1!
                       : '未设置',
-                  showCopy: contact.address1?.isNotEmpty == true,
-                  onCopy: contact.address1?.isNotEmpty == true
+                  showCopy: _contact.address1?.isNotEmpty == true,
+                  onCopy: _contact.address1?.isNotEmpty == true
                       ? () =>
-                          _copyToClipboard(context, contact.address1!, '地址1')
+                          _copyToClipboard(context, _contact.address1!, '地址1')
                       : null,
                 ),
                 const SizedBox(height: 8),
 
                 _buildCompactInfoRow(
                   context,
-                  icon: HugeIcons.strokeRoundedLocation02,
+                  icon: HugeIcons.strokeRoundedLocation01,
                   label: '地址2',
-                  value: contact.address2?.isNotEmpty == true
-                      ? contact.address2!
+                  value: _contact.address2?.isNotEmpty == true
+                      ? _contact.address2!
                       : '未设置',
-                  showCopy: contact.address2?.isNotEmpty == true,
-                  onCopy: contact.address2?.isNotEmpty == true
+                  showCopy: _contact.address2?.isNotEmpty == true,
+                  onCopy: _contact.address2?.isNotEmpty == true
                       ? () =>
-                          _copyToClipboard(context, contact.address2!, '地址2')
+                          _copyToClipboard(context, _contact.address2!, '地址2')
                       : null,
                 ),
               ],
