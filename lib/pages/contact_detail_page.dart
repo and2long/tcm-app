@@ -172,7 +172,7 @@ class _ContactDetailPageState extends State<ContactDetailPage> {
                 // 紧凑的信息行
                 _buildCompactInfoRow(
                   context,
-                  icon: HugeIcons.strokeRoundedUser,
+                  icon: HugeIcons.strokeRoundedNeutral,
                   label: '性别',
                   value: _contact.gender?.isNotEmpty == true
                       ? _contact.gender!

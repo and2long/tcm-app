@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ytnavigator/flutter_ytnavigator.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -11,6 +12,7 @@ import 'package:tcm/core/blocs/extension.dart';
 import 'package:tcm/core/blocs/order/order_cubit.dart';
 import 'package:tcm/core/blocs/order/order_state.dart';
 import 'package:tcm/models/order.dart';
+import 'package:tcm/pages/contact_detail_page.dart';
 import 'package:tcm/pages/order_create_page.dart';
 
 class OrderDetailPage extends StatefulWidget {
@@ -99,6 +101,259 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     );
   }
 
+  // 复制文本到剪贴板
+  void _copyToClipboard(BuildContext context, String text, String label) {
+    Clipboard.setData(ClipboardData(text: text));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('已复制$label到剪贴板'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  // 构建客户详细信息popup
+  Widget _buildCustomerInfoPopup() {
+    final contact = _order?.contact;
+    if (contact == null) return const SizedBox.shrink();
+
+    return GestureDetector(
+      onTap: () {
+        _showCustomerInfoDialog(context, contact);
+      },
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(
+            child: Text(
+              '${contact.name} ${_order?.isVip == true ? '🚀' : ''}',
+              style: Theme.of(context).appBarTheme.titleTextStyle ??
+                  Theme.of(context).textTheme.titleLarge,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(width: 4),
+          const Icon(
+            Icons.keyboard_arrow_down,
+            size: 16,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 显示居中的客户信息弹窗
+  void _showCustomerInfoDialog(BuildContext context, contact) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 40),
+          child: Container(
+            width: 320,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 标题
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '客户信息',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                    TextButton.icon(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        NavigatorUtil.push(
+                          context,
+                          ContactDetailPage(contact: contact),
+                        );
+                      },
+                      label: Text('详情'),
+                      icon: Icon(HugeIcons.strokeRoundedArrowRight01),
+                      iconAlignment: IconAlignment.end,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+
+                // 客户信息列表
+                _buildInfoRow(
+                  context,
+                  icon: HugeIcons.strokeRoundedUser,
+                  label: '姓名',
+                  value: contact.name,
+                ),
+                const SizedBox(height: 12),
+
+                _buildInfoRow(
+                  context,
+                  icon: HugeIcons.strokeRoundedNeutral,
+                  label: '性别',
+                  value: contact.gender?.isNotEmpty == true
+                      ? contact.gender!
+                      : '未设置',
+                ),
+                const SizedBox(height: 12),
+
+                _buildInfoRow(
+                  context,
+                  icon: HugeIcons.strokeRoundedCall,
+                  label: '手机',
+                  value: contact.phone?.isNotEmpty == true
+                      ? contact.phone!
+                      : '未设置',
+                  showCopy: contact.phone?.isNotEmpty == true,
+                  onCopy: contact.phone?.isNotEmpty == true
+                      ? () => _copyToClipboard(context, contact.phone!, '手机号')
+                      : null,
+                ),
+                const SizedBox(height: 12),
+
+                _buildInfoRow(
+                  context,
+                  icon: HugeIcons.strokeRoundedLocation01,
+                  label: '地址1',
+                  value: contact.address1?.isNotEmpty == true
+                      ? contact.address1!
+                      : '未设置',
+                  showCopy: contact.address1?.isNotEmpty == true,
+                  onCopy: contact.address1?.isNotEmpty == true
+                      ? () =>
+                          _copyToClipboard(context, contact.address1!, '地址1')
+                      : null,
+                ),
+                const SizedBox(height: 12),
+
+                _buildInfoRow(
+                  context,
+                  icon: HugeIcons.strokeRoundedLocation01,
+                  label: '地址2',
+                  value: contact.address2?.isNotEmpty == true
+                      ? contact.address2!
+                      : '未设置',
+                  showCopy: contact.address2?.isNotEmpty == true,
+                  onCopy: contact.address2?.isNotEmpty == true
+                      ? () =>
+                          _copyToClipboard(context, contact.address2!, '地址2')
+                      : null,
+                ),
+                const SizedBox(height: 20),
+
+                // 按钮区域
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text(
+                      '关闭',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // 修改原来的_buildInfoRow方法，使其在dialog中使用新样式
+  Widget _buildInfoRow(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required String value,
+    bool showCopy = false,
+    VoidCallback? onCopy,
+  }) {
+    final isEmptyValue = value == '未设置';
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      decoration: BoxDecoration(
+        color: Theme.of(context)
+            .colorScheme
+            .surfaceContainerHighest
+            .withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            size: 18,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          const SizedBox(width: 12),
+          SizedBox(
+            width: 60,
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(
+                fontSize: 14,
+                color: isEmptyValue
+                    ? Theme.of(context)
+                        .colorScheme
+                        .onSurfaceVariant
+                        .withValues(alpha: 0.6)
+                    : Theme.of(context).colorScheme.onSurface,
+                fontWeight: isEmptyValue ? FontWeight.normal : FontWeight.w500,
+              ),
+            ),
+          ),
+          if (showCopy && onCopy != null)
+            InkWell(
+              onTap: onCopy,
+              borderRadius: BorderRadius.circular(20),
+              child: Container(
+                padding: const EdgeInsets.all(6),
+                child: Icon(
+                  HugeIcons.strokeRoundedCopy01,
+                  size: 16,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<OrderCubit, OrderState>(
@@ -132,8 +387,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
-              '#${widget.orderId} ${_order?.contact?.name} ${_order?.isVip == true ? '🚀' : ''}'),
+          title: _order == null ? Text('') : _buildCustomerInfoPopup(),
           actions: [
             if (_order != null)
               IconButton(
