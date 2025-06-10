@@ -5,8 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:photo_view/photo_view.dart';
 import 'package:tcm/components/custom_label.dart';
+import 'package:tcm/components/image_gallery_dialog.dart';
 import 'package:tcm/components/search_select_field.dart';
 import 'package:tcm/components/yt_network_image.dart';
 import 'package:tcm/core/blocs/order/order_cubit.dart';
@@ -256,40 +256,15 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
     }
   }
 
-  void _showImagePreview(BuildContext context, ImageProvider imageProvider) {
+  void _showImageGallery(int initialIndex) {
+    // 合并所有图片，先是已上传的，再是本地选择的
+    List<dynamic> allImages = [..._uploadedImages, ..._images];
+
     showDialog(
       context: context,
-      builder: (context) => Dialog.fullscreen(
-        backgroundColor: Colors.transparent,
-        child: Stack(
-          children: [
-            PhotoView(
-              imageProvider: imageProvider,
-              backgroundDecoration: BoxDecoration(
-                color: Colors.black.withAlpha(70),
-              ),
-            ),
-            Positioned(
-              right: 16,
-              top: 16,
-              child: GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: const BoxDecoration(
-                    color: Colors.black54,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.close,
-                    size: 24,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+      builder: (context) => ImageGalleryDialog(
+        images: allImages,
+        initialIndex: initialIndex,
       ),
     );
   }
@@ -416,8 +391,7 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                           return Padding(
                             padding: const EdgeInsets.only(right: 8.0),
                             child: GestureDetector(
-                              onTap: () => _showImagePreview(
-                                  context, NetworkImage(imageUrl)),
+                              onTap: () => _showImageGallery(index),
                               child: Stack(
                                 children: [
                                   ClipRRect(
@@ -463,8 +437,8 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                           return Padding(
                             padding: const EdgeInsets.only(right: 8.0),
                             child: GestureDetector(
-                              onTap: () => _showImagePreview(
-                                  context, FileImage(File(image.path))),
+                              onTap: () => _showImageGallery(
+                                  _uploadedImages.length + index),
                               child: Stack(
                                 children: [
                                   ClipRRect(

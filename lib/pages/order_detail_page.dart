@@ -1,12 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ytnavigator/flutter_ytnavigator.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:photo_view/photo_view.dart';
-import 'package:photo_view/photo_view_gallery.dart';
 import 'package:tcm/components/custom_label.dart';
+import 'package:tcm/components/image_gallery_dialog.dart';
 import 'package:tcm/components/yt_network_image.dart';
 import 'package:tcm/core/blocs/extension.dart';
 import 'package:tcm/core/blocs/order/order_cubit.dart';
@@ -39,7 +37,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   void _showImageGallery(int initialIndex) {
     showDialog(
       context: context,
-      builder: (context) => _ImageGalleryDialog(
+      builder: (context) => ImageGalleryDialog(
         images: _order!.images,
         initialIndex: initialIndex,
       ),
@@ -532,112 +530,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                   _buildOrderLines(),
                 ],
               ),
-      ),
-    );
-  }
-}
-
-class _ImageGalleryDialog extends StatefulWidget {
-  final List<String> images;
-  final int initialIndex;
-
-  const _ImageGalleryDialog({
-    required this.images,
-    required this.initialIndex,
-  });
-
-  @override
-  State<_ImageGalleryDialog> createState() => _ImageGalleryDialogState();
-}
-
-class _ImageGalleryDialogState extends State<_ImageGalleryDialog> {
-  late int currentIndex;
-
-  @override
-  void initState() {
-    super.initState();
-    currentIndex = widget.initialIndex;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Dialog.fullscreen(
-      child: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          PhotoViewGallery.builder(
-            scrollPhysics: const BouncingScrollPhysics(),
-            builder: (BuildContext context, int index) {
-              return PhotoViewGalleryPageOptions(
-                imageProvider: CachedNetworkImageProvider(widget.images[index]),
-                initialScale: PhotoViewComputedScale.contained,
-                heroAttributes: PhotoViewHeroAttributes(tag: index),
-                errorBuilder: (context, error, stackTrace) => const Center(
-                  child: Icon(
-                    Icons.error,
-                    size: 48,
-                    color: Colors.white54,
-                  ),
-                ),
-              );
-            },
-            itemCount: widget.images.length,
-            loadingBuilder: (context, event) => const Center(
-              child: CircularProgressIndicator(),
-            ),
-            pageController: PageController(initialPage: widget.initialIndex),
-            backgroundDecoration: const BoxDecoration(
-              color: Colors.black,
-            ),
-            onPageChanged: (index) {
-              setState(() {
-                currentIndex = index;
-              });
-            },
-          ),
-          Positioned(
-            top: 16,
-            right: 16,
-            child: IconButton(
-              icon: const Icon(
-                HugeIcons.strokeRoundedCancelCircle,
-                color: Colors.white,
-                size: 30,
-              ),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ),
-          Positioned(
-            bottom: 16,
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 6,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.black54,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  for (int i = 0; i < widget.images.length; i++)
-                    Container(
-                      width: 8,
-                      height: 8,
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: i == currentIndex
-                            ? Colors.white
-                            : Colors.grey.shade800,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
