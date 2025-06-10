@@ -6,7 +6,6 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tcm/components/custom_label.dart';
-import 'package:tcm/components/image_gallery_dialog.dart';
 import 'package:tcm/components/search_select_field.dart';
 import 'package:tcm/components/yt_network_image.dart';
 import 'package:tcm/core/blocs/order/order_cubit.dart';
@@ -15,6 +14,7 @@ import 'package:tcm/core/repos/upload_repo.dart';
 import 'package:tcm/models/contact.dart';
 import 'package:tcm/models/order.dart';
 import 'package:tcm/models/product.dart';
+import 'package:tcm/pages/image_gallery_page.dart';
 import 'package:tcm/providers/app_provider.dart';
 import 'package:tcm/utils/sp_util.dart';
 
@@ -260,11 +260,13 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
     // 合并所有图片，先是已上传的，再是本地选择的
     List<dynamic> allImages = [..._uploadedImages, ..._images];
 
-    showDialog(
-      context: context,
-      builder: (context) => ImageGalleryDialog(
-        images: allImages,
-        initialIndex: initialIndex,
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ImageGalleryPage(
+          images: allImages,
+          initialIndex: initialIndex,
+        ),
       ),
     );
   }
@@ -394,13 +396,16 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                               onTap: () => _showImageGallery(index),
                               child: Stack(
                                 children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: YTNetworkImage(
-                                      imageUrl: imageUrl,
-                                      width: 100,
-                                      height: 100,
-                                      fit: BoxFit.cover,
+                                  Hero(
+                                    tag: index,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: YTNetworkImage(
+                                        imageUrl: imageUrl,
+                                        width: 100,
+                                        height: 100,
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                                   ),
                                   Positioned(
@@ -441,13 +446,16 @@ class _OrderCreatePageState extends State<OrderCreatePage> {
                                   _uploadedImages.length + index),
                               child: Stack(
                                 children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.file(
-                                      File(image.path),
-                                      width: 100,
-                                      height: 100,
-                                      fit: BoxFit.cover,
+                                  Hero(
+                                    tag: _uploadedImages.length + index,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.file(
+                                        File(image.path),
+                                        width: 100,
+                                        height: 100,
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                                   ),
                                   Positioned(

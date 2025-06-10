@@ -4,13 +4,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ytnavigator/flutter_ytnavigator.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:tcm/components/custom_label.dart';
-import 'package:tcm/components/image_gallery_dialog.dart';
 import 'package:tcm/components/yt_network_image.dart';
 import 'package:tcm/core/blocs/extension.dart';
 import 'package:tcm/core/blocs/order/order_cubit.dart';
 import 'package:tcm/core/blocs/order/order_state.dart';
 import 'package:tcm/models/order.dart';
 import 'package:tcm/pages/contact_detail_page.dart';
+import 'package:tcm/pages/image_gallery_page.dart';
 import 'package:tcm/pages/order_create_page.dart';
 
 class OrderDetailPage extends StatefulWidget {
@@ -35,11 +35,13 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   void _showImageGallery(int initialIndex) {
-    showDialog(
-      context: context,
-      builder: (context) => ImageGalleryDialog(
-        images: _order!.images,
-        initialIndex: initialIndex,
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ImageGalleryPage(
+          images: _order!.images,
+          initialIndex: initialIndex,
+        ),
       ),
     );
   }
