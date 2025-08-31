@@ -1,0 +1,8 @@
+app_identifier("tech.and2long.tcm") # The bundle identifier of your app
+apple_id("and2long@icloud.com") # Your Apple Developer Portal username
+
+itc_team_id("125656392") # App Store Connect Team ID
+team_id("GYU4JAXX5B") # Developer Portal Team ID
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile
